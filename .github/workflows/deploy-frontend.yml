@@ -1,0 +1,36 @@
+name: Build and Deploy Frontend to Hostinger
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'hospital-token-frontend/**' # Only triggers when files inside the frontend folder change
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Pull down the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      # 2. Setup Node.js on the runner environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './hospital-token-frontend/package-lock.json'
+      # 3. Clean install npm modules and run Vite build
+      - name: Install Dependencies & Compile Build
+        working-directory: ./hospital-token-frontend
+        run: |
+          npm ci
+          npm run build
+      # 4. Upload build output files to Hostinger
+      - name: Deploy Compiled Files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./hospital-token-frontend/dist/
+          server-dir: /public_html/ # Path where your frontend files live on Hostinger
