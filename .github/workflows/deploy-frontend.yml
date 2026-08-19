@@ -17,11 +17,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install Dependencies & Compile Build
         working-directory: ./hospital-token-frontend
@@ -29,7 +31,7 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy Compiled Files
+      - name: Deploy Compiled Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
