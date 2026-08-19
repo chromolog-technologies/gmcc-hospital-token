@@ -31,6 +31,12 @@ jobs:
           npm ci
           npm run build
 
+      - name: Git Config for FTP Action
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git config --global --add safe.directory "*"
+
       - name: Deploy Compiled Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

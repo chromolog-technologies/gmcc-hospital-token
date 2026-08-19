@@ -30,7 +30,13 @@ jobs:
       - name: Install Composer Dependencies
         working-directory: ./hospital-token-backend
         run: |
-          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
+
+      - name: Git Config for FTP Action
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git config --global --add safe.directory "*"
 
       - name: Deploy Backend Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
