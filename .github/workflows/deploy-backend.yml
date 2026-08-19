@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -32,28 +30,12 @@ jobs:
         run: |
           composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 
-      - name: Git Config for FTP Action
-        run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
-          git config --global --add safe.directory "*"
-
       - name: Deploy Backend Files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: sebastianpopp/ftp-action@v2.0.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+          host: ${{ secrets.FTP_SERVER }}
+          user: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./hospital-token-backend/
-          server-dir: /public_html/gmcc-api/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/tests/**
-            .env
-            storage/logs/*.log
-            storage/framework/sessions/*
-            storage/framework/views/*
-            storage/framework/cache/*
-          dangerous-clean-slate: false
+          localDir: ./hospital-token-backend
+          remoteDir: /public_html/gmcc-api
+          forceSsl: false
