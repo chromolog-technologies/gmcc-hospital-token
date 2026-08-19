@@ -1,0 +1,51 @@
+name: Build and Deploy Backend to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'hospital-token-backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch: {}
+
+jobs:
+  backend-deploy:
+    name: Build & Deploy Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, ctype, fileinfo, json, openssl, tokenizer, xml
+          coverage: none
+
+      - name: Install Composer Dependencies
+        working-directory: ./hospital-token-backend
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Deploy Backend Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./hospital-token-backend/
+          server-dir: /public_html/gmcc-api/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/tests/**
+            .env
+            storage/logs/*.log
+            storage/framework/sessions/*
+            storage/framework/views/*
+            storage/framework/cache/*
+          dangerous-clean-slate: false
