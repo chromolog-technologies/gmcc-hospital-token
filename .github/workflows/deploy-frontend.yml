@@ -21,9 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: 'npm'
-          cache-dependency-path: './hospital-token-frontend/package-lock.json'
+          node-version: 20
 
       - name: Install Dependencies & Compile Build
         working-directory: ./hospital-token-frontend
@@ -32,11 +30,11 @@ jobs:
           npm run build
 
       - name: Deploy Compiled Files via FTP
-        uses: sebastianpopp/ftp-action@v2.0.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.FTP_SERVER }}
-          user: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          localDir: ./hospital-token-frontend/dist
-          remoteDir: ./
-          forceSsl: false
+          local-dir: ./hospital-token-frontend/dist/
+          server-dir: /public_html/gmcc-frontend/
+          dangerous-clean-slate: false
