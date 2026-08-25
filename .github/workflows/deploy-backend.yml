@@ -30,22 +30,19 @@ jobs:
         run: |
           composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 
-      - name: Deploy Backend Files via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./hospital-token-backend/
-          server-dir: /public_html/gmcc-api/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/tests/**
-            .env
-            storage/logs/*.log
-            storage/framework/sessions/*
-            storage/framework/views/*
-            storage/framework/cache/*
-          dangerous-clean-slate: false
+      - name: Upload unzip.php bootstrapper
+        run: |
+          curl -v --ftp-create-dirs -T hospital-token-backend/public/unzip.php -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/public_html/gmcc-api/public/unzip.php"
+
+      - name: Package Backend into ZIP
+        run: |
+          cd hospital-token-backend
+          zip -r ../backend.zip . -x "node_modules/*" "tests/*" ".git/*" ".github/*" "storage/logs/*" "storage/framework/sessions/*"
+
+      - name: Upload ZIP via curl
+        run: |
+          curl -v -T backend.zip -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/public_html/gmcc-api/backend.zip"
+
+      - name: Trigger Remote Unzip
+        run: |
+          curl -s "https://api.gmcchtsrtoken.chromologtechnologies.com/unzip.php?token=Gmcchaav123"
