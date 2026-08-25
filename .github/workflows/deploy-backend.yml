@@ -32,7 +32,7 @@ jobs:
 
       - name: Upload unzip.php bootstrapper
         run: |
-          curl -v --ftp-create-dirs -T hospital-token-backend/public/unzip.php -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/public_html/gmcc-api/public/unzip.php"
+          curl -v --ftp-create-dirs -T hospital-token-backend/public/unzip.php -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/gmcc-api/public/unzip.php"
 
       - name: Package Backend into ZIP
         run: |
@@ -41,8 +41,8 @@ jobs:
 
       - name: Upload ZIP via curl
         run: |
-          curl -v -T backend.zip -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/public_html/gmcc-api/backend.zip"
+          curl -v -T backend.zip -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/gmcc-api/backend.zip"
 
       - name: Trigger Remote Unzip
         run: |
-          curl -s "https://api.gmcchtsrtoken.chromologtechnologies.com/unzip.php?token=Gmcchaav123"
+          curl -fs "https://api.gmcchtsrtoken.chromologtechnologies.com/unzip.php?token=Gmcchaav123"
