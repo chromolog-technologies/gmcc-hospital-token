@@ -29,6 +29,25 @@ class Doctor extends Authenticatable
         'remember_token',
     ];
 
+    /**
+     * Include photo_url in every serialised response (toArray / toJson).
+     */
+    protected $appends = ['photo_url'];
+
+    /**
+     * Returns the publicly accessible URL for the doctor's photo.
+     * Images are stored in public/storage/doctors/ and served directly
+     * without relying on a symlink (required for Hostinger shared hosting).
+     */
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (!$this->photo) {
+            return null;
+        }
+        $appUrl = rtrim(config('app.url'), '/');
+        return $appUrl . '/storage/' . ltrim($this->photo, '/');
+    }
+
     protected function casts(): array
     {
         return [

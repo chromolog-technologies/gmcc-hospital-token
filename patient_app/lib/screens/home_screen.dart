@@ -264,7 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
     // Count unique doctors in this department
     final uniqueDoctors = <int>{};
     for (final unit in units) {
-      if (unit.doctorId != null) uniqueDoctors.add(unit.doctorId!);
+      for (final doc in unit.doctors) {
+        uniqueDoctors.add(doc.id);
+      }
     }
     final doctorCount = uniqueDoctors.isEmpty ? units.length : uniqueDoctors.length;
 

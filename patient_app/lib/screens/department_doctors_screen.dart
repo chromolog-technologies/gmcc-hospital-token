@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
-import '../services/api_service.dart';
 import 'booking_screen.dart';
 
 class DepartmentDoctorsScreen extends StatelessWidget {
@@ -26,7 +25,7 @@ class DepartmentDoctorsScreen extends StatelessWidget {
       final mappedDoctors = unit.doctors.map((doc) => {
         'name': doc.name,
         'qualification': doc.qualification ?? '',
-        'photo': doc.photo,
+        'photo_url': doc.photoUrl,   // full URL from backend (no client-side URL building needed)
         'units': [unit],
       }).toList();
 
@@ -215,7 +214,7 @@ class DepartmentDoctorsScreen extends StatelessWidget {
   }
 
   Widget _buildDoctorAvatar(Map<String, dynamic> doctor, {double width = 80, double height = 90}) {
-    final photoUrl = ApiService.getDoctorPhotoUrl(doctor['photo']);
+    final photoUrl = doctor['photo_url'] as String?;
 
     if (photoUrl != null) {
       return ClipRRect(

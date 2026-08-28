@@ -27,7 +27,6 @@ class HospitalDoctorController extends Controller
 
         $doctors = Doctor::with('unit')->orderBy('id', 'desc')->get()->map(function ($doctor) {
             return array_merge($doctor->toArray(), [
-                'photo_url' => $doctor->photo ? Storage::disk('public')->url($doctor->photo) : null,
                 'unit_name' => $doctor->unit?->name ?? null,
                 'unit_id'   => $doctor->unit?->id ?? null,
             ]);
@@ -48,7 +47,6 @@ class HospitalDoctorController extends Controller
         return response()->json([
             'success' => true,
             'data' => array_merge($doctor->toArray(), [
-                'photo_url' => $doctor->photo ? Storage::disk('public')->url($doctor->photo) : null,
                 'unit_name' => $doctor->unit?->name ?? null,
                 'unit_id'   => $doctor->unit?->id ?? null,
             ])
@@ -95,9 +93,7 @@ class HospitalDoctorController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Doctor added successfully',
-            'data'    => array_merge($doctor->toArray(), [
-                'photo_url' => $doctor->photo ? Storage::disk('public')->url($doctor->photo) : null,
-            ])
+            'data'    => $doctor->toArray(),
         ], 201);
     }
 
@@ -144,7 +140,6 @@ class HospitalDoctorController extends Controller
             'success' => true,
             'message' => 'Doctor updated successfully',
             'data'    => array_merge($doctor->toArray(), [
-                'photo_url' => $doctor->photo ? Storage::disk('public')->url($doctor->photo) : null,
                 'unit_name' => $doctor->unit?->name ?? null,
                 'unit_id'   => $doctor->unit?->id ?? null,
             ])
