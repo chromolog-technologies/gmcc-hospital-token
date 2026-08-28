@@ -1,4 +1,5 @@
 <?php
+// Secure remote unzip script for automated deployment - cache check
 if (($_GET['token'] ?? '') !== 'Gmcchaav123') {
     http_response_code(403);
     die("Unauthorized");
