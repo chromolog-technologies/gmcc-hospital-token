@@ -20,11 +20,12 @@ Route::get('/storage-link', function () {
         $target = storage_path('app/public');
         $link = public_path('storage');
         
-        if (file_exists($link)) {
-            if (is_link($link)) {
+        if (file_exists($link) || is_link($link)) {
+            if (is_link($link) || is_file($link)) {
                 unlink($link);
             } else {
-                return response()->json(['message' => 'Storage directory/link already exists'], 200);
+                // If it is a real directory, rename it to avoid data loss
+                rename($link, $link . '_old_' . time());
             }
         }
         
