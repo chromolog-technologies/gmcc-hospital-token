@@ -5,17 +5,25 @@ if (($_GET['token'] ?? '') !== 'Gmcchaav123') {
 }
 
 echo "<pre>";
-$logPath = __DIR__ . '/../storage/logs/laravel.log';
-if (file_exists($logPath)) {
-    $content = file_get_contents($logPath);
-    $entries = preg_split('/^\[\d{4}-\d{2}-\d{2}/m', $content);
-    $latestEntries = array_slice($entries, -5); // Get last 5 full exception logs
-    foreach ($latestEntries as $entry) {
-        echo "==================================================\n";
-        $lines = explode("\n", $entry);
-        echo implode("\n", array_slice($lines, 0, 15)) . "\n";
-    }
+$imgPath = __DIR__ . '/../storage/app/public/doctors/nonam.png';
+echo "Checking nonam.png at: " . $imgPath . "\n";
+if (file_exists($imgPath)) {
+    echo "nonam.png EXISTS on the server!\n";
+    echo "Size: " . filesize($imgPath) . " bytes\n";
 } else {
-    echo "Log file not found.\n";
+    echo "nonam.png DOES NOT EXIST on the server!\n";
+    $dir = __DIR__ . '/../storage/app/public';
+    if (file_exists($dir)) {
+        echo "Files in storage/app/public/:\n";
+        print_r(scandir($dir));
+        if (file_exists($dir . '/doctors')) {
+            echo "Files in storage/app/public/doctors/:\n";
+            print_r(scandir($dir . '/doctors'));
+        } else {
+            echo "doctors directory does not exist.\n";
+        }
+    } else {
+        echo "storage/app/public directory does not exist.\n";
+    }
 }
 echo "</pre>";
