@@ -4,23 +4,21 @@ if (($_GET['token'] ?? '') !== 'Gmcchaav123') {
     die("Unauthorized");
 }
 
-$envPath = __DIR__ . '/../.env';
 echo "<pre>";
-if (file_exists($envPath)) {
-    echo ".env file exists!\n";
-    echo "Is readable: " . (is_readable($envPath) ? 'Yes' : 'No') . "\n";
-    echo "Size: " . filesize($envPath) . " bytes\n";
+$cacheDir = __DIR__ . '/../bootstrap/cache';
+echo "Files in bootstrap/cache:\n";
+if (file_exists($cacheDir)) {
+    $files = scandir($cacheDir);
+    print_r($files);
     
-    $content = file_get_contents($envPath);
-    if (str_contains($content, 'APP_KEY')) {
-        echo "APP_KEY is present in the file.\n";
-    } else {
-        echo "APP_KEY is MISSING in the file.\n";
+    foreach (['config.php', 'routes-v7.php', 'events.php'] as $cacheFile) {
+        $filePath = $cacheDir . '/' . $cacheFile;
+        if (file_exists($filePath)) {
+            echo "Deleting cached file: $cacheFile\n";
+            unlink($filePath);
+        }
     }
 } else {
-    echo ".env file DOES NOT EXIST at path: " . $envPath . "\n";
-    echo "Parent directory resolved real path: " . realpath(__DIR__ . '/../') . "\n";
-    echo "Files in parent directory:\n";
-    print_r(scandir(__DIR__ . '/../'));
+    echo "bootstrap/cache directory does not exist.\n";
 }
 echo "</pre>";
