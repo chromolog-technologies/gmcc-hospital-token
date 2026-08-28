@@ -5,26 +5,16 @@ if (($_GET['token'] ?? '') !== 'Gmcchaav123') {
 }
 
 echo "<pre>";
-$envPath = __DIR__ . '/../.env';
-if (file_exists($envPath)) {
-    $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    echo "Raw keys parsed from .env:\n";
-    foreach ($lines as $line) {
-        // Skip comments
-        if (str_starts_with(trim($line), '#')) {
-            continue;
-        }
-        if (str_contains($line, '=')) {
-            list($key, $val) = explode('=', $line, 2);
-            $cleanKey = trim($key);
-            $cleanVal = trim($val);
-            // Hide secret values for privacy, show length
-            echo "Key: '$cleanKey', Value length: " . strlen($cleanVal) . ", Preview: " . substr($cleanVal, 0, 10) . "...\n";
-        } else {
-            echo "Non-key line: '$line'\n";
-        }
-    }
-} else {
-    echo ".env file does not exist.\n";
-}
+require __DIR__.'/../vendor/autoload.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
+
+// Boot kernel
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
+
+echo "Laravel configuration loaded!\n";
+echo "Config app.key: " . config('app.key') . "\n";
+echo "env('APP_KEY'): " . env('APP_KEY') . "\n";
+echo "getenv('APP_KEY'): " . getenv('APP_KEY') . "\n";
+echo "Database Connection: " . config('database.default') . "\n";
 echo "</pre>";
