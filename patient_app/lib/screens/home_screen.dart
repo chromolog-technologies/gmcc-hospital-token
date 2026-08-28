@@ -230,6 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Group units by department
               final Map<String, List<UnitModel>> departments = {};
               for (final unit in units) {
+                if (unit.doctors.isEmpty) continue; // Skip units with no assigned doctors
                 final dept = unit.doctorDepartment ?? unit.name;
                 departments.putIfAbsent(dept, () => []);
                 departments[dept]!.add(unit);
