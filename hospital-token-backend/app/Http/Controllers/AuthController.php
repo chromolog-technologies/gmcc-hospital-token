@@ -48,16 +48,16 @@ class AuthController extends Controller
     }
 
     /**
-     * Doctor Login (Using username + password)
+     * Doctor Login (Using regno + password)
      */
     public function doctorLogin(DoctorLoginRequest $request)
     {
-        $doctor = Doctor::where('username', $request->username)->first();
+        $doctor = Doctor::where('regno', $request->regno)->first();
 
         if (!$doctor || !Hash::check($request->password, $doctor->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid username or password.'
+                'message' => 'Invalid registration number or password.'
             ], 401);
         }
 

@@ -239,7 +239,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     <div style={{ flex: 1, minWidth: '200px' }}>
                         <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Select Unit</label>
                         <SearchableSelect
-                            options={units.map(u => ({ value: u.id, label: `${u.name} (Dr. ${u.doctorName})` }))}
+                            options={units.map(u => ({ value: u.id, label: `${u.name} (${u.doctorName})` }))}
                             value={offlineForm.unit_id}
                             onChange={(val) => setOfflineForm({ ...offlineForm, unit_id: val })}
                             placeholder="Search unit or doctor..."

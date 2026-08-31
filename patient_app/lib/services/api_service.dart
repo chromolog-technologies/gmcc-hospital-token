@@ -78,12 +78,12 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> doctorLogin(String username, String password) async {
+  static Future<Map<String, dynamic>> doctorLogin(String regno, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/doctor/login'),
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'username': username, 'password': password}),
+        body: json.encode({'regno': regno, 'password': password}),
       );
 
       final data = json.decode(response.body);

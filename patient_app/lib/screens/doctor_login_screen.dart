@@ -10,14 +10,14 @@ class DoctorLoginScreen extends StatefulWidget {
 }
 
 class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
-  final _usernameController = TextEditingController();
+  final _regnoController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _handleLogin() async {
-    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_regnoController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter both username and password')),
+        const SnackBar(content: Text('Please enter both registration number and password')),
       );
       return;
     }
@@ -25,7 +25,7 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
     setState(() => _isLoading = true);
     
     final result = await ApiService.doctorLogin(
-      _usernameController.text, 
+      _regnoController.text.trim(),
       _passwordController.text
     );
     
@@ -89,12 +89,13 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                 ),
                 const SizedBox(height: 50),
                 TextField(
-                  controller: _usernameController,
+                  controller: _regnoController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    hintText: 'Enter Username',
-                    prefixIcon: const Icon(Icons.person, color: Color(0xFF007AFF)),
+                    hintText: 'Enter Registration Number',
+                    prefixIcon: const Icon(Icons.badge, color: Color(0xFF007AFF)),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                       borderSide: BorderSide.none,

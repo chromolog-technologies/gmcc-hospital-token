@@ -50,7 +50,7 @@ class DoctorDashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Dr. ${doctor['name']}',
+                  '${doctor['name']}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 22,

@@ -36,7 +36,7 @@ const OverviewTab = ({ hospital, summary, units }) => (
                                 </span>
                             </div>
                             <p style={{ margin: '0 0 0.25rem', fontSize: '0.8rem', color: '#64748b' }}>
-                                Dr. <strong>{unit.doctor_name || 'Not Assigned'}</strong>
+                                <strong>{unit.doctor_name || 'Not Assigned'}</strong>
                             </p>
                             <p style={{ margin: '0 0 0.75rem', fontSize: '0.75rem', color: '#94a3b8' }}>
                                 📅 {unit.day || 'N/A'}

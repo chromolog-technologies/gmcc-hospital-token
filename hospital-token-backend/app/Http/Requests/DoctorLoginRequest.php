@@ -23,7 +23,7 @@ class DoctorLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|string',
+            'regno' => 'required|string',
             'password' => 'required|string',
         ];
     }
