@@ -46,7 +46,13 @@ class _BookingScreenState extends State<BookingScreen> {
     final tomorrow = DateTime.now().add(const Duration(days: 1));
     final tomorrowWeekday = DateFormat('EEEE').format(tomorrow); // e.g. 'Monday'
 
-    if (widget.unit.day != null && widget.unit.day!.isNotEmpty && widget.unit.day != tomorrowWeekday) {
+    final operatingDays = (widget.unit.day ?? '')
+        .split(',')
+        .map((d) => d.trim().toLowerCase())
+        .toList();
+    final isTomorrowValid = operatingDays.contains(tomorrowWeekday.toLowerCase());
+
+    if (widget.unit.day != null && widget.unit.day!.isNotEmpty && !isTomorrowValid) {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
