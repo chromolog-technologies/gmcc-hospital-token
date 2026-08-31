@@ -52,7 +52,7 @@ class AuthController extends Controller
      */
     public function doctorLogin(DoctorLoginRequest $request)
     {
-        $doctor = Doctor::where('regno', $request->regno)->first();
+        $doctor = Doctor::where('regno', $request->regno)->with('unit')->first();
 
         if (!$doctor || !Hash::check($request->password, $doctor->password)) {
             return response()->json([
@@ -63,12 +63,16 @@ class AuthController extends Controller
 
         $token = $doctor->createToken('doctor-token')->plainTextToken;
 
+        // Build doctor data with units as an array (dashboard expects doctor['units'])
+        $doctorData = $doctor->toArray();
+        $doctorData['units'] = $doctor->unit ? [$doctor->unit->toArray()] : [];
+
         return response()->json([
             'success' => true,
             'message' => 'Doctor logged in successfully',
             'data' => [
-                'doctor' => $doctor,
-                'token' => $token
+                'doctor' => $doctorData,
+                'token'  => $token
             ]
         ], 200);
     }
