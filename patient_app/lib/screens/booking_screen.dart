@@ -85,7 +85,15 @@ class _BookingScreenState extends State<BookingScreen> {
       _bookingResult = result;
     });
 
-    if (result['status'] == true) {
+    if (result['success'] == true) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message'] ?? 'Token generated successfully'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
           Navigator.popUntil(context, (route) => route.isFirst);
@@ -110,7 +118,7 @@ class _BookingScreenState extends State<BookingScreen> {
         backgroundColor: const Color(0xFFFF0088),
         foregroundColor: Colors.white,
       ),
-      body: _bookingResult != null && _bookingResult!['status'] == true
+      body: _bookingResult != null && _bookingResult!['success'] == true
           ? _buildSuccessUI()
           : _buildBookingUI(),
     );
