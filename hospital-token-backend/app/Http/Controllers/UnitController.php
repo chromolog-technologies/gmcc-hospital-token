@@ -16,6 +16,11 @@ class UnitController extends Controller
             return Unit::with('doctors')->get()->toArray();
         });
 
+        // Guard: coerce to array in case the cache holds a stale Eloquent Collection
+        if (!is_array($units)) {
+            $units = $units->toArray();
+        }
+
         // Inject photo_url into each doctor. The cached data is a plain PHP array so
         // Eloquent accessors won't fire — we build the URL manually here instead.
         $appUrl = rtrim(config('app.url'), '/');
