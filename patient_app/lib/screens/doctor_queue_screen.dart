@@ -14,6 +14,7 @@ class DoctorQueueScreen extends StatefulWidget {
 class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
   List<dynamic> _queue = [];
   bool _isLoading = true;
+  String? _displayDate;
   Timer? _timer;
 
   @override
@@ -35,7 +36,16 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
     final result = await ApiService.getDoctorQueue(widget.unit['id']);
     if (mounted) {
       setState(() {
-        _queue = result['success'] == true ? result['data'] : [];
+        if (result['success'] == true) {
+          final data = result['data'];
+          // Backend returns { summary: {...}, queue: [...] }
+          _queue = (data is Map && data['queue'] != null)
+              ? List<dynamic>.from(data['queue'])
+              : [];
+          _displayDate = data is Map ? data['summary']?['display_date'] : null;
+        } else {
+          _queue = [];
+        }
         _isLoading = false;
       });
     }
@@ -95,6 +105,18 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
+                // Date banner
+                if (_displayDate != null)
+                  Container(
+                    width: double.infinity,
+                    color: const Color(0xFF007AFF).withValues(alpha: 0.1),
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                    child: Text(
+                      'Showing queue for: $_displayDate',
+                      style: const TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.w600),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 // Current Patient Card
                 Container(
                   padding: const EdgeInsets.all(20),

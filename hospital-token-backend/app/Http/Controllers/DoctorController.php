@@ -28,7 +28,7 @@ class DoctorController extends Controller
 
             $today = Carbon::today()->toDateString();
 
-            // Fetch active/completed queue (ignore cancelled)
+            // Fetch today's queue (ignore cancelled)
             $queue = Booking::with('user')
                 ->where('unit_id', $unit_id)
                 ->where('booking_date', $today)
@@ -36,18 +36,38 @@ class DoctorController extends Controller
                 ->orderBy('token_number', 'asc')
                 ->get();
 
-            $total = $queue->count();
+            // If today has no bookings, find the next upcoming date that does
+            $displayDate = $today;
+            if ($queue->isEmpty()) {
+                $nextDate = Booking::where('unit_id', $unit_id)
+                    ->where('booking_date', '>', $today)
+                    ->where('status', '!=', 'cancelled')
+                    ->min('booking_date');
+
+                if ($nextDate) {
+                    $displayDate = $nextDate;
+                    $queue = Booking::with('user')
+                        ->where('unit_id', $unit_id)
+                        ->where('booking_date', $nextDate)
+                        ->where('status', '!=', 'cancelled')
+                        ->orderBy('token_number', 'asc')
+                        ->get();
+                }
+            }
+
+            $total     = $queue->count();
             $completed = $queue->where('status', 'completed')->count();
-            $pending = $queue->where('status', 'active')->count();
+            $pending   = $queue->where('status', 'active')->count();
 
             return response()->json([
                 'success' => true,
                 'message' => "Queue retrieved successfully",
                 'data' => [
                     'summary' => [
-                        'total' => $total,
-                        'pending' => $pending,
-                        'completed' => $completed,
+                        'total'        => $total,
+                        'pending'      => $pending,
+                        'completed'    => $completed,
+                        'display_date' => $displayDate,
                     ],
                     'queue' => $queue
                 ]

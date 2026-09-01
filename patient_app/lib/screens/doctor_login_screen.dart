@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'doctor_dashboard_screen.dart';
 import '../services/api_service.dart';
 
@@ -10,9 +11,48 @@ class DoctorLoginScreen extends StatefulWidget {
 }
 
 class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
-  final _regnoController = TextEditingController();
+  final _regnoController    = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final _secureStorage      = const FlutterSecureStorage();
+
+  bool _isLoading      = false;
+  bool _rememberMe     = false;
+  bool _obscurePassword = true;
+
+  static const _keyRegno    = 'doctor_regno';
+  static const _keyPassword = 'doctor_password';
+  static const _keyRemember = 'doctor_remember';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final remember = await _secureStorage.read(key: _keyRemember);
+    if (remember == 'true') {
+      final savedRegno    = await _secureStorage.read(key: _keyRegno);
+      final savedPassword = await _secureStorage.read(key: _keyPassword);
+      setState(() {
+        _rememberMe = true;
+        if (savedRegno    != null) _regnoController.text    = savedRegno;
+        if (savedPassword != null) _passwordController.text = savedPassword;
+      });
+    }
+  }
+
+  Future<void> _saveOrClearCredentials() async {
+    if (_rememberMe) {
+      await _secureStorage.write(key: _keyRemember,  value: 'true');
+      await _secureStorage.write(key: _keyRegno,     value: _regnoController.text.trim());
+      await _secureStorage.write(key: _keyPassword,  value: _passwordController.text);
+    } else {
+      await _secureStorage.delete(key: _keyRemember);
+      await _secureStorage.delete(key: _keyRegno);
+      await _secureStorage.delete(key: _keyPassword);
+    }
+  }
 
   Future<void> _handleLogin() async {
     if (_regnoController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -23,18 +63,19 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
     }
 
     setState(() => _isLoading = true);
-    
+
     final result = await ApiService.doctorLogin(
       _regnoController.text.trim(),
-      _passwordController.text
+      _passwordController.text,
     );
-    
+
     setState(() => _isLoading = false);
 
     if (result['status'] == true) {
+      await _saveOrClearCredentials();
+
       final doctor = result['doctor'];
       if (!mounted) return;
-      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => DoctorDashboardScreen(doctor: doctor)),
@@ -43,11 +84,18 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result['message']),
+          content: Text(result['message'] ?? 'Login failed'),
           backgroundColor: Colors.red,
         ),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _regnoController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,6 +136,8 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 50),
+
+                // ── Registration Number field ──────────────────────────────
                 TextField(
                   controller: _regnoController,
                   keyboardType: TextInputType.number,
@@ -103,21 +153,50 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
+
+                // ── Password field ─────────────────────────────────────────
                 TextField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
                     hintText: 'Enter Password',
                     prefixIcon: const Icon(Icons.lock, color: Color(0xFF007AFF)),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(15),
                       borderSide: BorderSide.none,
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+
+                // ── Remember Me checkbox ───────────────────────────────────
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      onChanged: (val) => setState(() => _rememberMe = val ?? false),
+                      activeColor: Colors.white,
+                      checkColor: const Color(0xFF007AFF),
+                      side: const BorderSide(color: Colors.white, width: 2),
+                    ),
+                    const Text(
+                      'Remember Me',
+                      style: TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+
+                // ── Login button ───────────────────────────────────────────
                 SizedBox(
                   width: double.infinity,
                   height: 55,
@@ -130,9 +209,9 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: _isLoading 
-                      ? const CircularProgressIndicator()
-                      : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
               ],
