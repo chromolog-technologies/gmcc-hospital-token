@@ -46,6 +46,17 @@ class BookingService
             throw new Exception("This unit operates on {$unit->day}. You cannot book it for {$label} ({$targetDayName}).");
         }
 
+        // ── Validate Booking Time Window (Online only: 6 AM – 6 PM IST) ─────
+        if ($source === 'online') {
+            $nowIST  = Carbon::now('Asia/Kolkata');
+            $openIST = Carbon::today('Asia/Kolkata')->setTime(6,  0, 0);
+            $closeIST = Carbon::today('Asia/Kolkata')->setTime(18, 0, 0);
+
+            if ($nowIST->lt($openIST) || $nowIST->gte($closeIST)) {
+                throw new Exception('Online booking is only available between 6:00 AM and 6:00 PM IST.');
+            }
+        }
+
         // Retry up to 5 times on deadlock
         return DB::transaction(function () use ($userId, $unitId, $type, $source, $bookingDate) {
             // Lock the user record to serialize booking requests for this user

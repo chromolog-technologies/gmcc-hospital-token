@@ -42,7 +42,7 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
           _queue = (data is Map && data['queue'] != null)
               ? List<dynamic>.from(data['queue'])
               : [];
-          _displayDate = data is Map ? data['summary']?['display_date'] : null;
+          _displayDate = (data is Map && data['summary'] != null) ? data['summary']['display_date'] as String? : null;
         } else {
           _queue = [];
         }

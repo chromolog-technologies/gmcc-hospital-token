@@ -40,7 +40,7 @@ const ViewModal = ({ doctor, onClose, onEdit }) => (
                 }
             </div>
             <div>
-                <p style={{ margin: 0, fontWeight: 900, fontSize: '1rem', color: '#0f172a' }}>Dr. {doctor.name}</p>
+                <p style={{ margin: 0, fontWeight: 900, fontSize: '1rem', color: '#0f172a' }}>{doctor.name}</p>
                 <p style={{ margin: 0, fontSize: '0.82rem', color: '#ff0088', fontWeight: 700 }}>{doctor.qualification || '—'}</p>
                 <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>{doctor.department || '—'}</p>
             </div>
@@ -97,7 +97,7 @@ const EditModal = ({ doctor, units, onClose, onSaved }) => {
     const set = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
 
     return (
-        <Modal title="Edit Doctor" subtitle={`Editing: Dr. ${doctor.name}`} onClose={onClose} maxWidth="580px">
+        <Modal title="Edit Doctor" subtitle={`Editing: ${doctor.name}`} onClose={onClose} maxWidth="580px">
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem' }}>
                 <Field label="Full Name *"      value={form.name}          onChange={v => set('name', v)}          required />
                 <Field label="Qualification"    value={form.qualification} onChange={v => set('qualification', v)} placeholder="MD, MBBS…" />
@@ -137,7 +137,7 @@ const DeleteModal = ({ doctor, onClose, onDeleted }) => {
         setLoading(true);
         try {
             await api.delete(`/hospital/doctors/${doctor.id}`);
-            toast.success(`Dr. ${doctor.name} deleted.`);
+            toast.success(`${doctor.name} deleted.`);
             onDeleted();
         } catch (err) {
             toast.error(err.response?.data?.message || 'Delete failed.');
@@ -151,7 +151,7 @@ const DeleteModal = ({ doctor, onClose, onDeleted }) => {
         <Modal title="Delete Doctor" subtitle="This action cannot be undone." onClose={onClose}>
             <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '1rem', marginBottom: '1.5rem' }}>
                 <p style={{ margin: 0, fontSize: '0.875rem', color: '#dc2626', fontWeight: 600 }}>
-                    Are you sure you want to delete <strong>Dr. {doctor.name}</strong>?
+                    Are you sure you want to delete <strong>{doctor.name}</strong>?
                 </p>
                 <p style={{ margin: '0.4rem 0 0', fontSize: '0.8rem', color: '#ef4444' }}>
                     The doctor will be unassigned from their unit before deletion.
@@ -259,7 +259,7 @@ const DoctorTab = ({ units, onDoctorAdded }) => {
         Object.entries(form).forEach(([k, v]) => { if (v) fd.append(k, v); });
         try {
             await api.post('/hospital/doctors', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-            toast.success(`Dr. ${form.name} registered successfully.`);
+            toast.success(`${form.name} registered successfully.`);
             setForm(EMPTY_DOCTOR);
             setPreview(null);
             setShowConfirm(false);
@@ -381,7 +381,7 @@ const DoctorTab = ({ units, onDoctorAdded }) => {
                                             }
                                         </div>
                                         <div style={{ flex: 1, minWidth: 0 }}>
-                                            <p style={{ margin: 0, fontWeight: 800, fontSize: '0.875rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Dr. {doc.name}</p>
+                                            <p style={{ margin: 0, fontWeight: 800, fontSize: '0.875rem', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{doc.name}</p>
                                             <p style={{ margin: 0, fontSize: '0.72rem', color: '#ff0088', fontWeight: 700 }}>{doc.qualification || '—'}</p>
                                         </div>
                                     </div>

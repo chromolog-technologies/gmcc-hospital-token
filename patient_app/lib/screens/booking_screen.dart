@@ -146,8 +146,6 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 _buildInfoRow(Icons.medical_services, 'Department', widget.unit.name),
                 const Divider(height: 30),
-                _buildInfoRow(Icons.person, 'Consulting Doctor', widget.unit.doctorName),
-                const Divider(height: 30),
                 _buildInfoRow(Icons.access_time, 'Timings', widget.unit.time),
               ],
             ),
