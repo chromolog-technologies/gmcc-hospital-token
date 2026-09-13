@@ -1,0 +1,85 @@
+name: 🚀 Deploy to Hostinger
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  # ─────────────────────────────────────────────────────────
+  # JOB 1: Build React frontend and deploy to public_html/
+  # ─────────────────────────────────────────────────────────
+  deploy-frontend:
+    name: 🌐 Build & Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: hospital-token-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd hospital-token-frontend
+          npm ci
+
+      - name: Build for production
+        run: |
+          cd hospital-token-frontend
+          npm run build
+
+      - name: Deploy Frontend via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ./hospital-token-frontend/dist/
+          server-dir: public_html/
+          # Don't touch backend files already on server
+          exclude: |
+            **/gmcc-api/**
+            **/backend/**
+            **/.env
+            **/storage/**
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 2: Deploy Laravel backend to public_html/gmcc-api/
+  # ─────────────────────────────────────────────────────────
+  deploy-backend:
+    name: ⚙️ Deploy Backend (Laravel)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy Backend via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          local-dir: ./hospital-token-backend/
+          server-dir: public_html/gmcc-api/
+          # NEVER overwrite these server-side files
+          exclude: |
+            **/.env
+            **/vendor/**
+            **/node_modules/**
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/sessions/**
+            **/.git/**
+            **/.gitignore
+
+      - name: Clear Laravel config cache (via HTTP trigger)
+        run: |
+          curl -s "${{ secrets.CACHE_CLEAR_URL }}" || echo "Cache clear skipped"
