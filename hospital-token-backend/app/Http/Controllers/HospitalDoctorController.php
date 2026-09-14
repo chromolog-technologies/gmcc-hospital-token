@@ -29,6 +29,9 @@ class HospitalDoctorController extends Controller
             return array_merge($doctor->toArray(), [
                 'unit_name' => $doctor->unit?->name ?? null,
                 'unit_id'   => $doctor->unit?->id ?? null,
+                'photo_url' => $doctor->photo
+                    ? Storage::disk('public')->url($doctor->photo)
+                    : null,
             ]);
         });
 
@@ -49,6 +52,9 @@ class HospitalDoctorController extends Controller
             'data' => array_merge($doctor->toArray(), [
                 'unit_name' => $doctor->unit?->name ?? null,
                 'unit_id'   => $doctor->unit?->id ?? null,
+                'photo_url' => $doctor->photo
+                    ? Storage::disk('public')->url($doctor->photo)
+                    : null,
             ])
         ]);
     }
