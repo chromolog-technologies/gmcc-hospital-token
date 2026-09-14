@@ -26,12 +26,20 @@ class BookingService
      */
     public function createToken(int $userId, int $unitId, string $type, string $source = 'online'): Booking
     {
+        $nowIST = Carbon::now('Asia/Kolkata');
+        
+        // Define the current "Booking Day" (shifts at 6 AM IST)
+        $bookingDay = $nowIST->copy();
+        if ($nowIST->hour < 6) {
+            $bookingDay->subDay();
+        }
+
         // ── Date rule ────────────────────────────────────────────────────────
-        // Online  (app)   → always books for TOMORROW (prev-day booking)
-        // Offline (admin) → always books for TODAY    (walk-in patient)
+        // Online  (app)   → books for NEXT booking day (tomorrow's slot)
+        // Offline (admin) → books for CURRENT booking day (today's slot)
         $bookingDate = $source === 'offline'
-            ? Carbon::today()->toDateString()
-            : Carbon::tomorrow()->toDateString();
+            ? $bookingDay->toDateString()
+            : $bookingDay->copy()->addDay()->toDateString();
 
         // ── Validate Unit Operating Day ──────────────────────────────────────
         $unit = Unit::find($unitId);
@@ -42,18 +50,13 @@ class BookingService
         $targetDayName = Carbon::parse($bookingDate)->format('l'); // e.g. 'Monday'
         $unitDays = $unit->day ? array_map('trim', explode(',', $unit->day)) : [];
         if (!empty($unitDays) && !in_array($targetDayName, $unitDays)) {
-            $label = $source === 'offline' ? 'Today' : 'Tomorrow';
-            throw new Exception("This unit operates on {$unit->day}. You cannot book it for {$label} ({$targetDayName}).");
-        }
-
-        // ── Validate Booking Time Window (Online only: 6 AM – 6 PM IST) ─────
-        if ($source === 'online') {
-            $nowIST  = Carbon::now('Asia/Kolkata');
-            $openIST = Carbon::today('Asia/Kolkata')->setTime(6,  0, 0);
-            $closeIST = Carbon::today('Asia/Kolkata')->setTime(18, 0, 0);
-
-            if ($nowIST->lt($openIST) || $nowIST->gte($closeIST)) {
-                throw new Exception('Online booking is only available between 6:00 AM and 6:00 PM IST.');
+            $operatingDaysStr = implode(', ', array_map('ucfirst', $unitDays));
+            if ($source === 'online') {
+                $windowStart = $bookingDay->format('l') . ' 6:00 AM';
+                $windowEnd = $targetDayName . ' 6:00 AM';
+                throw new Exception("This unit operates on {$operatingDaysStr}.\n\nYou are trying to book for {$targetDayName}.\nBooking cannot be done for this day.\n\nNote: Bookings for {$targetDayName} must be made between {$windowStart} and {$windowEnd}.");
+            } else {
+                throw new Exception("This unit operates on {$operatingDaysStr}. Cannot generate offline token for {$targetDayName}.");
             }
         }
 

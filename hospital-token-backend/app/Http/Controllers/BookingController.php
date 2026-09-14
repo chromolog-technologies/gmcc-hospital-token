@@ -19,6 +19,35 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
+    public function getAvailability(Request $request)
+    {
+        $request->validate([
+            'unit_id' => 'required|exists:units,id',
+        ]);
+
+        $nowIST = Carbon::now('Asia/Kolkata');
+        
+        // Define the current "Booking Day" (shifts at 6 AM IST)
+        $bookingDay = $nowIST->copy();
+        if ($nowIST->hour < 6) {
+            $bookingDay->subDay();
+        }
+        
+        // App users always book for the NEXT booking day
+        $targetDate = $bookingDay->copy()->addDay()->toDateString();
+        
+        $availability = $this->bookingService->getAvailability(
+            $request->unit_id,
+            $targetDate
+        );
+
+        return response()->json([
+            'success' => true,
+            'target_date' => $targetDate,
+            'data'    => $availability
+        ]);
+    }
+
     public function create(CreateBookingRequest $request)
     {
         $userId = $request->user()->id;

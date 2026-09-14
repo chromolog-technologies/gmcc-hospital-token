@@ -19,6 +19,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Map<String, dynamic>? _bookingResult;
   String _selectedType = 'chemo';
   Map<String, dynamic>? _availability;
+  String? _targetDate;
   bool _isLoadingAvailability = true;
 
   @override
@@ -32,6 +33,7 @@ class _BookingScreenState extends State<BookingScreen> {
     if (res['success'] == true) {
       setState(() {
         _availability = res['data'];
+        _targetDate = res['target_date'];
         _isLoadingAvailability = false;
       });
     } else {
@@ -43,35 +45,6 @@ class _BookingScreenState extends State<BookingScreen> {
 
 
   void _handleBookingClick() {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowWeekday = DateFormat('EEEE').format(tomorrow); // e.g. 'Monday'
-
-    final operatingDays = (widget.unit.day ?? '')
-        .split(',')
-        .map((d) => d.trim().toLowerCase())
-        .toList();
-    final isTomorrowValid = operatingDays.contains(tomorrowWeekday.toLowerCase());
-
-    if (widget.unit.day != null && widget.unit.day!.isNotEmpty && !isTomorrowValid) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Booking Unavailable', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          content: Text(
-            'This unit operates on ${widget.unit.day}.\n\nYou are trying to book for tomorrow ($tomorrowWeekday). Booking cannot be done for this day.',
-            style: const TextStyle(fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFFF0088))),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
     _handleBooking();
   }
 
@@ -101,10 +74,21 @@ class _BookingScreenState extends State<BookingScreen> {
       });
     } else {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'] ?? 'Booking failed'),
-          backgroundColor: Colors.red,
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text('Booking Unavailable', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          content: Text(
+            result['message'] ?? 'Failed to generate token',
+            style: const TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFFF0088))),
+            ),
+          ],
         ),
       );
     }
@@ -187,7 +171,7 @@ class _BookingScreenState extends State<BookingScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Booking for: Tomorrow (${DateFormat('dd MMM yyyy').format(DateTime.now().add(const Duration(days: 1)))})',
+            'Booking for: ${_targetDate != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(_targetDate!)) : 'Loading...'}',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
           ),
           const Spacer(),
