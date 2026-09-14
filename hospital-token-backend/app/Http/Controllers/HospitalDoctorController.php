@@ -8,6 +8,7 @@ use App\Models\Hospital;
 use App\Models\Unit;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class HospitalDoctorController extends Controller
 {
@@ -96,6 +97,8 @@ class HospitalDoctorController extends Controller
             'unit_id'       => $request->unit_id,
         ]);
 
+        Cache::forget('hospital_units'); // invalidate unit listing cache
+
         return response()->json([
             'success' => true,
             'message' => 'Doctor added successfully',
@@ -142,6 +145,8 @@ class HospitalDoctorController extends Controller
 
         $doctor->refresh()->load('unit');
 
+        Cache::forget('hospital_units'); // invalidate unit listing cache
+
         return response()->json([
             'success' => true,
             'message' => 'Doctor updated successfully',
@@ -168,6 +173,8 @@ class HospitalDoctorController extends Controller
         }
 
         $doctor->delete();
+
+        Cache::forget('hospital_units'); // invalidate unit listing cache
 
         return response()->json([
             'success' => true,
