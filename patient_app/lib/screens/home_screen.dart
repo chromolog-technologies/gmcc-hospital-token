@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
+import 'booking_screen.dart';
 import 'department_doctors_screen.dart';
 import 'login_screen.dart';
 import 'my_token_screen.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserModel user;
@@ -119,6 +121,15 @@ class _HomeScreenState extends State<HomeScreen> {
           foregroundColor: Colors.white,
           elevation: 0,
           actions: [
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                );
+              },
+            ),
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'about') {

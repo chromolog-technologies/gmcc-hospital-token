@@ -230,4 +230,21 @@ class ApiService {
       return {'success': false, 'message': 'Network error'};
     }
   }
+
+  static Future<List<dynamic>> getNotifications() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/notifications'),
+        headers: _getHeaders(),
+      );
+      final data = json.decode(response.body);
+      if (data['success'] == true) {
+        return data['data'];
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error fetching notifications: $e');
+      return [];
+    }
+  }
 }

@@ -2,13 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { dashboardCache, CACHE_KEYS } from '../lib/dashboardCache';
-import { LayoutDashboard, Users, Stethoscope, Layers, LogOut, RefreshCw, Menu as MenuIcon, X } from 'lucide-react';
+import { LayoutDashboard, Users, Stethoscope, Layers, LogOut, RefreshCw, Menu as MenuIcon, X, Bell } from 'lucide-react';
 
 import OverviewTab from '../components/dashboard/OverviewTab';
 import UserTab     from '../components/dashboard/UserTab';
 import DoctorTab   from '../components/dashboard/DoctorTab';
 import UnitTab     from '../components/dashboard/UnitTab';
 import BookingTab  from '../components/dashboard/BookingTab';
+import NotificationsTab from '../components/dashboard/NotificationsTab';
 
 const NAV = [
     { id: 'overview', label: 'Overview',        icon: LayoutDashboard },
@@ -16,6 +17,7 @@ const NAV = [
     { id: 'doctors',  label: 'Doctors',          icon: Stethoscope     },
     { id: 'units',    label: 'Units',            icon: Layers          },
     { id: 'bookings', label: 'Bookings',         icon: LayoutDashboard },
+    { id: 'notifications', label: 'Notifications', icon: Bell          },
 ];
 
 const HospitalDashboard = () => {
@@ -195,6 +197,7 @@ const HospitalDashboard = () => {
                         {activeTab === 'doctors'  && <DoctorTab units={units} onDoctorAdded={handleMutation} />}
                         {activeTab === 'units'    && <UnitTab units={units} onUnitAdded={handleMutation} />}
                         {activeTab === 'bookings' && <BookingTab onBookingChanged={handleMutation} refreshKey={bookingRefreshKey} />}
+                        {activeTab === 'notifications' && <NotificationsTab />}
                     </>
                 )}
             </main>
