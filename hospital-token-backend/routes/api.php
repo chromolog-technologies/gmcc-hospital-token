@@ -34,6 +34,9 @@ Route::middleware('throttle:60,1')->group(function () {
             Route::post('/booking/create', [BookingController::class, 'create']);
             Route::get('/booking/my-bookings', [BookingController::class, 'getByUser']);
             Route::post('/booking/cancel', [BookingController::class, 'cancel']);
+            
+            // Notifications (Users can read)
+            Route::get('/notifications', [NotificationController::class, 'index']);
         });
         
         // Doctor Only Routes
@@ -88,6 +91,14 @@ Route::middleware('throttle:60,1')->group(function () {
                 Route::put('/{id}/status', [\App\Http\Controllers\HospitalBookingController::class, 'updateStatus']);
                 Route::get('/settings', [\App\Http\Controllers\HospitalBookingController::class, 'getSettings']);
                 Route::put('/auto-approve', [\App\Http\Controllers\HospitalBookingController::class, 'updateAutoApprove']);
+            });
+
+            // Hospital Notifications Endpoints
+            Route::prefix('hospital/notifications')->group(function () {
+                Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index']);
+                Route::post('/', [\App\Http\Controllers\NotificationController::class, 'store']);
+                Route::put('/{id}', [\App\Http\Controllers\NotificationController::class, 'update']);
+                Route::delete('/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
             });
         });
     });
