@@ -56,18 +56,10 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   /// Within each group, newer bookings (higher id) come first.
   Future<List<dynamic>> _fetchSortedTokens() async {
     final bookings = await ApiService.getUserBookings(widget.user.id);
-    const order = {'active': 0, 'pending': 1, 'completed': 2, 'cancelled': 3};
-    bookings.sort((a, b) {
-      final ao = order[a['status']] ?? 99;
-      final bo = order[b['status']] ?? 99;
-      if (ao != bo) return ao.compareTo(bo);
-      // within same status: newer date first
-      final dateA = a['booking_date'] as String? ?? '';
-      final dateB = b['booking_date'] as String? ?? '';
-      final dateCmp = dateB.compareTo(dateA);
-      if (dateCmp != 0) return dateCmp;
-      return (b['id'] as int).compareTo(a['id'] as int);
-    });
+    
+    // Sort by newest booking first (ID descending)
+    bookings.sort((a, b) => (b['id'] as int).compareTo(a['id'] as int));
+    
     return bookings;
   }
 
