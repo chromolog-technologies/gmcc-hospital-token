@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {
-  Bell,
-  Plus,
-  Edit2,
-  Trash2,
-  X,
-  MessageSquare,
-  Clock
-} from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { Bell, Plus, Edit2, Trash2, X, MessageSquare, Clock } from 'lucide-react';
+import { format } from 'date-fns';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -36,7 +30,7 @@ export default function NotificationsTab() {
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
-      alert('Failed to load notifications');
+      toast.error('Failed to load notifications');
     } finally {
       setLoading(false);
     }
@@ -65,7 +59,7 @@ export default function NotificationsTab() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !message) {
-      alert('Please fill all fields');
+      toast.error('Please fill all fields');
       return;
     }
 
@@ -78,7 +72,7 @@ export default function NotificationsTab() {
         // Update
         const response = await axios.put(`${API_URL}/hospital/notifications/${editingNotification.id}`, payload, config);
         if (response.data.success) {
-          alert('Notification updated');
+          toast.success('Notification updated');
           fetchNotifications();
           handleCloseModal();
         }
@@ -86,14 +80,14 @@ export default function NotificationsTab() {
         // Create
         const response = await axios.post(`${API_URL}/hospital/notifications`, payload, config);
         if (response.data.success) {
-          alert('Notification created and broadcast sent');
+          toast.success('Notification created and broadcast sent');
           fetchNotifications();
           handleCloseModal();
         }
       }
     } catch (error) {
       console.error('Error saving notification:', error);
-      alert('Failed to save notification');
+      toast.error('Failed to save notification');
     }
   };
 
@@ -105,174 +99,185 @@ export default function NotificationsTab() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.success) {
-        alert('Notification deleted');
+        toast.success('Notification deleted');
         fetchNotifications();
       }
     } catch (error) {
       console.error('Error deleting notification:', error);
-      alert('Failed to delete notification');
+      toast.error('Failed to delete notification');
     }
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem', color: '#94a3b8' }}>
+        Loading notifications...
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Notifications</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#0f172a', margin: 0 }}>Notifications</h2>
+          <p style={{ color: '#64748b', margin: '4px 0 0 0', fontSize: '0.9rem' }}>
             Manage push notifications and alerts sent to the patient app.
           </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+            background: '#ff0088', color: '#fff', border: 'none',
+            padding: '0.6rem 1.2rem', borderRadius: '8px', cursor: 'pointer',
+            fontWeight: '600', fontSize: '0.9rem', boxShadow: '0 4px 12px rgba(255,0,136,0.2)'
+          }}
         >
-          <Plus className="-ml-1 mr-2 h-5 w-5" />
-          New Notification
+          <Plus size={18} /> New Notification
         </button>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+      {/* List */}
+      <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
         {notifications.length === 0 ? (
-          <div className="text-center py-12">
-            <Bell className="mx-auto h-12 w-12 text-gray-300" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No notifications</h3>
-            <p className="mt-1 text-sm text-gray-500">Get started by creating a new notification.</p>
-            <div className="mt-6">
-              <button
-                onClick={() => handleOpenModal()}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-              >
-                <Plus className="-ml-1 mr-2 h-5 w-5" />
-                New Notification
-              </button>
-            </div>
+          <div style={{ padding: '4rem 2rem', textAlign: 'center', color: '#94a3b8' }}>
+            <Bell size={48} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
+            <h3 style={{ margin: 0, color: '#334155', fontSize: '1.1rem' }}>No notifications</h3>
+            <p style={{ marginTop: '0.5rem', fontSize: '0.9rem' }}>Get started by creating a new notification.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-200">
-            {notifications.map((notification) => (
-              <li key={notification.id} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center mb-2">
-                      <div className="flex-shrink-0">
-                        <MessageSquare className="h-6 w-6 text-indigo-500" />
-                      </div>
-                      <div className="ml-4">
-                        <h4 className="text-lg font-bold text-gray-900">{notification.title}</h4>
-                      </div>
-                    </div>
-                    <p className="mt-1 text-sm text-gray-600 whitespace-pre-wrap ml-10">
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {notifications.map((notification, idx) => (
+              <div
+                key={notification.id}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+                  padding: '1.5rem', borderBottom: idx !== notifications.length - 1 ? '1px solid #e2e8f0' : 'none'
+                }}
+              >
+                <div style={{ display: 'flex', gap: '1rem', flex: 1 }}>
+                  <div style={{ padding: '10px', background: '#f8fafc', borderRadius: '8px', height: 'fit-content' }}>
+                    <MessageSquare size={24} color="#ff0088" />
+                  </div>
+                  <div>
+                    <h4 style={{ margin: 0, color: '#0f172a', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                      {notification.title}
+                    </h4>
+                    <p style={{ margin: '0.5rem 0 0.75rem', color: '#475569', fontSize: '0.95rem', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
                       {notification.message}
                     </p>
-                    <div className="mt-2 flex items-center text-xs text-gray-400 ml-10">
-                      <Clock className="flex-shrink-0 mr-1.5 h-4 w-4" />
-                      {new Date(notification.created_at).toLocaleString()}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#94a3b8', fontSize: '0.85rem' }}>
+                      <Clock size={14} />
+                      {format(new Date(notification.created_at), 'PPP h:mm a')}
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4 ml-6">
-                    <button
-                      onClick={() => handleOpenModal(notification)}
-                      className="text-gray-400 hover:text-indigo-600 transition-colors"
-                    >
-                      <Edit2 className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(notification.id)}
-                      className="text-gray-400 hover:text-red-600 transition-colors"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
                 </div>
-              </li>
+                <div style={{ display: 'flex', gap: '0.75rem', marginLeft: '1rem' }}>
+                  <button
+                    onClick={() => handleOpenModal(notification)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
+                    title="Edit"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(notification.id)}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }}
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.5)', zIndex: 9999,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '1rem'
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '500px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            overflow: 'hidden', display: 'flex', flexDirection: 'column'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', borderBottom: '1px solid #e2e8f0' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: 'bold' }}>
+                {editingNotification ? 'Edit Notification' : 'Send New Notification'}
+              </h3>
+              <button onClick={handleCloseModal} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: 0 }}>
+                <X size={24} />
+              </button>
             </div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-              <div className="absolute top-0 right-0 pt-4 pr-4">
+            
+            <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#475569', fontWeight: '600', fontSize: '0.9rem' }}>
+                  Title
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="E.g. Holiday Alert"
+                  required
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px',
+                    border: '1px solid #cbd5e1', fontSize: '0.95rem',
+                    outline: 'none', boxSizing: 'border-box'
+                  }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: '#475569', fontWeight: '600', fontSize: '0.9rem' }}>
+                  Message
+                </label>
+                <textarea
+                  rows={4}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Notification content..."
+                  required
+                  style={{
+                    width: '100%', padding: '0.75rem', borderRadius: '8px',
+                    border: '1px solid #cbd5e1', fontSize: '0.95rem',
+                    outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+                    fontFamily: 'inherit'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="bg-white rounded-md text-gray-400 hover:text-gray-500"
+                  style={{
+                    padding: '0.6rem 1.2rem', background: '#f8fafc', color: '#475569',
+                    border: '1px solid #cbd5e1', borderRadius: '8px', cursor: 'pointer', fontWeight: '600'
+                  }}
                 >
-                  <X className="h-6 w-6" />
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '0.6rem 1.2rem', background: '#ff0088', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600'
+                  }}
+                >
+                  {editingNotification ? 'Save Changes' : 'Send Notification'}
                 </button>
               </div>
-              <div className="sm:flex sm:items-start">
-                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <Bell className="h-6 w-6 text-indigo-600" aria-hidden="true" />
-                </div>
-                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900">
-                    {editingNotification ? 'Edit Notification' : 'Send New Notification'}
-                  </h3>
-                  <div className="mt-4 w-full">
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Title
-                        </label>
-                        <input
-                          type="text"
-                          value={title}
-                          onChange={(e) => setTitle(e.target.value)}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="E.g. Holiday Alert"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Message
-                        </label>
-                        <textarea
-                          rows={4}
-                          value={message}
-                          onChange={(e) => setMessage(e.target.value)}
-                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                          placeholder="Notification content..."
-                          required
-                        />
-                      </div>
-                      <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                        <button
-                          type="submit"
-                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 sm:ml-3 sm:w-auto sm:text-sm"
-                        >
-                          {editingNotification ? 'Save Changes' : 'Send Notification'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleCloseModal}
-                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:text-gray-500 sm:mt-0 sm:w-auto sm:text-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import HospitalLogin from './pages/HospitalLogin';
 import HospitalDashboard from './pages/HospitalDashboard';
@@ -8,6 +9,7 @@ import { ToastProvider } from './components/Toast';
 function App() {
   return (
     <ToastProvider>
+      <Toaster position="top-right" />
       <Router>
         <Routes>
           {/* Public Routes */}
