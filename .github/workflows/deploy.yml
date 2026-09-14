@@ -41,6 +41,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
+          security: loose
           local-dir: ./hospital-token-frontend/dist/
           server-dir: public_html/
           # Don't touch backend files already on server
@@ -68,6 +69,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 21
+          security: loose
           local-dir: ./hospital-token-backend/
           server-dir: public_html/gmcc-api/
           # NEVER overwrite these server-side files
