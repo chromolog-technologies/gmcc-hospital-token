@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import {
   Bell,
   Plus,
@@ -10,7 +9,6 @@ import {
   MessageSquare,
   Clock
 } from 'lucide-react';
-import { format } from 'date-fns';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -38,7 +36,7 @@ export default function NotificationsTab() {
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
-      toast.error('Failed to load notifications');
+      alert('Failed to load notifications');
     } finally {
       setLoading(false);
     }
@@ -67,7 +65,7 @@ export default function NotificationsTab() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !message) {
-      toast.error('Please fill all fields');
+      alert('Please fill all fields');
       return;
     }
 
@@ -80,7 +78,7 @@ export default function NotificationsTab() {
         // Update
         const response = await axios.put(`${API_URL}/hospital/notifications/${editingNotification.id}`, payload, config);
         if (response.data.success) {
-          toast.success('Notification updated');
+          alert('Notification updated');
           fetchNotifications();
           handleCloseModal();
         }
@@ -88,14 +86,14 @@ export default function NotificationsTab() {
         // Create
         const response = await axios.post(`${API_URL}/hospital/notifications`, payload, config);
         if (response.data.success) {
-          toast.success('Notification created and broadcast sent');
+          alert('Notification created and broadcast sent');
           fetchNotifications();
           handleCloseModal();
         }
       }
     } catch (error) {
       console.error('Error saving notification:', error);
-      toast.error('Failed to save notification');
+      alert('Failed to save notification');
     }
   };
 
@@ -107,12 +105,12 @@ export default function NotificationsTab() {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.data.success) {
-        toast.success('Notification deleted');
+        alert('Notification deleted');
         fetchNotifications();
       }
     } catch (error) {
       console.error('Error deleting notification:', error);
-      toast.error('Failed to delete notification');
+      alert('Failed to delete notification');
     }
   };
 
@@ -177,7 +175,7 @@ export default function NotificationsTab() {
                     </p>
                     <div className="mt-2 flex items-center text-xs text-gray-400 ml-10">
                       <Clock className="flex-shrink-0 mr-1.5 h-4 w-4" />
-                      {format(new Date(notification.created_at), 'PPP h:mm a')}
+                      {new Date(notification.created_at).toLocaleString()}
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 ml-6">
