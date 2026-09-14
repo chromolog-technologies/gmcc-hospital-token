@@ -83,8 +83,18 @@ const EditModal = ({ doctor, units, onClose, onSaved }) => {
         setLoading(true);
         try {
             const fd = new FormData();
-            Object.entries(form).forEach(([k, v]) => { if (v) fd.append(k, v); });
-            await api.put(`/hospital/doctors/${doctor.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+            // PHP doesn't parse multipart/form-data for PUT requests.
+            // Use POST + _method spoofing so Laravel routes it as PUT.
+            fd.append('_method', 'PUT');
+            Object.entries(form).forEach(([k, v]) => {
+                // Always include unit_id even if empty (to allow unassigning)
+                if (k === 'unit_id') {
+                    fd.append(k, v ?? '');
+                } else if (v !== null && v !== undefined && v !== '') {
+                    fd.append(k, v);
+                }
+            });
+            await api.post(`/hospital/doctors/${doctor.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
             toast.success('Doctor updated successfully.');
             onSaved();
         } catch (err) {
