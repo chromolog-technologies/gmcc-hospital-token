@@ -3,7 +3,7 @@ name: 🚀 Deploy to Hostinger
 on:
   push:
     branches: [main]
-  workflow_dispatch:   # ← allows manual trigger from GitHub Actions UI
+  workflow_dispatch:   # allows manual trigger from GitHub Actions UI
 
 jobs:
   # ─────────────────────────────────────────────────────────
@@ -34,22 +34,16 @@ jobs:
           cd hospital-token-frontend
           npm run build
 
-      - name: Deploy Frontend via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy Frontend via SCP
+        uses: appleboy/scp-action@v0.1.7
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          security: loose
-          local-dir: ./hospital-token-frontend/dist/
-          server-dir: public_html/
-          # Don't touch backend files already on server
-          exclude: |
-            **/gmcc-api/**
-            **/backend/**
-            **/.env
-            **/storage/**
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
+          source: "hospital-token-frontend/dist/assets,hospital-token-frontend/dist/index.html,hospital-token-frontend/dist/favicon.svg,hospital-token-frontend/dist/icons.svg,hospital-token-frontend/dist/images,hospital-token-frontend/dist/sample_patients_import.csv"
+          target: "/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
+          strip_components: 2   # removes "hospital-token-frontend/dist/" prefix
 
   # ─────────────────────────────────────────────────────────
   # JOB 2: Deploy Laravel backend to public_html/gmcc-api/
@@ -62,27 +56,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy Backend via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy Backend via Rsync over SSH
+        uses: burnett01/rsync-deployments@7.0.1
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 21
-          security: loose
-          local-dir: ./hospital-token-backend/
-          server-dir: public_html/gmcc-api/
-          # NEVER overwrite these server-side files
-          exclude: |
-            **/.env
-            **/vendor/**
-            **/node_modules/**
-            **/storage/logs/**
-            **/storage/framework/cache/**
-            **/storage/framework/sessions/**
-            **/.git/**
-            **/.gitignore
+          switches: -avzr --delete --exclude='.env' --exclude='vendor/' --exclude='storage/logs/' --exclude='storage/framework/cache/' --exclude='storage/framework/sessions/' --exclude='.git/'
+          path: hospital-token-backend/
+          remote_path: /home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: 65002
 
-      - name: Clear Laravel config cache (via HTTP trigger)
-        run: |
-          curl -s "${{ secrets.CACHE_CLEAR_URL }}" || echo "Cache clear skipped"
+      - name: Clear Laravel cache via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 65002
+          script: |
+            cd /home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+            php artisan config:cache
+            php artisan route:cache
+            echo "✅ Cache cleared successfully"
