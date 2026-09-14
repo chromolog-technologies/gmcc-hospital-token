@@ -67,7 +67,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
           remote_port: 65002
 
-      - name: Clear Laravel cache via SSH
+      - name: Clear Laravel cache & set up storage link via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -75,7 +75,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
           script: |
-            cd /home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+            BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+            # Create storage symlink (exec() disabled on Hostinger so can't use artisan storage:link)
+            ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
+            cd $BASEDIR
+            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
             php artisan config:cache
             php artisan route:cache
-            echo "✅ Cache cleared successfully"
+            echo "✅ Deploy complete"
