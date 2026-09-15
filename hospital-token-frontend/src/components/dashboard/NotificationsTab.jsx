@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../lib/axios';
 import { toast } from 'react-hot-toast';
 import { Bell, Plus, Edit2, Trash2, X, MessageSquare, Clock } from 'lucide-react';
 import { format } from 'date-fns';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 export default function NotificationsTab() {
   const [notifications, setNotifications] = useState([]);
@@ -22,9 +20,7 @@ export default function NotificationsTab() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await axios.get(`${API_URL}/hospital/notifications`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get(`/hospital/notifications`);
       if (response.data.success) {
         setNotifications(response.data.data);
       }
@@ -64,13 +60,11 @@ export default function NotificationsTab() {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
       const payload = { title, message };
 
       if (editingNotification) {
         // Update
-        const response = await axios.put(`${API_URL}/hospital/notifications/${editingNotification.id}`, payload, config);
+        const response = await api.put(`/hospital/notifications/${editingNotification.id}`, payload);
         if (response.data.success) {
           toast.success('Notification updated');
           fetchNotifications();
@@ -78,7 +72,7 @@ export default function NotificationsTab() {
         }
       } else {
         // Create
-        const response = await axios.post(`${API_URL}/hospital/notifications`, payload, config);
+        const response = await api.post(`/hospital/notifications`, payload);
         if (response.data.success) {
           toast.success('Notification created and broadcast sent');
           fetchNotifications();
@@ -95,9 +89,7 @@ export default function NotificationsTab() {
     if (!window.confirm('Are you sure you want to delete this notification? It will be removed from the App.')) return;
 
     try {
-      const response = await axios.delete(`${API_URL}/hospital/notifications/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.delete(`/hospital/notifications/${id}`);
       if (response.data.success) {
         toast.success('Notification deleted');
         fetchNotifications();
