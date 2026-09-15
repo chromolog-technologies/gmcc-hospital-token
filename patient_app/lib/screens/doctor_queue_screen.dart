@@ -67,8 +67,8 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
     }
   }
 
-  Future<void> _handleMarkCompleted() async {
-    final result = await ApiService.markTokenCompleted(widget.unit['id']);
+  Future<void> _handleMarkCompleted(int bookingId) async {
+    final result = await ApiService.markTokenCompleted(bookingId);
     if (mounted) {
       if (result['success'] == true) {
         _fetchQueue(silent: true);
@@ -176,7 +176,7 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
                             ),
                           ),
                           ElevatedButton.icon(
-                            onPressed: currentBooking != null ? _handleMarkCompleted : null,
+                            onPressed: currentBooking != null ? () => _handleMarkCompleted(currentBooking['id']) : null,
                             icon: const Icon(Icons.check_circle),
                             label: const Text('Complete'),
                             style: ElevatedButton.styleFrom(

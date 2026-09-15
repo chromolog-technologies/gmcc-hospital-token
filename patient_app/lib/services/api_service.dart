@@ -220,12 +220,12 @@ class ApiService {
     }
   }
 
-  static Future<Map<String, dynamic>> markTokenCompleted(int unitId) async {
+  static Future<Map<String, dynamic>> markTokenCompleted(int bookingId) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/doctor/complete'),
         headers: _getHeaders(),
-        body: json.encode({'unit_id': unitId}),
+        body: json.encode({'booking_id': bookingId}),
       );
       return json.decode(response.body);
     } catch (e) {
