@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\NotificationController;
 
 // Apply standard API rate limiting
 Route::middleware('throttle:60,1')->group(function () {
