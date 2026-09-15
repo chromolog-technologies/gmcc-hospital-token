@@ -101,8 +101,6 @@ class NotificationController extends Controller
      */
     private function sendPushNotification($title, $body)
     {
-        // TODO: Implement FCM Push Notification broadcast here
-        // We will do this once the user provides the Firebase Service Account JSON.
-        Log::info("Push Notification Broadcast Placeholder: Title: {$title}, Body: {$body}");
+        \App\Services\FirebaseService::sendNotificationToTopic('all_patients', $title, $body);
     }
 }
