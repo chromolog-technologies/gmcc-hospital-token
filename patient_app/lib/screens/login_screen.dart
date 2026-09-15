@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.local_hospital, size: 80, color: Colors.white),
+              Image.asset('assets/icon.webp', width: 90, height: 90),
               const SizedBox(height: 20),
               const Text(
                 'GMCCH PATIENT',
