@@ -220,7 +220,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             </div>
 
             {/* Offline Token Booking Box */}
-            <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'white' }}>
+            <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'white', position: 'relative', zIndex: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                     <Settings size={20} color="#ff0088" />
                     <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Offline Token Booking (Walk-in)</h3>

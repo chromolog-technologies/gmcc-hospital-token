@@ -3,13 +3,13 @@ import api from '../../lib/axios';
 import { useToast } from '../Toast';
 import { LoadingButton } from '../Spinner';
 import {
-    UserPlus, Camera, X, User, Mail, Phone, Building2, CreditCard, Lock,
+    UserPlus, Camera, X, User, Phone, Building2, CreditCard, Lock,
     Stethoscope, Eye, Pencil, Trash2, Save, RefreshCw
 } from 'lucide-react';
 
 const EMPTY_DOCTOR = {
-    name: '', qualification: '', unit_id: '', department: '',
-    phone: '', email: '', gender: 'male', regno: '', password: '', photo: null
+    name: '', qualification: '', department: '', unit_id: '',
+    phone: '', gender: 'male', regno: '', password: '', photo: null
 };
 
 // ── Modal Shell ─────────────────────────────────────────────────────────────
@@ -50,7 +50,6 @@ const ViewModal = ({ doctor, onClose, onEdit }) => (
                 { icon: <CreditCard size={14} />,  label: 'Registration No', value: doctor.regno },
                 { icon: <Building2 size={14} />,   label: 'Assigned Unit',   value: doctor.unit_name || 'Not assigned' },
                 { icon: <Phone size={14} />,       label: 'Phone',           value: doctor.phone || '—' },
-                { icon: <Mail size={14} />,        label: 'Email',           value: doctor.email || '—' },
                 { icon: <User size={14} />,        label: 'Gender',          value: doctor.gender ? doctor.gender.charAt(0).toUpperCase() + doctor.gender.slice(1) : '—' },
             ].map(({ icon, label, value }) => (
                 <div key={label} style={ms.detailRow}>
@@ -75,9 +74,18 @@ const EditModal = ({ doctor, units, onClose, onSaved }) => {
     const [form, setForm]       = useState({
         name: doctor.name, qualification: doctor.qualification || '',
         department: doctor.department || '', phone: doctor.phone || '',
-        gender: doctor.gender || 'male', unit_id: doctor.unit_id || '', password: '',
+        gender: doctor.gender || 'male', unit_id: doctor.unit_id || '', password: '', photo: null
     });
     const [loading, setLoading] = useState(false);
+    const [preview, setPreview] = useState(doctor.photo_url || null);
+
+    const handlePhoto = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setForm(prev => ({ ...prev, photo: file }));
+            setPreview(URL.createObjectURL(file));
+        }
+    };
 
     const handleSave = async () => {
         setLoading(true);
@@ -129,7 +137,23 @@ const EditModal = ({ doctor, units, onClose, onSaved }) => {
                     </select>
                 </div>
             </div>
-            <Field label="New Password (leave blank to keep)" value={form.password} onChange={v => set('password', v)} type="password" />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 1rem', marginTop: '0.2rem' }}>
+                <Field label="New Password (leave blank to keep)" value={form.password} onChange={v => set('password', v)} type="password" />
+                <div style={{ marginBottom: '1rem' }}>
+                    <label style={s.label}>Update Photo (jpeg, png)</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={s.photoPreview}>
+                            {preview ? <img src={preview} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Camera size={22} style={{ color: '#cbd5e1' }} />}
+                        </div>
+                        <div>
+                            <input type="file" id="editDoctorPhoto" accept="image/jpeg,image/png" onChange={handlePhoto} style={{ display: 'none' }} />
+                            <label htmlFor="editDoctorPhoto" style={{ ...s.btnSecondary, cursor: 'pointer', display: 'inline-block' }}>
+                                {preview ? 'Change Photo' : 'Upload Photo'}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
                 <button onClick={onClose} style={ms.btnBack} disabled={loading}>Cancel</button>
                 <LoadingButton loading={loading} label={<><Save size={14} /> Save Changes</>} loadingLabel="Saving…" onClick={handleSave} style={ms.btnConfirm} type="button" />
@@ -183,7 +207,6 @@ const ConfirmModal = ({ form, unitLabel, preview, onConfirm, onBack, loading }) 
         { icon: <Building2 size={15} />,   label: 'Department',      value: form.department },
         { icon: <Building2 size={15} />,   label: 'Assigned Unit',   value: unitLabel },
         { icon: <Phone size={15} />,       label: 'Phone',           value: form.phone },
-        { icon: <Mail size={15} />,        label: 'Email',           value: form.email },
         { icon: <User size={15} />,        label: 'Gender',          value: form.gender.charAt(0).toUpperCase() + form.gender.slice(1) },
         { icon: <CreditCard size={15} />,  label: 'Registration No', value: form.regno },
         { icon: <Lock size={15} />,        label: 'Password',        value: '••••••••' },
@@ -332,7 +355,6 @@ const DoctorTab = ({ units, onDoctorAdded }) => {
                                 </div>
                                 <div>
                                     <Field label="Registration No (Regno) *" value={form.regno}    onChange={v => set('regno', v)}    required placeholder="MCI Reg number" />
-                                    <Field label="Email"                      value={form.email}    onChange={v => set('email', v)}    type="email" placeholder="doctor@example.com" />
                                     <div style={{ marginBottom: '0.85rem' }}>
                                         <label style={s.label}>Gender *</label>
                                         <select style={s.input} value={form.gender} onChange={e => set('gender', e.target.value)}>
