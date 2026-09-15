@@ -86,7 +86,15 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
   @override
   Widget build(BuildContext context) {
     final activeBookings = _queue.where((b) => b['status'] == 'active').toList();
+    final pendingBookings = _queue.where((b) => b['status'] == 'pending').toList();
+    
     final currentBooking = activeBookings.isNotEmpty ? activeBookings.first : null;
+    
+    // Remaining active bookings + all pending bookings
+    final upcomingList = [
+      if (activeBookings.length > 1) ...activeBookings.sublist(1),
+      ...pendingBookings
+    ];
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -194,19 +202,38 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    itemCount: activeBookings.length > 1 ? activeBookings.length - 1 : 0,
+                    itemCount: upcomingList.length,
                     itemBuilder: (context, index) {
-                      final booking = activeBookings[index + 1];
+                      final booking = upcomingList[index];
+                      final isPending = booking['status'] == 'pending';
+                      
                       return Card(
                         margin: const EdgeInsets.only(bottom: 10),
+                        color: isPending ? Colors.grey[100] : Colors.white,
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: const Color(0xFF007AFF).withValues(alpha: 0.1),
-                            child: Text('${booking['token_number']}', style: const TextStyle(color: Color(0xFF007AFF), fontWeight: FontWeight.bold)),
+                            backgroundColor: isPending ? Colors.grey.withValues(alpha: 0.2) : const Color(0xFF007AFF).withValues(alpha: 0.1),
+                            child: Text(
+                              '${booking['token_number']}', 
+                              style: TextStyle(
+                                color: isPending ? Colors.grey[700] : const Color(0xFF007AFF), 
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
                           ),
-                          title: Text(booking['user']?['name'] ?? 'Unknown'),
+                          title: Text(
+                            booking['user']?['name'] ?? 'Unknown',
+                            style: TextStyle(color: isPending ? Colors.grey[600] : Colors.black87),
+                          ),
                           subtitle: Text('CRNO: ${booking['user']?['crno'] ?? '-'}'),
-                          trailing: const Text('Waiting', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w600)),
+                          trailing: Text(
+                            isPending ? 'Pending Admin' : 'Waiting', 
+                            style: TextStyle(
+                              color: isPending ? Colors.red[400] : Colors.orange, 
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            )
+                          ),
                         ),
                       );
                     },
