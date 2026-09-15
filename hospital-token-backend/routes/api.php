@@ -11,8 +11,8 @@ use App\Http\Controllers\NotificationController;
 // Apply standard API rate limiting
 Route::middleware('throttle:60,1')->group(function () {
     
-    // Strict Rate Limiting for Auth
-    Route::middleware('throttle:5,1')->group(function () {
+    // Strict Rate Limiting for Auth (increased to prevent lockouts during normal use)
+    Route::middleware('throttle:30,1')->group(function () {
         Route::post('/user/login', [AuthController::class, 'userLogin']);
         Route::post('/doctor/login', [AuthController::class, 'doctorLogin']);
         Route::post('/hospital/login', [AuthController::class, 'hospitalLogin']);

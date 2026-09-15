@@ -55,6 +55,13 @@ class ApiService {
       debugPrint('Login Response Status: ${response.statusCode}');
       debugPrint('Login Response Body: ${response.body}');
 
+      if (response.statusCode == 429) {
+        return {
+          'status': false,
+          'message': 'Too many login attempts. Please wait a minute.',
+        };
+      }
+
       final data = json.decode(response.body);
 
       if (data['success'] == true) {
@@ -85,6 +92,13 @@ class ApiService {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'regno': regno, 'password': password}),
       );
+
+      if (response.statusCode == 429) {
+        return {
+          'status': false,
+          'message': 'Too many login attempts. Please wait a minute.',
+        };
+      }
 
       final data = json.decode(response.body);
 
