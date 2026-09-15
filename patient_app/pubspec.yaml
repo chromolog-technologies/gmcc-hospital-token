@@ -65,11 +65,11 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon.webp"
+  image_path: "assets/t_logo.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/icon.webp"
+    image_path: "assets/t_logo.png"
 
 flutter:
   uses-material-design: true

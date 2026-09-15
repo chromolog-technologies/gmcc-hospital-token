@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/icon.webp',
+              'assets/t_logo.png',
               width: 130,
               height: 130,
             ),
