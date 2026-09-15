@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "723130237683",
+    "project_id": "gmc-hospital-token",
+    "storage_bucket": "gmc-hospital-token.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:723130237683:android:312c3defe57a1b5f816d86",
+        "android_client_info": {
+          "package_name": "gmcch.vast.token"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyP2o-IA6QOXhpWlEPPvz91MZXA0UOUsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

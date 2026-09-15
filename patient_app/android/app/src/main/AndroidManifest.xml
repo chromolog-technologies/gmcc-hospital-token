@@ -3,11 +3,16 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
 
     <application
-        android:label="patient_app"
+        android:label="MCCH TOKEN"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/llogo.png"
         android:largeHeap="true"
         android:usesCleartextTraffic="false">
         <activity
