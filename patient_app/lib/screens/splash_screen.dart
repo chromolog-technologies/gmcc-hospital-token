@@ -37,17 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF0088).withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.local_hospital_rounded,
-                size: 80,
-                color: Color(0xFFFF0088),
-              ),
+            Image.asset(
+              'assets/icon.webp',
+              width: 130,
+              height: 130,
             ),
             const SizedBox(height: 24),
             const Text(
