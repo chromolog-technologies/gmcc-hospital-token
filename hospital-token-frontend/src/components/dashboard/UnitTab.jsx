@@ -191,7 +191,7 @@ const UnitTab = ({ units, onUnitAdded }) => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
 
                 {/* ── Add Unit Form ── */}
-                <div style={s.card}>
+                <div className="dash-card-pad" style={s.card}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
                         <Layers size={18} color="#ff0088" />
                         <h3 style={{ margin: 0, fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>Add New Unit</h3>
@@ -242,7 +242,7 @@ const UnitTab = ({ units, onUnitAdded }) => {
                 </div>
 
                 {/* ── Existing Units List ── */}
-                <div style={s.card}>
+                <div className="dash-card-pad" style={s.card}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
                         <Calendar size={18} color="#ff0088" />
                         <h3 style={{ margin: 0, fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
@@ -309,7 +309,7 @@ const UnitTab = ({ units, onUnitAdded }) => {
 // ── Styles ─────────────────────────────────────────────────────────────────
 const s = {
     pageTitle:  { fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '1.5rem' },
-    card:       { background: 'white', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e2e8f0' },
+    card:       { background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0' },
     input:      { width: '100%', padding: '0.75rem 1rem', border: '2px solid #e2e8f0', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' },
     inlineInput:{ padding: '0.55rem 0.75rem', border: '2px solid #ffd6ec', borderRadius: '8px', fontSize: '0.82rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', minWidth: 0 },
     label:      { display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' },

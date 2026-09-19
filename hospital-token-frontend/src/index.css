@@ -230,6 +230,30 @@ h2 { font-size: 2.25rem; font-weight: 800; line-height: 1.2; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ADMIN DASHBOARD UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+.dash-main-pad {
+  padding: 1.75rem 1.5rem !important;
+}
+.dash-card-pad {
+  padding: 1.75rem !important;
+}
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .dash-main-pad {
+    padding: 1rem 0.75rem !important;
+  }
+  .dash-card-pad {
+    padding: 1rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
    HOME PAGE — component classes extracted from inline styles
    ═══════════════════════════════════════════════════════════════ */
 

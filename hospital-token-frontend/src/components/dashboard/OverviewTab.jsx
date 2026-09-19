@@ -21,7 +21,7 @@ const OverviewTab = ({ hospital, summary, units }) => (
         </div>
 
         {/* Unit Queue Cards */}
-        <div style={{ background: 'white', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e2e8f0' }}>
+        <div className="dash-card-pad" style={{ background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontWeight: 800, fontSize: '1rem', color: '#0f172a', marginBottom: '1.25rem' }}>Active Unit Queues</h3>
             {units.length === 0 ? (
                 <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>No units configured yet.</p>

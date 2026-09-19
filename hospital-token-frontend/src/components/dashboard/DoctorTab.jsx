@@ -386,7 +386,7 @@ const DoctorTab = ({ units, onDoctorAdded }) => {
                 )}
 
                 {/* Doctor List */}
-                <div style={s.card}>
+                <div className="dash-card-pad" style={s.card}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem' }}>
                         <Stethoscope size={18} color="#ff0088" />
                         <h3 style={{ margin: 0, fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
@@ -449,7 +449,7 @@ const Field = ({ label, value, onChange, required, type = 'text', placeholder = 
 // ── Styles ─────────────────────────────────────────────────────────────────
 const s = {
     pageTitle:    { fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: 0 },
-    card:         { background: 'white', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e2e8f0' },
+    card:         { background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0' },
     formGrid:     { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' },
     input:        { width: '100%', padding: '0.75rem 1rem', border: '2px solid #e2e8f0', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' },
     label:        { display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' },

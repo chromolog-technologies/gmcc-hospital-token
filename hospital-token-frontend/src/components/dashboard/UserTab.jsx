@@ -219,7 +219,7 @@ const UserTab = () => {
             <div style={s.twoCol}>
                 {/* ── Left: Add + Bulk Import ── */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    <div style={s.card}>
+                    <div className="dash-card-pad" style={s.card}>
                         <SectionTitle icon={<Plus size={17} />} text="Add Individual User" />
                         <form onSubmit={handleAdd}>
                             <Field label="Full Name *"  value={newUser.name}   onChange={v => setNewUser({ ...newUser, name: v })}   required />
@@ -242,7 +242,7 @@ const UserTab = () => {
                         </form>
                     </div>
 
-                    <div style={s.card}>
+                    <div className="dash-card-pad" style={s.card}>
                         <SectionTitle icon={<Upload size={17} />} text="Bulk CSV Import" />
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                             <p style={s.desc}>Upload a CSV with columns: <code>name</code>, <code>crno</code>, <code>user_age</code>, <code>user_gender</code>.</p>
@@ -274,7 +274,7 @@ const UserTab = () => {
                 </div>
 
                 {/* ── Right: List of Users ── */}
-                <div style={s.card}>
+                <div className="dash-card-pad" style={s.card}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                         <SectionTitle icon={<UserIcon size={17} />} text={`All Users (${users.length})`} />
                     </div>
@@ -343,7 +343,7 @@ const Field = ({ label, value, onChange, required, type = 'text' }) => (
 const s = {
     pageTitle:    { fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', marginBottom: '1.5rem' },
     twoCol:       { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', alignItems: 'start' },
-    card:         { background: 'white', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e2e8f0' },
+    card:         { background: 'white', borderRadius: '20px', border: '1px solid #e2e8f0' },
     input:        { width: '100%', padding: '0.75rem 1rem', border: '2px solid #e2e8f0', borderRadius: '10px', fontSize: '0.875rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box' },
     label:        { display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' },
     btnPrimary:   { background: '#ff0088', color: 'white', border: 'none', borderRadius: '10px', padding: '0.75rem 1.25rem', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.875rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' },

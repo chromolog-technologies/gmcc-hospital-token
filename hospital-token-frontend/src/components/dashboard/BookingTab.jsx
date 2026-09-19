@@ -271,16 +271,17 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
             {/* Bookings List */}
             <div className="glass-panel" style={{ background: 'white', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
-                    <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
-                        <tr>
-                            <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
-                            <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit & Doctor</th>
-                            <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Date & Token</th>
-                            <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
-                            <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
-                        </tr>
-                    </thead>
+                <div className="table-responsive">
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+                        <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
+                            <tr>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit & Doctor</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Date & Token</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+                            </tr>
+                        </thead>
                     <tbody>
                         {bookings.length === 0 ? (
                             <tr>
@@ -355,6 +356,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                         )}
                     </tbody>
                 </table>
+            </div>
             </div>
         </div>
     );

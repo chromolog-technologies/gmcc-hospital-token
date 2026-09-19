@@ -187,7 +187,7 @@ const HospitalDashboard = () => {
             )}
 
             {/* ══════════════════ MAIN CONTENT ══════════════════════════ */}
-            <main style={css.main}>
+            <main style={css.main} className="dash-main-pad">
                 {!summary ? (
                     <p style={{ color: '#94a3b8', padding: '2rem' }}>Loading data…</p>
                 ) : (
@@ -394,7 +394,6 @@ const css = {
     /* Main content — full width, no offset needed */
     main: {
         flex: 1,
-        padding: '1.75rem 1.5rem',
         maxWidth: '1280px',
         width: '100%',
         margin: '0 auto',
