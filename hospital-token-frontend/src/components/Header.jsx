@@ -30,13 +30,13 @@ const Header = () => {
             <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
               <img src="/images/g11.png" alt="GMCCH Logo" style={{ height: '40px', width: 'auto' }} />
               <div>
-                <div style={{ fontWeight: 900, fontSize: '0.95rem', color: '#0f172a', lineHeight: 1, letterSpacing: '-0.01em' }}>GMCCH THRISSUR</div>
-                <div style={{ fontWeight: 700, fontSize: '0.6rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>Chest &amp; Cancer Hospital</div>
+                <div style={{ fontWeight: 900, fontSize: '0.95rem', color: '#0f172a', lineHeight: 1, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>GMCCH THRISSUR</div>
+                <div style={{ fontWeight: 700, fontSize: '0.6rem', color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px', whiteSpace: 'nowrap' }}>Chest &amp; Cancer Hospital</div>
               </div>
             </Link>
 
             {/* Desktop Nav Links */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }} className="desktop-nav">
+            <div style={{ alignItems: 'center', gap: '0.25rem' }} className="desktop-nav">
               <NavLink to="/" label="Home" />
               <NavLink href="#about" label="About" />
               <NavLink href="#contact" label="Contact" />
@@ -140,7 +140,7 @@ const Header = () => {
       </div>
 
       <style>{`
-        .desktop-nav { display: none; }
+        .desktop-nav { display: none !important; }
         .hamburger-btn { display: flex; }
         @media (min-width: 768px) {
           .desktop-nav { display: flex !important; }
