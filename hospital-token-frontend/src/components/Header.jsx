@@ -40,6 +40,7 @@ const Header = () => {
               <NavLink to="/" label="Home" />
               <NavLink href="#about" label="About" />
               <NavLink to="/project-information" label="System Info" />
+              <NavLink to="/privacy" label="Privacy Policy" />
               <NavLink href="#contact" label="Contact" />
             </div>
 
@@ -120,6 +121,7 @@ const Header = () => {
           <DrawerLink to="/" label="Home" onClick={() => setIsMenuOpen(false)} />
           <DrawerLink href="#about" label="About Us" onClick={() => setIsMenuOpen(false)} />
           <DrawerLink to="/project-information" label="System Info" onClick={() => setIsMenuOpen(false)} />
+          <DrawerLink to="/privacy" label="Privacy Policy" onClick={() => setIsMenuOpen(false)} />
           <DrawerLink href="#contact" label="Contact Us" onClick={() => setIsMenuOpen(false)} />
         </nav>
 

@@ -119,6 +119,9 @@ const Footer = () => {
             <Link to="/project-information" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
               System &amp; Technology Info
             </Link>
+            <Link to="/privacy" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+              Privacy Policy
+            </Link>
             <a 
               href="https://chromologtechnologies.com/" 
               target="_blank" 

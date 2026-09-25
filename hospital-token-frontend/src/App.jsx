@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import HospitalLogin from './pages/HospitalLogin';
 import HospitalDashboard from './pages/HospitalDashboard';
 import ProjectInformation from './pages/ProjectInformation';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/Toast';
 
@@ -16,6 +17,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/project-information" element={<ProjectInformation />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/Adminlogin" element={<HospitalLogin />} />
           <Route path="/adminlogin" element={<HospitalLogin />} />
 

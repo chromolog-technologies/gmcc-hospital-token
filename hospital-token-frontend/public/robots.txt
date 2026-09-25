@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Allow: /project-information
+Allow: /privacy
 Disallow: /admin/
 Disallow: /adminlogin
 Disallow: /Adminlogin
