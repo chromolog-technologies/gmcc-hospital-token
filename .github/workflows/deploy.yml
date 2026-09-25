@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 65002
-          source: "hospital-token-frontend/dist/assets,hospital-token-frontend/dist/index.html,hospital-token-frontend/dist/favicon.svg,hospital-token-frontend/dist/icons.svg,hospital-token-frontend/dist/images,hospital-token-frontend/dist/sample_patients_import.csv"
+          source: "hospital-token-frontend/dist/assets,hospital-token-frontend/dist/index.html,hospital-token-frontend/dist/favicon.svg,hospital-token-frontend/dist/icons.svg,hospital-token-frontend/dist/images,hospital-token-frontend/dist/sample_patients_import.csv,hospital-token-frontend/dist/robots.txt,hospital-token-frontend/dist/sitemap.xml"
           target: "/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
           strip_components: 2   # removes "hospital-token-frontend/dist/" prefix
 

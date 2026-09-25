@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /project-information
+Disallow: /admin/
+Disallow: /adminlogin
+Disallow: /Adminlogin
+Disallow: /api/
+
+Sitemap: https://gmcchtsrtoken.com/sitemap.xml

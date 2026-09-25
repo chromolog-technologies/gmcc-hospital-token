@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import HospitalLogin from './pages/HospitalLogin';
 import HospitalDashboard from './pages/HospitalDashboard';
+import ProjectInformation from './pages/ProjectInformation';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastProvider } from './components/Toast';
 
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/project-information" element={<ProjectInformation />} />
           <Route path="/Adminlogin" element={<HospitalLogin />} />
           <Route path="/adminlogin" element={<HospitalLogin />} />
 
@@ -36,4 +38,3 @@ function App() {
 }
 
 export default App;
-

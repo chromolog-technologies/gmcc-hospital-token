@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Mail, Phone } from 'lucide-react';
+import { MapPin, Mail, Phone, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer id="contact" style={{ background: '#ffffff', color: '#0f172a', paddingTop: '2rem', paddingBottom: '2.5rem', fontFamily: "'Plus Jakarta Sans', sans-serif", borderTop: '1px solid #e2e8f0' }}>
+    <footer id="contact" style={{ background: '#ffffff', color: '#0f172a', paddingTop: '2.5rem', paddingBottom: '2.5rem', fontFamily: "'Plus Jakarta Sans', sans-serif", borderTop: '1px solid #e2e8f0' }}>
       <div className="container">
         <h2 style={{ textAlign: 'center', fontSize: '2.25rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', marginBottom: '2rem', letterSpacing: '0.15em' }}>Contact Us</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', marginBottom: '4rem', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', marginBottom: '3.5rem', alignItems: 'center' }}>
           
           {/* Map Column */}
           <div>
@@ -45,9 +45,9 @@ const Footer = () => {
           </div>
 
           {/* Contact Column */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <div>
-              <h4 style={{ color: 'var(--primary)', fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '0.05em' }}>Address</h4>
+              <h4 style={{ color: 'var(--primary)', fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '0.75rem', letterSpacing: '0.05em' }}>Address</h4>
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
                 <MapPin size={18} style={{ color: 'var(--primary)', marginTop: '0.25rem', flexShrink: 0 }} />
                 <p style={{ color: '#334155', fontWeight: 500, fontSize: '0.875rem', lineHeight: '1.625', margin: 0 }}>
@@ -66,33 +66,70 @@ const Footer = () => {
               <p style={{ color: '#334155', fontWeight: 500, fontSize: '0.875rem', margin: 0 }}>0487 2200310</p>
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <Phone size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
               <p style={{ color: '#334155', fontWeight: 500, fontSize: '0.875rem', margin: 0 }}>0487 2200610</p>
             </div>
 
-            <div>
-              <Link to="/privacy" style={{ fontSize: '0.75rem', color: '#64748b', transition: 'color 0.15s', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>Privacy Policy</Link>
+            {/* Technology Partner Attribution Box */}
+            <div 
+              className="technology-partner" 
+              style={{ 
+                marginTop: '0.5rem', 
+                padding: '1rem', 
+                background: '#f8fafc', 
+                borderRadius: '8px', 
+                border: '1px solid #e2e8f0' 
+              }}
+            >
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.25rem' }}>
+                Technology Partner
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <a
+                  href="https://chromologtechnologies.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chromolog Technologies - Technology Partner"
+                  style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '0.95rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                >
+                  Chromolog Technologies <ExternalLink size={14} />
+                </a>
+              </div>
+              <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0.35rem 0 0 0', lineHeight: 1.4 }}>
+                Software Development &amp; Technology Partner
+              </p>
             </div>
 
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
               <a href="https://www.facebook.com/mcchtsr/" target="_blank" rel="noopener noreferrer" style={{ width: '2.5rem', height: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', transition: 'all 0.15s', borderRadius: '8px', color: '#475569', textDecoration: 'none' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}>
                 <span style={{ fontWeight: 900, fontSize: '0.75rem' }}>FB</span>
-              </a>
-              <a href="#" style={{ width: '2.5rem', height: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', transition: 'all 0.15s', borderRadius: '8px', color: '#475569', textDecoration: 'none' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}>
-                <span style={{ fontWeight: 900, fontSize: '0.75rem' }}>G+</span>
               </a>
             </div>
           </div>
         </div>
 
-        <hr style={{ borderColor: '#e2e8f0', marginBottom: '2rem', borderTopWidth: '1px', borderStyle: 'solid' }} />
+        <hr style={{ borderColor: '#e2e8f0', marginBottom: '1.75rem', borderTopWidth: '1px', borderStyle: 'solid' }} />
 
         <div style={{ textAlign: 'center', color: '#64748b', fontSize: '0.875rem' }}>
-          <p style={{ marginBottom: '0.5rem' }}>Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.</p>
-          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-            <a href="#" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>Privacy Policy</a>
-            <a href="#" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>Terms of Service</a>
+          <p style={{ marginBottom: '0.5rem', fontWeight: 500 }}>
+            Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.
+          </p>
+          <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.8rem' }}>
+            <Link to="/project-information" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+              System &amp; Technology Info
+            </Link>
+            <a 
+              href="https://chromologtechnologies.com/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              aria-label="Chromolog Technologies - Technology Partner"
+              style={{ color: '#64748b', textDecoration: 'underline' }} 
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} 
+              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+            >
+              Technology Partner: Chromolog Technologies
+            </a>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import TechnologyPartnerSection from '../components/TechnologyPartnerSection';
 import { Star, ShieldCheck, HeartPulse, Download, Quote, ExternalLink } from 'lucide-react';
 
 // Actual Google Reviews for Government Medical College Chest and Cancer Hospital, Thrissur
@@ -98,7 +99,7 @@ const REVIEW_URL  = "https://www.google.com/search?sca_esv=55117bfb786c3fb6&si=A
 // ── Page Component ─────────────────────────────────────────────────────────
 const Home = () => {
   useEffect(() => {
-    document.title = 'GMCC Hospital Thrissur | Token Management System';
+    document.title = 'GMC Chest Hospital Thrissur | Online Token Booking System';
   }, []);
 
   return (
@@ -264,6 +265,9 @@ const Home = () => {
 
         </div>
       </section>
+
+      {/* ─── Technology Partner Section ─── */}
+      <TechnologyPartnerSection />
 
       {/* ─── CTA Banner Section ─── */}
       <section className="cta-section">
