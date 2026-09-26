@@ -8,7 +8,7 @@ const Footer = () => {
       <div className="container">
         <h2 style={{ textAlign: 'center', fontSize: '2.25rem', fontWeight: 900, color: '#0f172a', textTransform: 'uppercase', marginBottom: '2rem', letterSpacing: '0.15em' }}>Contact Us</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '3rem', marginBottom: '3.5rem', alignItems: 'center' }}>
-          
+
           {/* Map Column */}
           <div>
             <div style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02)', height: '350px', border: '4px solid #f1f5f9', marginBottom: '1rem' }}>
@@ -86,19 +86,19 @@ const Footer = () => {
             Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.75rem', color: '#94a3b8' }}>
-            <Link to="/project-information" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+            {/* <Link to="/project-information" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
               System Info
-            </Link>
+            </Link> */}
             <Link to="/privacy" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
               Privacy Policy
             </Link>
-            <a 
-              href="https://chromologtechnologies.com/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://chromologtechnologies.com/"
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Chromolog Technologies - Technology Partner"
-              style={{ color: '#94a3b8', textDecoration: 'underline' }} 
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} 
+              style={{ color: '#94a3b8', textDecoration: 'underline' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
               onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
             >
               Technology Partner: Chromolog Technologies

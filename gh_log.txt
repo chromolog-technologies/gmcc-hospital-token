@@ -1,0 +1,768 @@
+🌐 Build & Deploy Frontend	UNKNOWN STEP	﻿2026-09-19T21:28:02.8176221Z Current runner version: '2.337.0'
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8200933Z ##[group]Runner Image Provisioner
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8201992Z Hosted Compute Agent
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8203153Z Version: 20260828.587
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8203952Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8204869Z Build Date: 2026-08-28T16:44:25Z
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8205755Z Worker ID: {ddbf63f5-30ed-4fcf-88b4-6d53fc552fd1}
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8207057Z Azure Region: westcentralus
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8207804Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8209655Z ##[group]Operating System
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8210445Z Ubuntu
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8211175Z 24.04.5
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8211806Z LTS
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8212476Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8213096Z ##[group]Runner Image
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8213881Z Image: ubuntu-24.04
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8214581Z Version: 20260907.300.1
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8215997Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8218074Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8219224Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8222564Z ##[group]GITHUB_TOKEN Permissions
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8225058Z Actions: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8225901Z ArtifactMetadata: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8227073Z Attestations: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8227859Z Checks: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8228602Z CodeQuality: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8229330Z Contents: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8230007Z CopilotRequests: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8230727Z Deployments: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8231408Z Discussions: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8232095Z Drives: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8232682Z Issues: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8233459Z Metadata: read
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8234411Z Models: read
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8235123Z Packages: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8235795Z Pages: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8236469Z PullRequests: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8237405Z RepositoryProjects: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8238173Z SecurityEvents: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8238827Z Statuses: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8239465Z VulnerabilityAlerts: read
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8240261Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8242399Z Secret source: Actions
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8243603Z Cache mode: write
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8244439Z Prepare workflow directory
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8641694Z Prepare all required actions
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:02.8689463Z Getting action download info
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.1639631Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.2532319Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.3422141Z Download action repository 'appleboy/scp-action@v0.1.7' (SHA:917f8b81dfc1ccd331fef9e2d61bdc6c8be94634)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.7592142Z Complete job name: 🌐 Build & Deploy Frontend
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.8079850Z ##[group]Build container for action use: '/home/runner/work/_actions/appleboy/scp-action/v0.1.7/Dockerfile'.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:03.8197756Z ##[command]/usr/bin/docker build -t 0c8200:2ff1fc3380f940b38863513f0d17e387 -f "/home/runner/work/_actions/appleboy/scp-action/v0.1.7/Dockerfile" "/home/runner/work/_actions/appleboy/scp-action/v0.1.7"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3210474Z #0 building with "default" instance using docker driver
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3211401Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3211836Z #1 [internal] load build definition from Dockerfile
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3212792Z #1 transferring dockerfile: 150B done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3213572Z #1 DONE 0.0s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3213909Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:04.3214404Z #2 [internal] load metadata for ghcr.io/appleboy/drone-scp:1.6.14
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.0475289Z #2 DONE 0.9s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1651862Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1653390Z #3 [internal] load .dockerignore
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1654541Z #3 transferring context: 2B done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1655621Z #3 DONE 0.0s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1656103Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1656786Z #4 [internal] load build context
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1658224Z #4 transferring context: 187B done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1659368Z #4 DONE 0.0s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1659883Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1661314Z #5 [1/2] FROM ghcr.io/appleboy/drone-scp:1.6.14@sha256:0e0597678b948b0aa09888c66ac75af904cce81baf6af955208527d259c61818
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1664511Z #5 resolve ghcr.io/appleboy/drone-scp:1.6.14@sha256:0e0597678b948b0aa09888c66ac75af904cce81baf6af955208527d259c61818 done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1667913Z #5 sha256:0e0597678b948b0aa09888c66ac75af904cce81baf6af955208527d259c61818 2.38kB / 2.38kB done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1670920Z #5 sha256:b49e06fc857838320ee2682058d609a527fd05056650f6f6387b8a320d25aed5 1.24kB / 1.24kB done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1673986Z #5 sha256:6e1933d0a1a550dee7c2be05d0c681372d8661e12dec2bd66f028fd3f2e1eccb 3.65kB / 3.65kB done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1677343Z #5 sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 0B / 3.38MB 0.1s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1680596Z #5 sha256:57fce42a8fe3138af514e9b1be611ec437fe87def8a6946cad1d6b7608188ce2 0B / 284.84kB 0.1s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.1684283Z #5 sha256:a7e706a435c2a53ff172ba5b50e2a06c2eaf63d2f764bdaabcca52d378beeb35 0B / 1.20kB 0.1s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.4357146Z #5 sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 3.38MB / 3.38MB 0.3s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.4358291Z #5 sha256:a7e706a435c2a53ff172ba5b50e2a06c2eaf63d2f764bdaabcca52d378beeb35 1.20kB / 1.20kB 0.2s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.4359112Z #5 extracting sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 0.1s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.4359869Z #5 sha256:c5ff66ca7e6bad6eb2c1b483c6c580ef147d04552f3bba4b13ac1b05cf474013 0B / 125B 0.3s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.4360614Z #5 sha256:103b78775db928290fb85c370d3e47361a507a82b3b7c69c628783e018a9ffb8 0B / 2.49MB 0.3s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.5652135Z #5 sha256:57fce42a8fe3138af514e9b1be611ec437fe87def8a6946cad1d6b7608188ce2 284.84kB / 284.84kB 0.3s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.5653490Z #5 sha256:c5ff66ca7e6bad6eb2c1b483c6c580ef147d04552f3bba4b13ac1b05cf474013 125B / 125B 0.4s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.5654404Z #5 sha256:103b78775db928290fb85c370d3e47361a507a82b3b7c69c628783e018a9ffb8 2.49MB / 2.49MB 0.4s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:05.5655197Z #5 extracting sha256:57fce42a8fe3138af514e9b1be611ec437fe87def8a6946cad1d6b7608188ce2 0.0s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:07.8166116Z #5 extracting sha256:a7e706a435c2a53ff172ba5b50e2a06c2eaf63d2f764bdaabcca52d378beeb35
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0039047Z #5 extracting sha256:a7e706a435c2a53ff172ba5b50e2a06c2eaf63d2f764bdaabcca52d378beeb35 done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0041792Z #5 extracting sha256:c5ff66ca7e6bad6eb2c1b483c6c580ef147d04552f3bba4b13ac1b05cf474013 done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0043210Z #5 extracting sha256:103b78775db928290fb85c370d3e47361a507a82b3b7c69c628783e018a9ffb8 0.0s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0044488Z #5 DONE 2.8s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0044825Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0045144Z #6 [2/2] COPY entrypoint.sh /bin/entrypoint.sh
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0047151Z #6 DONE 0.0s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0047534Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0047686Z #7 exporting to image
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0048204Z #7 exporting layers 0.1s done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0219895Z #7 writing image sha256:4aff0e81d9c992f1f8bf3f68deddb111d3e3fb24cc4dc86d975cff55344c4542 done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0221404Z #7 naming to docker.io/library/0c8200:2ff1fc3380f940b38863513f0d17e387 done
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0222741Z #7 DONE 0.1s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0292941Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0604595Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0612794Z ##[group]Run actions/checkout@v4
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0613358Z with:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0613753Z   repository: chromolog-technologies/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0616747Z   token: ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0617080Z   ssh-strict: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0617385Z   ssh-user: git
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0617957Z   persist-credentials: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0618303Z   clean: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0618615Z   sparse-checkout-cone-mode: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0618968Z   fetch-depth: 1
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0619269Z   fetch-tags: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0619570Z   show-progress: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0619885Z   lfs: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0620216Z   submodules: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0620537Z   set-safe-directory: true
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0620875Z   allow-unsafe-pr-checkout: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.0621666Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1673126Z Syncing repository: chromolog-technologies/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1675326Z ##[group]Getting Git version info
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1676258Z Working directory is '/home/runner/work/gmcc-hospital-token/gmcc-hospital-token'
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1677853Z [command]/usr/bin/git version
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1678435Z git version 2.55.0
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1689798Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1695927Z Temporarily overriding HOME='/home/runner/work/_temp/785507cd-d2fa-4fe9-9bb8-dcf6638a1b53' before making global git config changes
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1697954Z Adding repository directory to the temporary git global config as a safe directory
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1703118Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1751207Z Deleting the contents of '/home/runner/work/gmcc-hospital-token/gmcc-hospital-token'
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1754963Z ##[group]Initializing the repository
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1759423Z [command]/usr/bin/git init /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1864215Z hint: Using 'master' as the name for the initial branch. This default branch name
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1865573Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1866960Z hint: to use in all of your new repositories, which will suppress this warning,
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1867981Z hint: call:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1868535Z hint:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1869218Z hint: 	git config --global init.defaultBranch <name>
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1869912Z hint:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1870567Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1871608Z hint: 'development'. The just-created branch can be renamed via this command:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1872415Z hint:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1872885Z hint: 	git branch -m <name>
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1873409Z hint:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1874090Z hint: Disable this message with "git config set advice.defaultBranchName false"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1879188Z Initialized empty Git repository in /home/runner/work/gmcc-hospital-token/gmcc-hospital-token/.git/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1893149Z [command]/usr/bin/git remote add origin https://github.com/chromolog-technologies/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1938522Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1939401Z ##[group]Disabling automatic garbage collection
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.1946327Z [command]/usr/bin/git config --local gc.auto 0
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2008997Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2009906Z ##[group]Setting up auth
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2010726Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2028575Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2366131Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2408017Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2652614Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2689496Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2916121Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2954733Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2955601Z ##[group]Fetching the repository
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:08.2964618Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ed1f618b85c7666fb9517e9bf236f13579d6ce19:refs/remotes/origin/main
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7955457Z From https://github.com/chromolog-technologies/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7956972Z  * [new ref]         ed1f618b85c7666fb9517e9bf236f13579d6ce19 -> origin/main
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7960606Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7961476Z ##[group]Determining the checkout info
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7963826Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.7971478Z [command]/usr/bin/git sparse-checkout disable
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.8019820Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.8051996Z ##[group]Checking out the ref
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.8067553Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9601987Z Switched to a new branch 'main'
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9617129Z branch 'main' set up to track 'origin/main'.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9622665Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9667207Z [command]/usr/bin/git log -1 --format=%H
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9693495Z ed1f618b85c7666fb9517e9bf236f13579d6ce19
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9957079Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9959089Z ##[group]Run actions/setup-node@v4
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9959396Z with:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9959624Z   node-version: 20
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9959891Z   cache: npm
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9960237Z   cache-dependency-path: hospital-token-frontend/package-lock.json
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9960649Z   always-auth: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9960903Z   check-latest: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9963400Z   token: ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:09.9963629Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:10.1397774Z Attempting to download 20...
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:10.1502998Z (node:2392) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:10.1503774Z (Use `node --trace-deprecation ...` to show where the warning was created)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:11.0295533Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:11.6601564Z Extracting ...
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:11.6718090Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/7b0aa998-e294-4308-8fef-3cd5f5bf5214 -f /home/runner/work/_temp/a793f427-c2d7-4ad4-9758-a14682be3905
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:12.7034741Z Adding to the cache ...
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.4524256Z ##[group]Environment details
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.6677369Z node: v20.20.2
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.6677849Z npm: 10.8.2
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.6678238Z yarn: 1.22.22
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.6679065Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.6699493Z [command]/opt/hostedtoolcache/node/20.20.2/x64/bin/npm config get cache
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.7744961Z /home/runner/.npm
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.9571646Z Cache hit for: node-cache-Linux-x64-npm-9b269e36a91acda5bb5dcfa564b078b7e547e1945f6bf19ce8e8cb518e02d061
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:14.9676009Z (node:2392) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.1910190Z Received 18362606 of 26751214 (68.6%), 17.5 MBs/sec
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.5135126Z Received 26751214 of 26751214 (100.0%), 19.3 MBs/sec
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.5136175Z Cache Size: ~26 MB (26751214 B)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.5171883Z [command]/usr/bin/tar -xf /home/runner/work/_temp/8a979ce0-5018-4825-9aad-d12288a11f67/cache.tzst -P -C /home/runner/work/gmcc-hospital-token/gmcc-hospital-token --use-compress-program unzstd
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.5887441Z Cache restored successfully
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.5907693Z Cache restored from key: node-cache-Linux-x64-npm-9b269e36a91acda5bb5dcfa564b078b7e547e1945f6bf19ce8e8cb518e02d061
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.6089053Z ##[group]Run cd hospital-token-frontend
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.6089493Z ^[[36;1mcd hospital-token-frontend^[[0m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.6089815Z ^[[36;1mnpm ci^[[0m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.6132249Z shell: /usr/bin/bash -e {0}
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:16.6132563Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.8997460Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9005840Z added 168 packages, and audited 169 packages in 3s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9007127Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9007919Z 39 packages are looking for funding
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9008835Z   run `npm fund` for details
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9009501Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9009989Z found 0 vulnerabilities
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9231854Z ##[group]Run cd hospital-token-frontend
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9232297Z ^[[36;1mcd hospital-token-frontend^[[0m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9232632Z ^[[36;1mnpm run build^[[0m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9270074Z shell: /usr/bin/bash -e {0}
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:19.9270382Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.0419281Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.0420112Z > hospital-token-frontend@0.0.0 build
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.0420824Z > vite build
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.0421110Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.2940745Z ^[[36mvite v8.2.1 ^[[32mbuilding client environment for production...^[[36m^[[39m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.3073081Z ^[[2K
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.5475649Z transforming...✓ 2178 modules transformed.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.5966923Z rendering chunks...
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6589469Z computing gzip size...
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6673559Z dist/index.html                   0.47 kB │ gzip:   0.30 kB
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6674619Z dist/assets/index-BEe_QQ5m.css   12.93 kB │ gzip:   3.22 kB
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6675759Z dist/assets/index-C5VlMPEw.js   435.51 kB │ gzip: 130.67 kB
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6676236Z 
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6681517Z ^[[32m✓ built in 372ms^[[39m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6965405Z ##[group]Run appleboy/scp-action@v0.1.7
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6965762Z with:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6966088Z   host: ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6966341Z   username: ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6968546Z   key: ***
+🌐 Build & Deploy Frontend	UNKNOWN STEP	
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6968777Z   port: 65002
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6969859Z   source: hospital-token-frontend/dist/assets,hospital-token-frontend/dist/index.html,hospital-token-frontend/dist/favicon.svg,hospital-token-frontend/dist/icons.svg,hospital-token-frontend/dist/images,hospital-token-frontend/dist/sample_patients_import.csv
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6971193Z   target: /home/***/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6971656Z   strip_components: 2
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6971910Z   timeout: 30s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6972143Z   command_timeout: 10m
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6972424Z   use_insecure_cipher: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6972691Z   rm: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6972911Z   debug: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6973142Z   overwrite: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6973422Z   tar_dereference: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6973681Z   tar_exec: tar
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6973919Z   proxy_port: 22
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6974159Z   proxy_timeout: 30s
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6974422Z   proxy_use_insecure_cipher: false
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.6974716Z ##[endgroup]
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:20.7079355Z ##[command]/usr/bin/docker run --name c82002ff1fc3380f940b38863513f0d17e387_7eef9c --label 0c8200 --workdir /github/workspace --rm -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_PORT" -e "INPUT_SOURCE" -e "INPUT_TARGET" -e "INPUT_STRIP_COMPONENTS" -e "INPUT_PASSWORD" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_KEY_PATH" -e "INPUT_PASSPHRASE" -e "INPUT_FINGERPRINT" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_RM" -e "INPUT_DEBUG" -e "INPUT_OVERWRITE" -e "INPUT_TAR_DEREFERENCE" -e "INPUT_TAR_TMP_PATH" -e "INPUT_TAR_EXEC" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_CACHE_MODE" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/gmcc-hospital-token/gmcc-hospital-token":"/github/workspace" 0c8200:2ff1fc3380f940b38863513f0d17e387
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:21.9213612Z drone-scp version: v1.6.14
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:21.9214358Z tar all files into /tmp/GNbnHlsQWn.tar.gz
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:24.6864860Z remote server os type is unix
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:24.6865325Z scp file to server.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:31.4307068Z create folder /home/***/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:34.1138967Z untar file GNbnHlsQWn.tar.gz
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:36.8562607Z remove file GNbnHlsQWn.tar.gz
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.4148121Z ===================================================
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.4148912Z ✅ Successfully executed transfer data to all host
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.4149378Z ===================================================
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.5024435Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.5025761Z Post job cleanup.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.6211824Z (node:2613) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.6212875Z (Use `node --trace-deprecation ...` to show where the warning was created)
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.6215630Z Cache hit occurred on the primary key node-cache-Linux-x64-npm-9b269e36a91acda5bb5dcfa564b078b7e547e1945f6bf19ce8e8cb518e02d061, not saving cache.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.6344936Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.6346256Z Post job cleanup.
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7169705Z [command]/usr/bin/git version
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7212734Z git version 2.55.0
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7250953Z Temporarily overriding HOME='/home/runner/work/_temp/dd7b7923-2350-4c70-8877-30395879dc97' before making global git config changes
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7253065Z Adding repository directory to the temporary git global config as a safe directory
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7257204Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7296203Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7330929Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7582988Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7611580Z http.https://github.com/.extraheader
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7624481Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7661566Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7934324Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.7989766Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.8444152Z Cleaning up orphan processes
+🌐 Build & Deploy Frontend	UNKNOWN STEP	2026-09-19T21:28:39.8844964Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	﻿2026-09-19T21:28:03.0081557Z Current runner version: '2.337.0'
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0117990Z ##[group]Runner Image Provisioner
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0119642Z Hosted Compute Agent
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0121027Z Version: 20260828.587
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0122350Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0124856Z Build Date: 2026-08-28T16:44:25Z
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0126338Z Worker ID: {2dd07b2f-2349-426d-8709-0bbb74b5c6a8}
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0128017Z Azure Region: westcentralus
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0129376Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0131937Z ##[group]Operating System
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0133518Z Ubuntu
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0134732Z 24.04.5
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0135791Z LTS
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0137019Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0138306Z ##[group]Runner Image
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0139697Z Image: ubuntu-24.04
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0140915Z Version: 20260907.300.1
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0143700Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0146487Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0148411Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0154480Z ##[group]GITHUB_TOKEN Permissions
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0158074Z Actions: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0159250Z ArtifactMetadata: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0160476Z Attestations: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0161729Z Checks: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0163350Z CodeQuality: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0164774Z Contents: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0166003Z CopilotRequests: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0167433Z Deployments: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0168701Z Discussions: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0169907Z Drives: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0171019Z Issues: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0172166Z Metadata: read
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0173788Z Models: read
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0175083Z Packages: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0176378Z Pages: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0177549Z PullRequests: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0178733Z RepositoryProjects: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0179965Z SecurityEvents: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0181476Z Statuses: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0183002Z VulnerabilityAlerts: read
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0184487Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0187552Z Secret source: Actions
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0189437Z Cache mode: write
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0191395Z Prepare workflow directory
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0553051Z Prepare all required actions
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.0601297Z Getting action download info
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.3583966Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.4528914Z Download action repository 'burnett01/rsync-deployments@7.0.1' (SHA:796cf0d5e4b535745ce49d7429f77cf39e25ef39)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:03.6763050Z Download action repository 'appleboy/ssh-action@v1.0.3' (SHA:029f5b4aeeeb58fdfe1410a5d17f967dacf36262)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.2102054Z Complete job name: ⚙️ Deploy Backend (Laravel)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.2630510Z ##[group]Build container for action use: '/home/runner/work/_actions/burnett01/rsync-deployments/7.0.1/Dockerfile'.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.2761204Z ##[command]/usr/bin/docker build -t f792c9:1c3b418a612240bf952568944491b1fb -f "/home/runner/work/_actions/burnett01/rsync-deployments/7.0.1/Dockerfile" "/home/runner/work/_actions/burnett01/rsync-deployments/7.0.1"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7831228Z #0 building with "default" instance using docker driver
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7831951Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7832321Z #1 [internal] load build definition from Dockerfile
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7833450Z #1 transferring dockerfile: 271B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7834145Z #1 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7834436Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.7834851Z #2 [auth] drinternet/rsync:pull token for registry-1.docker.io
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.9324106Z #2 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.9324791Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:04.9326399Z #3 [internal] load metadata for docker.io/drinternet/rsync@sha256:15b2949838074bd93c49421c22380396a0cd53a322439e799ac87afcadcfe234
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.3035593Z #3 DONE 0.7s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4204951Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4206177Z #4 [internal] load .dockerignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4207781Z #4 transferring context: 2B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4209079Z #4 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4209573Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4210000Z #5 [internal] load build context
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4211167Z #5 transferring context: 907B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4212296Z #5 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4213103Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4214370Z #6 [1/3] FROM docker.io/drinternet/rsync@sha256:15b2949838074bd93c49421c22380396a0cd53a322439e799ac87afcadcfe234
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4217709Z #6 resolve docker.io/drinternet/rsync@sha256:15b2949838074bd93c49421c22380396a0cd53a322439e799ac87afcadcfe234 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4221014Z #6 sha256:15b2949838074bd93c49421c22380396a0cd53a322439e799ac87afcadcfe234 1.77kB / 1.77kB done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4224305Z #6 sha256:e3e00ef61af204eaa5083103924ca4286abf396df2a0202ef58383e2b21e2ad5 2.17kB / 2.17kB done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4227725Z #6 sha256:d0d59afdfbe915d0264b504fe496c77eb775717e2b1e1ef77844cb11656f4174 206B / 206B 0.1s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4231135Z #6 sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8 0B / 3.41MB 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4234953Z #6 sha256:673dab6a778399532989dcde44534b5d7272b5a8c78c829b22a1797b4985361a 0B / 4.64MB 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.4238580Z #6 sha256:1b6825f0ae04444194fc54e31f40576471163d211d98f8b6ed0bfa01bc31df0b 0B / 114B 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.6017687Z #6 extracting sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7118456Z #6 sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8 3.41MB / 3.41MB 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7124352Z #6 sha256:1b6825f0ae04444194fc54e31f40576471163d211d98f8b6ed0bfa01bc31df0b 114B / 114B 0.2s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7129017Z #6 extracting sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8 0.1s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7139095Z #6 sha256:dd2ed445aa09b437c95624a022db605cf1d8d182c514de803cd3580adb195e75 952B / 952B 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7154834Z #6 sha256:018458017b2853e8ec59281823240c65129d6b4a320605f1c6d5349aa74b9d4e 0B / 948B 0.3s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7159434Z #6 sha256:a4b2a24db84003d780d6196b4252e45427f5f6f91484055a112bef4909f829e6 0B / 148B 0.3s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.7182071Z #6 extracting sha256:673dab6a778399532989dcde44534b5d7272b5a8c78c829b22a1797b4985361a
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.9201593Z #6 sha256:673dab6a778399532989dcde44534b5d7272b5a8c78c829b22a1797b4985361a 4.64MB / 4.64MB 0.4s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.9208079Z #6 sha256:018458017b2853e8ec59281823240c65129d6b4a320605f1c6d5349aa74b9d4e 948B / 948B 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.9213935Z #6 sha256:a4b2a24db84003d780d6196b4252e45427f5f6f91484055a112bef4909f829e6 148B / 148B 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:05.9219567Z #6 extracting sha256:673dab6a778399532989dcde44534b5d7272b5a8c78c829b22a1797b4985361a 0.1s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:07.9887423Z #6 extracting sha256:d0d59afdfbe915d0264b504fe496c77eb775717e2b1e1ef77844cb11656f4174
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2191332Z #6 extracting sha256:d0d59afdfbe915d0264b504fe496c77eb775717e2b1e1ef77844cb11656f4174 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2195687Z #6 extracting sha256:1b6825f0ae04444194fc54e31f40576471163d211d98f8b6ed0bfa01bc31df0b done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2197508Z #6 extracting sha256:dd2ed445aa09b437c95624a022db605cf1d8d182c514de803cd3580adb195e75 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2213612Z #6 extracting sha256:018458017b2853e8ec59281823240c65129d6b4a320605f1c6d5349aa74b9d4e done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2215409Z #6 extracting sha256:a4b2a24db84003d780d6196b4252e45427f5f6f91484055a112bef4909f829e6 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2217128Z #6 DONE 2.8s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2218112Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2218673Z #7 [2/3] COPY entrypoint.sh /entrypoint.sh
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2219645Z #7 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2220326Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2220924Z #8 [3/3] RUN chmod +x /entrypoint.sh
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.2221677Z #8 DONE 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.3707417Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.3708049Z #9 exporting to image
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:08.3708593Z #9 exporting layers
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0090608Z #9 exporting layers 0.8s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0284920Z #9 writing image sha256:05a6724b5c82d0b62b19b49b05b73385f3099e6c135fd315479ce02c8f9302f5 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0285978Z #9 naming to docker.io/library/f792c9:1c3b418a612240bf952568944491b1fb done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0286757Z #9 DONE 0.8s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0390837Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0428268Z ##[group]Build container for action use: '/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile'.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.0429720Z ##[command]/usr/bin/docker build -t f792c9:ea77e1a27f63482fb1475972d6711350 -f "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3/Dockerfile" "/home/runner/work/_actions/appleboy/ssh-action/v1.0.3"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.1472030Z #0 building with "default" instance using docker driver
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.1473120Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.1473841Z #1 [internal] load build definition from Dockerfile
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.1474634Z #1 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3050609Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3051598Z #1 [internal] load build definition from Dockerfile
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3052761Z #1 transferring dockerfile: 149B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3053201Z #1 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3053395Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.3053838Z #2 [internal] load metadata for ghcr.io/appleboy/drone-ssh:1.7.3
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:09.9813996Z #2 DONE 0.8s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0968619Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0969410Z #3 [internal] load .dockerignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0970231Z #3 transferring context: 2B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0971163Z #3 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0971623Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0972099Z #4 [internal] load build context
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0973089Z #4 transferring context: 108B done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0973746Z #4 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0973972Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0974566Z #5 [1/2] FROM ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0975869Z #5 resolve ghcr.io/appleboy/drone-ssh:1.7.3@sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0977040Z #5 sha256:179cbd253771007f2ebcaf7a3860afe059207351de1f3378efafac93bd310158 2.38kB / 2.38kB done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0978082Z #5 sha256:1a52f94820e830bc9734623deb03bbafa6a248fba19cdc2e5605c70d90d91441 1.24kB / 1.24kB done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0979129Z #5 sha256:c4781b8d012b16b6c7468dc9104fad0a63f2a8815b2af8b7176bb544253ea8c7 3.86kB / 3.86kB done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0979805Z #5 sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 0B / 3.38MB 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0980479Z #5 sha256:654aaee5654be60f81172539ecd74485cf8bbe2e9137bab0d429862c31c676f6 0B / 284.83kB 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.0981149Z #5 sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c 0B / 1.20kB 0.1s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.2973636Z #5 sha256:654aaee5654be60f81172539ecd74485cf8bbe2e9137bab0d429862c31c676f6 284.83kB / 284.83kB 0.2s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.4515435Z #5 sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c 1.20kB / 1.20kB 0.1s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.4516873Z #5 sha256:066e5b821e26d8313055e0314c056e6c297847bcf963e5df10e7aa03107f2246 125B / 125B 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.4518144Z #5 sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 0B / 2.44MB 0.3s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.4519346Z #5 sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 3.38MB / 3.38MB 0.4s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.4521502Z #5 extracting sha256:1207c741d8c9b028d98c4006013f9de959da3c55f85b91ed5e4583438a0112ca 0.1s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.5898155Z #5 sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 2.44MB / 2.44MB 0.5s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.5899987Z #5 extracting sha256:654aaee5654be60f81172539ecd74485cf8bbe2e9137bab0d429862c31c676f6 0.0s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.5903429Z #5 extracting sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8228675Z #5 sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 2.44MB / 2.44MB 0.5s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8229689Z #5 extracting sha256:7e20f48a19643465f486f59127b8f4e0f4114bedc8bd5260fb4f92d5fda95f1c done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8231034Z #5 extracting sha256:066e5b821e26d8313055e0314c056e6c297847bcf963e5df10e7aa03107f2246 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8231957Z #5 extracting sha256:47353a6f9201a145b687290e5ae0278ac269faf4bb61bee3e9246c37a8d74277 0.0s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8233273Z #5 DONE 0.7s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8233458Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8233630Z #6 [2/2] COPY entrypoint.sh /bin/entrypoint.sh
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8234042Z #6 DONE 0.0s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8234205Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8234337Z #7 exporting to image
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:10.8234656Z #7 exporting layers
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0052305Z #7 exporting layers 0.3s done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0246270Z #7 writing image sha256:8479fed2d0bccc0830a2228464078f41341a2c3af5308410d619f6f5118d2c9a done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0247409Z #7 naming to docker.io/library/f792c9:ea77e1a27f63482fb1475972d6711350 done
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0304412Z #7 DONE 0.3s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0306253Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0671127Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0679578Z ##[group]Run actions/checkout@v4
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0680031Z with:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0680344Z   repository: chromolog-technologies/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0683503Z   token: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0683758Z   ssh-strict: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0684001Z   ssh-user: git
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0684249Z   persist-credentials: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0684509Z   clean: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0684763Z   sparse-checkout-cone-mode: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0685050Z   fetch-depth: 1
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0685286Z   fetch-tags: false
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0685528Z   show-progress: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0685769Z   lfs: false
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0686041Z   submodules: false
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0686286Z   set-safe-directory: true
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0686565Z   allow-unsafe-pr-checkout: false
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.0687138Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1729201Z Syncing repository: chromolog-technologies/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1730710Z ##[group]Getting Git version info
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1731222Z Working directory is '/home/runner/work/gmcc-hospital-token/gmcc-hospital-token'
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1731915Z [command]/usr/bin/git version
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1732201Z git version 2.55.0
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1739706Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1759367Z Temporarily overriding HOME='/home/runner/work/_temp/b655d6b9-c023-4dd4-aa2d-83cda2e1d7ab' before making global git config changes
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1760927Z Adding repository directory to the temporary git global config as a safe directory
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1765577Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1815160Z Deleting the contents of '/home/runner/work/gmcc-hospital-token/gmcc-hospital-token'
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1819542Z ##[group]Initializing the repository
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1823981Z [command]/usr/bin/git init /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1936661Z hint: Using 'master' as the name for the initial branch. This default branch name
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1937647Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1938606Z hint: to use in all of your new repositories, which will suppress this warning,
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1939310Z hint: call:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1939657Z hint:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1940189Z hint: 	git config --global init.defaultBranch <name>
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1940814Z hint:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1941387Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1942382Z hint: 'development'. The just-created branch can be renamed via this command:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1943618Z hint:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1943995Z hint: 	git branch -m <name>
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1944418Z hint:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1945024Z hint: Disable this message with "git config set advice.defaultBranchName false"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1960119Z Initialized empty Git repository in /home/runner/work/gmcc-hospital-token/gmcc-hospital-token/.git/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.1962345Z [command]/usr/bin/git remote add origin https://github.com/chromolog-technologies/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2012099Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2013022Z ##[group]Disabling automatic garbage collection
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2018045Z [command]/usr/bin/git config --local gc.auto 0
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2049438Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2049861Z ##[group]Setting up auth
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2058549Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2093543Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2468488Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2514830Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2771074Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.2809434Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.3046203Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.3088070Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.3088725Z ##[group]Fetching the repository
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:11.3098512Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ed1f618b85c7666fb9517e9bf236f13579d6ce19:refs/remotes/origin/main
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8914045Z From https://github.com/chromolog-technologies/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8914859Z  * [new ref]         ed1f618b85c7666fb9517e9bf236f13579d6ce19 -> origin/main
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8921206Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8921883Z ##[group]Determining the checkout info
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8923435Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8928466Z [command]/usr/bin/git sparse-checkout disable
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.8979182Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.9012824Z ##[group]Checking out the ref
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:12.9017860Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0580367Z Switched to a new branch 'main'
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0584953Z branch 'main' set up to track 'origin/main'.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0599519Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0648994Z [command]/usr/bin/git log -1 --format=%H
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0679852Z ed1f618b85c7666fb9517e9bf236f13579d6ce19
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0910415Z ##[group]Run burnett01/rsync-deployments@7.0.1
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0910791Z with:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0911814Z   switches: -avzr --delete --exclude='.env' --exclude='vendor/' --exclude='storage/logs/' --exclude='storage/framework/cache/' --exclude='storage/framework/sessions/' --exclude='.git/' --exclude='storage/app/firebase_credentials.json' --exclude='storage/app/public/'
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0913251Z   path: hospital-token-backend/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0913945Z   remote_path: /home/***/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0914485Z   remote_host: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0914739Z   remote_user: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0916610Z   remote_key: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0916852Z   remote_port: 65002
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0917103Z   legacy_allow_rsa_hostkeys: false
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.0917608Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.1018376Z ##[command]/usr/bin/docker run --name f792c91c3b418a612240bf952568944491b1fb_a224cf --label f792c9 --workdir /github/workspace --rm -e "INPUT_SWITCHES" -e "INPUT_PATH" -e "INPUT_REMOTE_PATH" -e "INPUT_REMOTE_HOST" -e "INPUT_REMOTE_USER" -e "INPUT_REMOTE_KEY" -e "INPUT_REMOTE_PORT" -e "INPUT_RSH" -e "INPUT_LEGACY_ALLOW_RSA_HOSTKEYS" -e "INPUT_REMOTE_KEY_PASS" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_CACHE_MODE" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/gmcc-hospital-token/gmcc-hospital-token":"/github/workspace" f792c9:1c3b418a612240bf952568944491b1fb
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:13.3151754Z Identity added: (stdin) (github-actions-deploy)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:14.3941120Z Warning: Permanently added '[***]:65002' (ED25519) to the list of known hosts.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:16.8411980Z sending incremental file list
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0875988Z ./
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0876518Z .editorconfig
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0877472Z .env.example
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0878619Z .gitattributes
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0879102Z .gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0879558Z .npmrc
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0880006Z artisan
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0880460Z composer.json
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0880770Z composer.lock
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0895215Z package.json
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0896110Z phpunit.xml
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.0896589Z vite.config.js
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1123860Z deleting bootstrap/cache/services.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1124992Z deleting bootstrap/cache/routes-v7.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1126451Z deleting bootstrap/cache/packages.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1127880Z deleting bootstrap/cache/config.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1129385Z deleting public/storage
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1131132Z deleting storage/framework/views/0ec1a556ba450a0be6ef49a3e5049469.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1164063Z app/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1165376Z app/Http/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1166481Z app/Http/Controllers/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1167517Z app/Http/Controllers/AuthController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1168574Z app/Http/Controllers/BookingController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1170092Z app/Http/Controllers/Controller.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1170792Z app/Http/Controllers/DashboardController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1171469Z app/Http/Controllers/DisplayController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1171928Z app/Http/Controllers/DoctorController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1172321Z app/Http/Controllers/HospitalBookingController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1174041Z app/Http/Controllers/HospitalDashboardController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1174680Z app/Http/Controllers/HospitalDoctorController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1175164Z app/Http/Controllers/HospitalUnitController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1175550Z app/Http/Controllers/HospitalUserController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1176430Z app/Http/Controllers/NotificationController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1176988Z app/Http/Controllers/UnitController.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1177347Z app/Http/Middleware/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1177900Z app/Http/Middleware/CheckRole.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1178366Z app/Http/Requests/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1178648Z app/Http/Requests/CancelBookingRequest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1179252Z app/Http/Requests/CreateBookingRequest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1179639Z app/Http/Requests/DoctorLoginRequest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1179975Z app/Http/Requests/UserLoginRequest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1180501Z app/Jobs/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1180796Z app/Jobs/ImportPatientsJob.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1181082Z app/Models/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1181304Z app/Models/Booking.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1181634Z app/Models/Doctor.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1182103Z app/Models/Hospital.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1182386Z app/Models/Notification.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1183117Z app/Models/Unit.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1183637Z app/Models/User.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1184767Z app/Providers/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1186252Z app/Providers/AppServiceProvider.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1186827Z app/Services/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1197336Z app/Services/BookingService.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1197969Z app/Services/FirebaseService.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1198459Z bootstrap/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1198836Z bootstrap/app.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1199253Z bootstrap/providers.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1199683Z bootstrap/cache/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1200095Z bootstrap/cache/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1200525Z config/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1200881Z config/app.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1201116Z config/auth.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1201351Z config/cache.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1201574Z config/database.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1201831Z config/filesystems.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1202140Z config/logging.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1202365Z config/mail.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1202908Z config/queue.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1203140Z config/sanctum.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1203383Z config/services.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1203605Z config/session.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1203825Z database/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1204046Z database/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1204278Z database/factories/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1204539Z database/factories/UserFactory.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1204840Z database/migrations/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1205157Z database/migrations/0001_01_01_000000_create_users_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1205588Z database/migrations/0001_01_01_000001_create_cache_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1206005Z database/migrations/0001_01_01_000002_create_jobs_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1206444Z database/migrations/2026_05_02_085327_create_doctors_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1206864Z database/migrations/2026_05_02_085328_create_units_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1207285Z database/migrations/2026_05_02_085329_create_bookings_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1207780Z database/migrations/2026_05_02_120832_create_personal_access_tokens_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1208349Z database/migrations/2026_05_02_124432_add_performance_indexes_to_bookings_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1209085Z database/migrations/2026_05_02_162328_add_type_to_bookings_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1209632Z database/migrations/2026_05_02_163447_add_unique_token_constraint_to_bookings_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1210206Z database/migrations/2026_05_02_180041_add_time_slots_to_bookings_and_units.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1210713Z database/migrations/2026_05_02_182625_create_hospitals_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1211206Z database/migrations/2026_05_09_142800_add_extra_fields_to_doctors_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1211723Z database/migrations/2026_05_09_150956_add_day_to_units_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1212273Z database/migrations/2026_05_10_055123_add_auto_approve_to_hospitals_and_update_booking_status.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1213066Z database/migrations/2026_05_10_084218_add_age_and_gender_to_users_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1213590Z database/migrations/2026_06_09_201551_add_pending_to_booking_status_enum.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1214327Z database/migrations/2026_06_20_201404_add_password_to_users_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1214858Z database/migrations/2026_08_02_000001_add_source_and_followup_to_bookings_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1215406Z database/migrations/2026_08_09_140000_restructure_doctor_unit_relationship.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1215910Z database/migrations/2026_09_15_010412_create_notifications_table.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1216328Z database/seeders/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1216583Z database/seeders/DatabaseSeeder.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1216852Z public/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1217060Z public/.htaccess
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1217303Z public/deploy-hook.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1217552Z public/favicon.ico
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1217782Z public/index.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1218009Z public/robots.txt
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1218227Z public/unzip.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1218453Z public/view-logs.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1218686Z public/css/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1218922Z public/css/modern-hospital.css
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1219195Z resources/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1219406Z resources/css/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1219630Z resources/css/app.css
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1219870Z resources/js/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1220094Z resources/js/app.js
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1220331Z resources/views/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1220582Z resources/views/dashboard.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1220885Z resources/views/welcome.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1221189Z resources/views/booking/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1221462Z resources/views/booking/create.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1221783Z resources/views/booking/index.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1222097Z resources/views/components/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1222640Z resources/views/components/dashboard-card.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1223005Z resources/views/display/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1223280Z resources/views/display/index.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1223573Z resources/views/layouts/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1223847Z resources/views/layouts/app.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1224159Z resources/views/layouts/modern.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1224464Z resources/views/modern/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1224747Z resources/views/modern/booking-form.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1225107Z resources/views/modern/booking-list.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1225442Z resources/views/modern/dashboard.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1225757Z resources/views/modern/login.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1226058Z resources/views/modern/queue.blade.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1226331Z routes/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1226534Z routes/api.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1226764Z routes/console.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1226994Z routes/web.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1227199Z storage/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1227403Z storage/app/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1227625Z storage/app/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1227869Z storage/app/private/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1228117Z storage/app/private/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1228383Z storage/framework/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1228624Z storage/framework/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1228895Z storage/framework/testing/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1229165Z storage/framework/testing/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1229455Z storage/framework/views/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1229714Z storage/framework/views/.gitignore
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1230110Z tests/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1230319Z tests/TestCase.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1230543Z tests/Feature/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1230786Z tests/Feature/ExampleTest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1231074Z tests/Feature/SecurityHardeningTest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1231365Z tests/Unit/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.1231588Z tests/Unit/ExampleTest.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.8719444Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.8720220Z sent 9,550 bytes  received 8,014 bytes  3,903.11 bytes/sec
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.8721131Z total size is 599,083  speedup is 34.11
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9527848Z ##[group]Run appleboy/ssh-action@v1.0.3
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9528206Z with:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9528534Z   host: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9528775Z   username: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9530638Z   key: ***
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9530864Z   port: 65002
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9532636Z   script: BASEDIR=/home/***/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	# Create storage symlink (exec() disabled on Hostinger so can't use artisan storage:link)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	cd $BASEDIR
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	php artisan config:cache
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	php artisan route:cache
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	echo "✅ Deploy complete"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9534490Z   timeout: 30s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9534726Z   command_timeout: 10m
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9534980Z   proxy_port: 22
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9535219Z   proxy_timeout: 30s
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9535460Z ##[endgroup]
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:17.9555264Z ##[command]/usr/bin/docker run --name f792c9ea77e1a27f63482fb1475972d6711350_39a062 --label f792c9 --workdir /github/workspace --rm -e "INPUT_HOST" -e "INPUT_USERNAME" -e "INPUT_KEY" -e "INPUT_PORT" -e "INPUT_SCRIPT" -e "INPUT_PASSPHRASE" -e "INPUT_PASSWORD" -e "INPUT_SYNC" -e "INPUT_USE_INSECURE_CIPHER" -e "INPUT_CIPHER" -e "INPUT_TIMEOUT" -e "INPUT_COMMAND_TIMEOUT" -e "INPUT_KEY_PATH" -e "INPUT_FINGERPRINT" -e "INPUT_PROXY_HOST" -e "INPUT_PROXY_PORT" -e "INPUT_PROXY_USERNAME" -e "INPUT_PROXY_PASSWORD" -e "INPUT_PROXY_PASSPHRASE" -e "INPUT_PROXY_TIMEOUT" -e "INPUT_PROXY_KEY" -e "INPUT_PROXY_KEY_PATH" -e "INPUT_PROXY_FINGERPRINT" -e "INPUT_PROXY_CIPHER" -e "INPUT_PROXY_USE_INSECURE_CIPHER" -e "INPUT_SCRIPT_STOP" -e "INPUT_ENVS" -e "INPUT_ENVS_FORMAT" -e "INPUT_DEBUG" -e "INPUT_ALLENVS" -e "INPUT_REQUEST_PTY" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_CACHE_MODE" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/gmcc-hospital-token/gmcc-hospital-token":"/github/workspace" f792c9:ea77e1a27f63482fb1475972d6711350
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0886798Z ======CMD======
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0887823Z BASEDIR=/home/***/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0888764Z # Create storage symlink (exec() disabled on Hostinger so can't use artisan storage:link)
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0889530Z ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0890151Z cd $BASEDIR
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0890549Z rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0890984Z php artisan config:cache
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0891260Z php artisan route:cache
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0891730Z echo "✅ Deploy complete"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0891897Z 
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:18.0892295Z ======END======
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.2019235Z out:    INFO  Configuration cached successfully.  
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.5406558Z out:    INFO  Routes cached successfully.  
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.5523583Z out: ✅ Deploy complete
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.5526102Z ==============================================
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.5527138Z ✅ Successfully executed commands to all host.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.5527596Z ==============================================
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.6268647Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.6270281Z Post job cleanup.
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7125687Z [command]/usr/bin/git version
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7169638Z git version 2.55.0
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7209950Z Temporarily overriding HOME='/home/runner/work/_temp/c3774d37-926b-4c30-8dc6-289f61e12299' before making global git config changes
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7211477Z Adding repository directory to the temporary git global config as a safe directory
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7225737Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/gmcc-hospital-token/gmcc-hospital-token
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7261185Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7297920Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7557803Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7588313Z http.https://github.com/.extraheader
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7601627Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7639217Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7923346Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.7955243Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.8356762Z Cleaning up orphan processes
+⚙️ Deploy Backend (Laravel)	UNKNOWN STEP	2026-09-19T21:28:21.8724396Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
