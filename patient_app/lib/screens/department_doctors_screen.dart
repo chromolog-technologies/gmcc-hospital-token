@@ -15,33 +15,8 @@ class DepartmentDoctorsScreen extends StatelessWidget {
     required this.user,
   });
 
-  /// Groups doctors by their set of OP days using the new Unit-Doctor relation.
-  List<Map<String, dynamic>> _buildOpDayGroups() {
-    final List<Map<String, dynamic>> groups = [];
-
-    for (final unit in departmentUnits) {
-      if (unit.doctors.isEmpty) continue;
-
-      final mappedDoctors = unit.doctors.map((doc) => {
-        'name': doc.name,
-        'qualification': doc.qualification ?? '',
-        'photo_url': doc.photoUrl,   // full URL from backend (no client-side URL building needed)
-        'units': [unit],
-      }).toList();
-
-      groups.add({
-        'days': unit.day ?? 'Not Scheduled',
-        'doctors': mappedDoctors,
-      });
-    }
-
-    return groups;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final opDayGroups = _buildOpDayGroups();
-
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -81,8 +56,8 @@ class DepartmentDoctorsScreen extends StatelessWidget {
               ),
             ),
 
-            // OP Day Sections
-            ...opDayGroups.map((group) => _buildOpDaySection(context, group)),
+            // Unit / OP Day Sections
+            ...departmentUnits.map((unit) => _buildUnitSection(context, unit)),
 
             const SizedBox(height: 30),
           ],
@@ -91,9 +66,9 @@ class DepartmentDoctorsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOpDaySection(BuildContext context, Map<String, dynamic> group) {
-    final String days = group['days'];
-    final List<Map<String, dynamic>> doctors = group['doctors'];
+  Widget _buildUnitSection(BuildContext context, UnitModel unit) {
+    final String days = unit.day ?? 'Not Scheduled';
+    final doctors = unit.doctors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,20 +97,15 @@ class DepartmentDoctorsScreen extends StatelessWidget {
             padding: const EdgeInsets.only(right: 20, top: 8, bottom: 4),
             child: TextButton(
               onPressed: () {
-                if (doctors.isNotEmpty) {
-                  final units = doctors[0]['units'] as List<UnitModel>;
-                  if (units.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BookingScreen(
-                          user: user,
-                          unit: units.first,
-                        ),
-                      ),
-                    );
-                  }
-                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingScreen(
+                      user: user,
+                      unit: unit,
+                    ),
+                  ),
+                );
               },
               child: const Text(
                 'Book Token',
@@ -149,27 +119,47 @@ class DepartmentDoctorsScreen extends StatelessWidget {
           ),
         ),
 
-        // Grouped Doctor Container (Full Width, No Card Margins)
+        // Doctors list or "No Doctors assigned" message
         Container(
           color: Colors.white,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Column(
-            children: [
-              for (int i = 0; i < doctors.length; i++) ...[
-                _buildDoctorCard(context, doctors[i]),
-                if (i < doctors.length - 1)
-                  const Divider(height: 1, indent: 20, endIndent: 20, color: Color(0xFFEEEEEE)),
-              ]
-            ],
-          ),
+          child: doctors.isNotEmpty
+              ? Column(
+                  children: [
+                    for (int i = 0; i < doctors.length; i++) ...[
+                      _buildDoctorCard(context, doctors[i], unit),
+                      if (i < doctors.length - 1)
+                        const Divider(height: 1, indent: 20, endIndent: 20, color: Color(0xFFEEEEEE)),
+                    ]
+                  ],
+                )
+              : Container(
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_outline, color: Colors.grey[500], size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'No Doctors are assigned for this unit.',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
         ),
       ],
     );
   }
 
 
-  Widget _buildDoctorCard(BuildContext context, Map<String, dynamic> doctor) {
+  Widget _buildDoctorCard(BuildContext context, DoctorModel doctor, UnitModel unit) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
@@ -185,19 +175,18 @@ class DepartmentDoctorsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  doctor['name'] ?? '',
+                  doctor.name,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
-                if (doctor['qualification'] != null &&
-                    doctor['qualification'].toString().isNotEmpty)
+                if (doctor.qualification != null && doctor.qualification!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      doctor['qualification'],
+                      doctor.qualification!,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -213,10 +202,10 @@ class DepartmentDoctorsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDoctorAvatar(Map<String, dynamic> doctor, {double width = 80, double height = 90}) {
-    final photoUrl = doctor['photo_url'] as String?;
+  Widget _buildDoctorAvatar(DoctorModel doctor, {double width = 80, double height = 90}) {
+    final photoUrl = doctor.photoUrl;
 
-    if (photoUrl != null) {
+    if (photoUrl != null && photoUrl.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(4),
         child: Container(
@@ -234,8 +223,8 @@ class DepartmentDoctorsScreen extends StatelessWidget {
     return _buildPlaceholderAvatar(doctor, width, height);
   }
 
-  Widget _buildPlaceholderAvatar(Map<String, dynamic> doctor, double width, double height) {
-    final name = (doctor['name'] as String?) ?? '';
+  Widget _buildPlaceholderAvatar(DoctorModel doctor, double width, double height) {
+    final name = doctor.name;
     final initials = name
         .split(' ')
         .where((w) => w.isNotEmpty)

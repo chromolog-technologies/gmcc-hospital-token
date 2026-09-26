@@ -241,8 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Group units by department
               final Map<String, List<UnitModel>> departments = {};
               for (final unit in units) {
-                if (unit.doctors.isEmpty) continue; // Skip units with no assigned doctors
-                final dept = unit.doctorDepartment ?? unit.name;
+                final dept = _getDepartmentNameForUnit(unit, units);
                 departments.putIfAbsent(dept, () => []);
                 departments[dept]!.add(unit);
               }
@@ -264,6 +263,31 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String _getDepartmentNameForUnit(UnitModel unit, List<UnitModel> allUnits) {
+    if (unit.doctors.isNotEmpty && unit.doctorDepartment != null && unit.doctorDepartment!.trim().isNotEmpty) {
+      return unit.doctorDepartment!.trim();
+    }
+    final String name = unit.name.trim();
+    if (name.contains(' - ')) {
+      return name.split(' - ').first.trim();
+    }
+    if (name.contains(' – ')) {
+      return name.split(' – ').first.trim();
+    }
+    if (name.contains('-') && !name.toLowerCase().startsWith('unit')) {
+      return name.split('-').first.trim();
+    }
+    for (final u in allUnits) {
+      if (u.doctors.isNotEmpty && u.doctorDepartment != null && u.doctorDepartment!.trim().isNotEmpty) {
+        final dept = u.doctorDepartment!.trim();
+        if (name.toLowerCase().startsWith(dept.toLowerCase())) {
+          return dept;
+        }
+      }
+    }
+    return name;
+  }
+
   // --- MY TOKEN TAB ---
   Widget _buildMyTokenBody() {
     return MyTokenScreen(user: widget.user, hideAppBar: true);
@@ -279,7 +303,10 @@ class _HomeScreenState extends State<HomeScreen> {
         uniqueDoctors.add(doc.id);
       }
     }
-    final doctorCount = uniqueDoctors.isEmpty ? units.length : uniqueDoctors.length;
+    final doctorCount = uniqueDoctors.length;
+    final doctorText = doctorCount > 0
+        ? '$doctorCount Doctor${doctorCount != 1 ? 's' : ''}'
+        : 'No Doctors Assigned';
 
     // Collect unique OP days
     final opDays = <String>{};
@@ -315,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Icon(Icons.person, size: 14, color: Colors.grey),
                 const SizedBox(width: 5),
                 Text(
-                  '$doctorCount Doctor${doctorCount != 1 ? 's' : ''}',
+                  doctorText,
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],
