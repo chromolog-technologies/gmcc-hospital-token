@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { dashboardCache, CACHE_KEYS } from '../lib/dashboardCache';
 import { LayoutDashboard, Users, Stethoscope, Layers, LogOut, RefreshCw, Menu as MenuIcon, X, Bell } from 'lucide-react';
 
-import OverviewTab from '../components/dashboard/OverviewTab';
-import UserTab     from '../components/dashboard/UserTab';
-import DoctorTab   from '../components/dashboard/DoctorTab';
-import UnitTab     from '../components/dashboard/UnitTab';
-import BookingTab  from '../components/dashboard/BookingTab';
-import NotificationsTab from '../components/dashboard/NotificationsTab';
+const OverviewTab     = lazy(() => import('../components/dashboard/OverviewTab'));
+const UserTab         = lazy(() => import('../components/dashboard/UserTab'));
+const DoctorTab       = lazy(() => import('../components/dashboard/DoctorTab'));
+const UnitTab         = lazy(() => import('../components/dashboard/UnitTab'));
+const BookingTab      = lazy(() => import('../components/dashboard/BookingTab'));
+const NotificationsTab = lazy(() => import('../components/dashboard/NotificationsTab'));
 
 const NAV = [
     { id: 'overview', label: 'Overview',        icon: LayoutDashboard },
@@ -191,14 +191,14 @@ const HospitalDashboard = () => {
                 {!summary ? (
                     <p style={{ color: '#94a3b8', padding: '2rem' }}>Loading data…</p>
                 ) : (
-                    <>
+                    <Suspense fallback={<p style={{ color: '#94a3b8', padding: '2rem' }}>Loading module…</p>}>
                         {activeTab === 'overview' && <OverviewTab hospital={hospital} summary={summary} units={units} />}
                         {activeTab === 'users'    && <UserTab />}
                         {activeTab === 'doctors'  && <DoctorTab units={units} onDoctorAdded={handleMutation} />}
                         {activeTab === 'units'    && <UnitTab units={units} onUnitAdded={handleMutation} />}
                         {activeTab === 'bookings' && <BookingTab onBookingChanged={handleMutation} refreshKey={bookingRefreshKey} />}
                         {activeTab === 'notifications' && <NotificationsTab />}
-                    </>
+                    </Suspense>
                 )}
             </main>
 

@@ -380,6 +380,27 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                       _ticketField('DATE', bookingDate, alignRight: true),
                     ],
                   ),
+                  if (isPending) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+                          const SizedBox(width: 6),
+                          Text(
+                            _calculateRemainingCancelTime(booking['created_at'] as String?),
+                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                   // Actions
                   Row(
@@ -501,6 +522,19 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                                     fontWeight: FontWeight.bold)),
                           ),
                         ),
+                      if (isPending) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(Icons.timer_outlined, size: 12, color: statusColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              _calculateRemainingCancelTime(booking['created_at'] as String?),
+                              style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -786,6 +820,23 @@ class _MyTokenScreenState extends State<MyTokenScreen>
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ));
       }
+    }
+  }
+
+  String _calculateRemainingCancelTime(String? createdAtStr) {
+    if (createdAtStr == null || createdAtStr.isEmpty) return '1 hour cancel window';
+    try {
+      final createdAt = DateTime.parse(createdAtStr).toLocal();
+      final expireAt = createdAt.add(const Duration(hours: 1));
+      final remaining = expireAt.difference(DateTime.now());
+      if (remaining.isNegative) {
+        return 'Cancel window ending soon';
+      }
+      final mins = remaining.inMinutes;
+      final secs = remaining.inSeconds % 60;
+      return 'Cancel window ends in: ${mins}m ${secs}s';
+    } catch (e) {
+      return '1 hour cancel window';
     }
   }
 }

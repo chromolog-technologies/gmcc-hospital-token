@@ -142,6 +142,14 @@ class DoctorController extends Controller
                     ->orderBy('token_number', 'asc')
                     ->first();
 
+                if ($nextToken) {
+                    \App\Services\FirebaseService::sendNotificationToTopic(
+                        'unit_' . $unit_id,
+                        'Token Call Alert',
+                        'Token #' . str_pad($nextToken->token_number, 3, '0', STR_PAD_LEFT) . ' is now being called.'
+                    );
+                }
+
                 return response()->json([
                     'success' => true,
                     'message' => "Moved to next token",
