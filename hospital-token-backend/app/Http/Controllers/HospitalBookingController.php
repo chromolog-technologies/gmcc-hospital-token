@@ -162,13 +162,13 @@ class HospitalBookingController extends Controller
         $this->checkAccess($request);
 
         $request->validate([
-            'hours' => 'required|integer|min:0|max:168'
+            'hours' => 'required|integer|min:0|max:87600'
         ]);
 
         $hospital = $request->user();
 
         if ($request->hours > 0) {
-            $hospital->auto_approve_bookings_until = Carbon::now()->addHours($request->hours);
+            $hospital->auto_approve_bookings_until = Carbon::now()->addYears(1);
         } else {
             $hospital->auto_approve_bookings_until = null;
         }

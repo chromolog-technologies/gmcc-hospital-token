@@ -109,16 +109,20 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         }
     };
 
-    const handleSaveSettings = async () => {
+    const isAutoApproveOn = Boolean(
+        currentAutoApprove && new Date(currentAutoApprove) > new Date()
+    );
+
+    const handleToggleAutoApprove = async () => {
         setSavingSettings(true);
         try {
-            const res = await api.put('/hospital/bookings/auto-approve', { hours: Number(autoApproveHours) });
+            const nextHours = isAutoApproveOn ? 0 : 8760;
+            const res = await api.put('/hospital/bookings/auto-approve', { hours: nextHours });
             if (res.data.success) {
                 setCurrentAutoApprove(res.data.data.auto_approve_bookings_until);
-                alert('Auto-approve settings updated.');
             }
         } catch (err) {
-            alert('Failed to update settings.');
+            alert('Failed to update auto-approve setting.');
         } finally {
             setSavingSettings(false);
         }
@@ -173,50 +177,47 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                 </div>
             )}
 
-            {/* Auto Approve Settings Box */}
-            <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'white' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <Settings size={20} color="#64748b" />
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Auto-Approval Settings</h3>
+            {/* Auto Approve Settings Box - Compact ON/OFF Toggle */}
+            <div className="glass-panel" style={{ padding: '0.85rem 1.25rem', marginBottom: '1.25rem', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <Settings size={18} color="#64748b" />
+                    <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#0f172a' }}>
+                        Auto-Approve Bookings:
+                    </span>
+                    <span style={{
+                        padding: '0.2rem 0.65rem',
+                        borderRadius: '20px',
+                        fontSize: '0.75rem',
+                        fontWeight: 800,
+                        textTransform: 'uppercase',
+                        background: isAutoApproveOn ? '#dcfce7' : '#fee2e2',
+                        color: isAutoApproveOn ? '#166534' : '#991b1b'
+                    }}>
+                        {isAutoApproveOn ? 'ON' : 'OFF'}
+                    </span>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-                    <div style={{ flex: 1, minWidth: '250px' }}>
-                        <p style={{ margin: '0 0 0.5rem 0', color: '#64748b', fontSize: '0.9rem' }}>
-                            Automatically approve new bookings from the app for the specified duration.
-                        </p>
-                        {currentAutoApprove ? (
-                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#10b981', fontWeight: 600 }}>
-                                Currently active until: {new Date(currentAutoApprove).toLocaleString()}
-                            </p>
-                        ) : (
-                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-                                Auto-approve is currently <strong style={{color:'#ef4444'}}>OFF</strong>.
-                            </p>
-                        )}
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <select 
-                            className="input-field" 
-                            style={{ width: 'auto' }}
-                            value={autoApproveHours}
-                            onChange={(e) => setAutoApproveHours(e.target.value)}
-                        >
-                            <option value="0">Turn OFF Auto-Approve</option>
-                            <option value="1">1 Hour</option>
-                            <option value="6">6 Hours</option>
-                            <option value="12">12 Hours</option>
-                            <option value="24">24 Hours</option>
-                            <option value="48">48 Hours</option>
-                        </select>
-                        <LoadingButton 
-                            onClick={handleSaveSettings} 
-                            loading={savingSettings} 
-                            label="Apply Settings"
-                            className="btn btn-primary" 
-                            style={{ whiteSpace: 'nowrap', padding: '0.6rem 1rem', background: '#ff0088', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600 }}
-                        />
-                    </div>
-                </div>
+
+                <button
+                    onClick={handleToggleAutoApprove}
+                    disabled={savingSettings}
+                    style={{
+                        padding: '0.45rem 1rem',
+                        borderRadius: '8px',
+                        border: 'none',
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        cursor: savingSettings ? 'not-allowed' : 'pointer',
+                        background: isAutoApproveOn ? '#ef4444' : '#10b981',
+                        color: '#ffffff',
+                        transition: 'all 0.2s ease',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        boxShadow: isAutoApproveOn ? '0 2px 8px rgba(239, 68, 68, 0.25)' : '0 2px 8px rgba(16, 185, 129, 0.25)'
+                    }}
+                >
+                    {savingSettings ? 'Updating...' : (isAutoApproveOn ? 'Turn OFF' : 'Turn ON')}
+                </button>
             </div>
 
             {/* Offline Token Booking Box */}
