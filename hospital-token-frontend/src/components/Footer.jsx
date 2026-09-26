@@ -86,9 +86,6 @@ const Footer = () => {
             Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.75rem', color: '#94a3b8' }}>
-            {/* <Link to="/project-information" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
-              System Info
-            </Link> */}
             <Link to="/privacy" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
               Privacy Policy
             </Link>
