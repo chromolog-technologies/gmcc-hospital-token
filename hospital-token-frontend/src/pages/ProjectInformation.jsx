@@ -45,7 +45,7 @@ const ProjectInformation = () => {
             >
               System Information &amp; Attribution
             </span>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', letterSpacing: '-0.02em', color: '#ffffff' }}>
               GMC Chest Hospital Token Management System
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: 1.6, maxWidth: '750px', margin: 0 }}>

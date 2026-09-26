@@ -40,7 +40,7 @@ const PrivacyPolicy = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ff0088', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
               <ShieldCheck size={18} /> Official Legal Documentation
             </div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em', color: '#ffffff' }}>
               Privacy Policy for gmcchtsrtoken.in
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.875rem' }}>
