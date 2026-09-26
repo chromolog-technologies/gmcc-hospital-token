@@ -60,18 +60,30 @@ class _BookingScreenState extends State<BookingScreen> {
 
     if (result['success'] == true) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message'] ?? 'Token generated successfully'),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 3),
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Row(
+            children: [
+              Icon(Icons.info_outline, color: Color(0xFFFF0088)),
+              SizedBox(width: 8),
+              Text('Notice', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+          ),
+          content: const Text(
+            'If you would like to cancel the token, should be done with in 1hour',
+            style: TextStyle(fontSize: 15, height: 1.4),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFFFF0088))),
+            ),
+          ],
         ),
       );
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          Navigator.popUntil(context, (route) => route.isFirst);
-        }
-      });
     } else {
       if (!mounted) return;
       showDialog(

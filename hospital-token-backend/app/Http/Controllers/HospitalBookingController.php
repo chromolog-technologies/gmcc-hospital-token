@@ -27,6 +27,8 @@ class HospitalBookingController extends Controller
     {
         $this->checkAccess($request);
 
+        BookingService::processAutoApprovals();
+
         $query = Booking::with(['user', 'unit.doctors'])
             ->orderBy('booking_date', 'desc')
             ->orderBy('id', 'desc');

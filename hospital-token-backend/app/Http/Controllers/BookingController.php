@@ -86,6 +86,8 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Doctors cannot fetch patient bookings here.'], 403);
         }
 
+        BookingService::processAutoApprovals();
+
         $bookings = Booking::with(['unit.doctors'])
             ->where('user_id', $user->id)
             ->orderBy('booking_date', 'desc')
@@ -106,8 +108,8 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        if ($booking->status !== 'active') {
-            return response()->json(['success' => false, 'message' => 'Only active bookings can be cancelled'], 400);
+        if (!in_array($booking->status, ['active', 'pending'])) {
+            return response()->json(['success' => false, 'message' => 'Only active or pending bookings can be cancelled'], 400);
         }
 
         $booking->update(['status' => 'cancelled']);
@@ -132,6 +134,8 @@ class BookingController extends Controller
         if ($doctor->unit_id !== (int)$unit_id) {
             return response()->json(['success' => false, 'message' => 'Unauthorized. You are not assigned to this unit.'], 403);
         }
+
+        BookingService::processAutoApprovals();
 
         $today = Carbon::today()->toDateString();
 

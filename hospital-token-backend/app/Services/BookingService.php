@@ -11,6 +11,26 @@ use Exception;
 
 class BookingService
 {
+    /**
+     * Process auto-approval for pending online bookings older than 1 hour,
+     * provided auto-approval is currently active for the hospital.
+     */
+    public static function processAutoApprovals(): void
+    {
+        $hospital = Hospital::first();
+        if (!$hospital || !$hospital->auto_approve_bookings_until) {
+            return;
+        }
+
+        if (Carbon::now()->lt(Carbon::parse($hospital->auto_approve_bookings_until))) {
+            $oneHourAgo = Carbon::now()->subHour();
+            Booking::where('status', 'pending')
+                ->where('source', 'online')
+                ->where('created_at', '<=', $oneHourAgo)
+                ->update(['status' => 'active']);
+        }
+    }
+
     // ── Token pool constants ────────────────────────────────────────────────
     const MAX_TOKENS      = 300; // Total tokens per unit per day
 
@@ -95,15 +115,11 @@ class BookingService
 
             // ── 4. Determine status ───────────────────────────────────────
             // Offline bookings are always immediately active (admin confirmed).
-            // Online bookings check auto-approve setting.
+            // Online bookings start as 'pending' (1-hour cancellation grace period before auto-approval).
             if ($source === 'offline') {
                 $status = 'active';
             } else {
-                $hospital = Hospital::first();
-                $isAutoApprove = $hospital
-                    && $hospital->auto_approve_bookings_until
-                    && Carbon::parse($hospital->auto_approve_bookings_until)->isFuture();
-                $status = $isAutoApprove ? 'active' : 'pending';
+                $status = 'pending';
             }
 
             // ── 5. Create the booking ─────────────────────────────────────
