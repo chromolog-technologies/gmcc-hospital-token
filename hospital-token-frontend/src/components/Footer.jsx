@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Mail, Phone, ExternalLink } from 'lucide-react';
+import { MapPin, Mail, Phone } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -71,37 +71,7 @@ const Footer = () => {
               <p style={{ color: '#334155', fontWeight: 500, fontSize: '0.875rem', margin: 0 }}>0487 2200610</p>
             </div>
 
-            {/* Technology Partner Attribution Box */}
-            <div 
-              className="technology-partner" 
-              style={{ 
-                marginTop: '0.5rem', 
-                padding: '1rem', 
-                background: '#f8fafc', 
-                borderRadius: '8px', 
-                border: '1px solid #e2e8f0' 
-              }}
-            >
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.25rem' }}>
-                Technology Partner
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <a
-                  href="https://chromologtechnologies.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Chromolog Technologies - Technology Partner"
-                  style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '0.95rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-                >
-                  Chromolog Technologies <ExternalLink size={14} />
-                </a>
-              </div>
-              <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '0.35rem 0 0 0', lineHeight: 1.4 }}>
-                Software Development &amp; Technology Partner
-              </p>
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
               <a href="https://www.facebook.com/mcchtsr/" target="_blank" rel="noopener noreferrer" style={{ width: '2.5rem', height: '2.5rem', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', transition: 'all 0.15s', borderRadius: '8px', color: '#475569', textDecoration: 'none' }} onMouseEnter={e => { e.currentTarget.style.background = 'var(--primary)'; e.currentTarget.style.borderColor = 'var(--primary)'; e.currentTarget.style.color = 'white'; }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#475569'; }}>
                 <span style={{ fontWeight: 900, fontSize: '0.75rem' }}>FB</span>
               </a>
@@ -115,11 +85,11 @@ const Footer = () => {
           <p style={{ marginBottom: '0.5rem', fontWeight: 500 }}>
             Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.
           </p>
-          <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.8rem' }}>
-            <Link to="/project-information" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
-              System &amp; Technology Info
+          <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.75rem', color: '#94a3b8' }}>
+            <Link to="/project-information" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              System Info
             </Link>
-            <Link to="/privacy" style={{ color: '#64748b', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#64748b'}>
+            <Link to="/privacy" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
               Privacy Policy
             </Link>
             <a 
@@ -127,9 +97,9 @@ const Footer = () => {
               target="_blank" 
               rel="noopener noreferrer" 
               aria-label="Chromolog Technologies - Technology Partner"
-              style={{ color: '#64748b', textDecoration: 'underline' }} 
+              style={{ color: '#94a3b8', textDecoration: 'underline' }} 
               onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} 
-              onMouseLeave={e => e.currentTarget.style.color = '#64748b'}
+              onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
             >
               Technology Partner: Chromolog Technologies
             </a>

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import TechnologyPartnerSection from '../components/TechnologyPartnerSection';
 import { Star, ShieldCheck, HeartPulse, Download, Quote, ExternalLink } from 'lucide-react';
 
 // Actual Google Reviews for Government Medical College Chest and Cancer Hospital, Thrissur
@@ -265,9 +264,6 @@ const Home = () => {
 
         </div>
       </section>
-
-      {/* ─── Technology Partner Section ─── */}
-      <TechnologyPartnerSection />
 
       {/* ─── CTA Banner Section ─── */}
       <section className="cta-section">
