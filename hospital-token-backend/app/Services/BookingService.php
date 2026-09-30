@@ -225,10 +225,17 @@ class BookingService
                     }
                 }
                 return null;
-            } else {
-                // Offline Chemo: any number from 1 to 150 that is NOT an online chemo token
+            } elseif ($source === 'offline-staff') {
                 for ($t = 1; $t <= 150; $t++) {
-                    if (!$this->isOnlineChemoToken($t) && !in_array($t, $bookedTokens)) {
+                    if (!$this->isOnlineChemoToken($t) && $t % 5 === 0 && !in_array($t, $bookedTokens)) {
+                        return $t;
+                    }
+                }
+                return null;
+            } elseif ($source === 'offline-walkin' || $source === 'offline') {
+                // Offline Chemo: any number from 1 to 150 that is NOT an online chemo token and NOT a multiple of 5
+                for ($t = 1; $t <= 150; $t++) {
+                    if (!$this->isOnlineChemoToken($t) && $t % 5 !== 0 && !in_array($t, $bookedTokens)) {
                         return $t;
                     }
                 }
@@ -237,13 +244,28 @@ class BookingService
         }
 
         if ($type === 'followup') {
-            // Followups: sequential starting at 151 to 300
-            for ($t = 151; $t <= 300; $t++) {
-                if (!in_array($t, $bookedTokens)) {
-                    return $t;
+            if ($source === 'offline-staff') {
+                for ($t = 151; $t <= 300; $t++) {
+                    if ($t % 5 === 0 && !in_array($t, $bookedTokens)) {
+                        return $t;
+                    }
                 }
+                return null;
+            } elseif ($source === 'offline-walkin' || $source === 'offline') {
+                for ($t = 151; $t <= 300; $t++) {
+                    if ($t % 5 !== 0 && !in_array($t, $bookedTokens)) {
+                        return $t;
+                    }
+                }
+                return null;
+            } else {
+                for ($t = 151; $t <= 300; $t++) {
+                    if (!in_array($t, $bookedTokens)) {
+                        return $t;
+                    }
+                }
+                return null;
             }
-            return null;
         }
 
         return null;

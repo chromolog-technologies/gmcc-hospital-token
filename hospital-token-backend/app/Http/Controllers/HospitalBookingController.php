@@ -64,6 +64,7 @@ class HospitalBookingController extends Controller
             'user_id' => 'required|exists:users,id',
             'unit_id' => 'required|exists:units,id',
             'type'    => 'required|in:chemo,followup',
+            'source'  => 'required|in:offline-walkin,offline-staff',
         ]);
 
         try {
@@ -71,7 +72,7 @@ class HospitalBookingController extends Controller
                 $request->user_id,
                 $request->unit_id,
                 $request->type,
-                'offline'   // Admin walk-in booking for TODAY
+                $request->source   // Admin walk-in or staff booking for TODAY
             );
 
             $booking->load(['user', 'unit.doctors']);

@@ -23,7 +23,15 @@ class CancelBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'booking_id' => 'required|exists:bookings,id',
+            'booking_id' => 'required_without:id|exists:bookings,id',
+            'id' => 'required_without:booking_id|exists:bookings,id',
         ];
+    }
+    
+    protected function prepareForValidation()
+    {
+        if ($this->has('id') && !$this->has('booking_id')) {
+            $this->merge(['booking_id' => $this->id]);
+        }
     }
 }

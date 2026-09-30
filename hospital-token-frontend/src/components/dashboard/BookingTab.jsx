@@ -16,7 +16,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [units, setUnits] = useState([]);
     
     // Offline Booking State
-    const [offlineForm, setOfflineForm] = useState({ user_id: '', unit_id: '', type: 'chemo' });
+    const [offlineForm, setOfflineForm] = useState({ user_id: '', unit_id: '', type: 'chemo', source: 'offline-walkin' });
     const [bookingLoading, setBookingLoading] = useState(false);
     const [availability, setAvailability] = useState(null);
 
@@ -151,7 +151,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             const res = await api.post('/hospital/bookings/offline', offlineForm);
             if (res.data.success) {
                 alert(res.data.message);
-                setOfflineForm({ user_id: '', unit_id: '', type: 'chemo' });
+                setOfflineForm({ user_id: '', unit_id: '', type: 'chemo', source: 'offline-walkin' });
                 fetchData();
                 handleCheckAvailability();
             }
@@ -224,7 +224,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             <div className="glass-panel" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'white', position: 'relative', zIndex: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                     <Settings size={20} color="#ff0088" />
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Offline Token Booking (Walk-in)</h3>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Offline Token Booking</h3>
                 </div>
                 <form onSubmit={handleOfflineBooking} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'flex-end' }}>
                     <div style={{ flex: 1, minWidth: '200px' }}>
@@ -254,6 +254,13 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                             <option value="followup">Followup</option>
                         </select>
                     </div>
+                    <div style={{ flex: '1 1 150px' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SOURCE</label>
+                        <select className="input-field" value={offlineForm.source} onChange={(e) => setOfflineForm({ ...offlineForm, source: e.target.value })} required>
+                            <option value="offline-walkin">Walk-in</option>
+                            <option value="offline-staff">Staff</option>
+                        </select>
+                    </div>
                     <LoadingButton 
                         loading={bookingLoading} 
                         label="Book Offline Token"
@@ -277,7 +284,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit & Doctor</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Date & Token</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
@@ -299,14 +306,13 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                     </td>
                                     <td style={{ padding: '1rem' }}>
                                         <div style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '-'}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{b.unit?.doctor?.name || '-'}</div>
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{b.booking_date}</div>
+                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{new Date(b.booking_date).toLocaleDateString()}</div>
                                         <div style={{ fontSize: '0.85rem', color: '#ff0088', fontWeight: 800 }}>Token: {b.token_number}</div>
                                         <div style={{ fontSize: '0.75rem', marginTop: '0.2rem' }}>
-                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: b.source === 'offline' ? '#ffedd5' : '#e0f2fe', color: b.source === 'offline' ? '#c2410c' : '#0369a1', fontWeight: 700 }}>
-                                                {b.source?.toUpperCase() || 'ONLINE'}
+                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe', color: b.source?.includes('offline') ? '#c2410c' : '#0369a1', fontWeight: 700 }}>
+                                                {b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'STAFF' : 'WALK-IN') : 'ONLINE'}
                                             </span>
                                             <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: '#f1f5f9', color: '#475569', fontWeight: 700, marginLeft: '0.3rem' }}>
                                                 {b.type?.toUpperCase()}
