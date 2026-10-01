@@ -23,6 +23,16 @@ const Modal = ({ title, subtitle, onClose, children }) => (
     </div>
 );
 
+// Format date as dd-MM-yyyy
+const formatDate = (dateString) => {
+    if (!dateString) return '—';
+    const d = new Date(dateString);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+};
+
 // ── View Modal ──────────────────────────────────────────────────────────────
 const ViewModal = ({ user, onClose, onEdit }) => (
     <Modal title="User Details" subtitle="Patient information" onClose={onClose}>
@@ -32,7 +42,7 @@ const ViewModal = ({ user, onClose, onEdit }) => (
                 { label: 'CR Number',  value: user.crno },
                 { label: 'Age',        value: user.user_age ? `${user.user_age} yrs` : '—' },
                 { label: 'Gender',     value: user.user_gender || '—' },
-                { label: 'Registered', value: user.created_at ? new Date(user.created_at).toLocaleDateString() : '—' },
+                { label: 'Registered', value: formatDate(user.created_at) },
             ].map(({ label, value }) => (
                 <div key={label} style={ms.row}>
                     <p style={ms.rowLabel}>{label}</p>

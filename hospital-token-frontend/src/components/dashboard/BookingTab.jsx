@@ -11,6 +11,16 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [autoApproveHours, setAutoApproveHours] = useState(0);
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
+
+    // Format date as dd-MM-yyyy
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const d = new Date(dateString);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+    };
     const [error, setError] = useState('');
     const [users, setUsers] = useState([]);
     const [units, setUnits] = useState([]);
@@ -308,7 +318,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                         <div style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '-'}</div>
                                     </td>
                                     <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{new Date(b.booking_date).toLocaleDateString()}</div>
+                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{formatDate(b.booking_date)}</div>
                                         <div style={{ fontSize: '0.85rem', color: '#ff0088', fontWeight: 800 }}>Token: {b.token_number}</div>
                                         <div style={{ fontSize: '0.75rem', marginTop: '0.2rem' }}>
                                             <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe', color: b.source?.includes('offline') ? '#c2410c' : '#0369a1', fontWeight: 700 }}>

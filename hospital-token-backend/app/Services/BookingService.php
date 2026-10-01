@@ -101,6 +101,7 @@ class BookingService
             $bookedTokens = Booking::where('unit_id', $unitId)
                 ->where('type', $type)
                 ->where('booking_date', $bookingDate)
+                ->where('status', '!=', 'cancelled')
                 ->lockForUpdate()
                 ->pluck('token_number')
                 ->toArray();
@@ -244,28 +245,12 @@ class BookingService
         }
 
         if ($type === 'followup') {
-            if ($source === 'offline-staff') {
-                for ($t = 151; $t <= 300; $t++) {
-                    if ($t % 5 === 0 && !in_array($t, $bookedTokens)) {
-                        return $t;
-                    }
+            for ($t = 151; $t <= 300; $t++) {
+                if (!in_array($t, $bookedTokens)) {
+                    return $t;
                 }
-                return null;
-            } elseif ($source === 'offline-walkin' || $source === 'offline') {
-                for ($t = 151; $t <= 300; $t++) {
-                    if ($t % 5 !== 0 && !in_array($t, $bookedTokens)) {
-                        return $t;
-                    }
-                }
-                return null;
-            } else {
-                for ($t = 151; $t <= 300; $t++) {
-                    if (!in_array($t, $bookedTokens)) {
-                        return $t;
-                    }
-                }
-                return null;
             }
+            return null;
         }
 
         return null;
