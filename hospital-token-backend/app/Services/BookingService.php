@@ -123,8 +123,24 @@ class BookingService
                 $status = 'pending';
             }
 
-            // ── 5. Create the booking ─────────────────────────────────────
+            // ── 5. Create or Overwrite the booking ────────────────────────
             try {
+                $existingCancelled = Booking::where('unit_id', $unitId)
+                    ->where('booking_date', $bookingDate)
+                    ->where('token_number', $nextToken)
+                    ->where('status', 'cancelled')
+                    ->first();
+
+                if ($existingCancelled) {
+                    $existingCancelled->update([
+                        'user_id'      => $userId,
+                        'type'         => $type,
+                        'status'       => $status,
+                        'source'       => $source,
+                    ]);
+                    return $existingCancelled;
+                }
+
                 return Booking::create([
                     'user_id'      => $userId,
                     'unit_id'      => $unitId,
