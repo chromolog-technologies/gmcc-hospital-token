@@ -86,15 +86,13 @@ class BookingService
             \App\Models\User::where('id', $userId)->lockForUpdate()->first();
 
             // ── 1. Prevent duplicate: one active token per user per day ────
-            if ($source === 'online') {
-                $existing = Booking::where('user_id', $userId)
-                    ->where('booking_date', $bookingDate)
-                    ->whereIn('status', ['active', 'pending'])
-                    ->first();
+            $existing = Booking::where('user_id', $userId)
+                ->where('booking_date', $bookingDate)
+                ->whereIn('status', ['active', 'pending'])
+                ->first();
 
-                if ($existing) {
-                    throw new Exception('You already have a booking for tomorrow. Only one token allowed per day.');
-                }
+            if ($existing) {
+                throw new Exception('User already has a booking for this day. Only one token allowed per day.');
             }
 
             // ── 2. Lock and fetch all booked token numbers for this slot ──
