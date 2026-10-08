@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class NotificationsScreen extends StatefulWidget {
-  const NotificationsScreen({Key? key}) : super(key: key);
+  const NotificationsScreen({super.key});
 
   @override
   _NotificationsScreenState createState() => _NotificationsScreenState();
@@ -30,7 +32,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FC),
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: const Text('Notifications', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: primaryColor,

@@ -174,27 +174,47 @@ class HospitalUserController extends Controller
             return response()->json(['success' => false, 'message' => 'The CSV file is empty.'], 422);
         }
 
+        // Strip UTF-8 BOM if present
+        $header[0] = preg_replace('/[\x{FEFF}\x{FFFE}]/u', '', $header[0]);
+        $header[0] = str_replace("\xEF\xBB\xBF", '', $header[0]);
         $header = array_map(fn($col) => strtolower(trim($col)), $header);
 
-        $requiredColumns = ['name', 'crno'];
-        $missingColumns  = array_diff($requiredColumns, $header);
+        // Check required columns allowing variations (crno/cr_number/cr/cr_no, name/patient_name)
+        $hasName = false;
+        $hasCrno = false;
+        foreach ($header as $colName) {
+            if (in_array($colName, ['name', 'patient_name', 'patient name'])) $hasName = true;
+            if (in_array($colName, ['crno', 'cr_number', 'cr number', 'cr_no', 'cr'])) $hasCrno = true;
+        }
 
-        if (!empty($missingColumns)) {
+        if (!$hasName || !$hasCrno) {
             return response()->json([
                 'success' => false,
-                'message' => 'Missing required columns: ' . implode(', ', $missingColumns) . '. The CSV must have "name" and "crno" columns.'
+                'message' => 'Missing required columns. The CSV must contain "name" and "crno" (or "cr_number") columns.'
             ], 422);
         }
 
-        // Store file and dispatch background job
+        // Store file and process import synchronously
         $path = $file->store('imports');
         $absolutePath = \Illuminate\Support\Facades\Storage::path($path);
 
-        \App\Jobs\ImportPatientsJob::dispatch($absolutePath);
+        $job = new \App\Jobs\ImportPatientsJob($absolutePath);
+        $result = $job->process();
+
+        $imported = $result['imported'];
+        $skipped  = $result['skipped'];
+
+        $msg = "Bulk import completed. {$imported} patient" . ($imported === 1 ? '' : 's') . " imported successfully.";
+        if ($skipped > 0) {
+            $msg .= " ({$skipped} duplicates or invalid rows skipped).";
+        }
 
         return response()->json([
             'success'  => true,
-            'message'  => "CSV file uploaded successfully. Bulk patient import is now processing in the background."
+            'imported' => $imported,
+            'skipped'  => $skipped,
+            'message'  => $msg
         ], 200);
     }
+
 }

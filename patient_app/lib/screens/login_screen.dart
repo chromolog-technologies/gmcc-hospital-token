@@ -3,7 +3,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'home_screen.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'doctor_login_screen.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -66,7 +68,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const BannerAdWidget(),
       body: Container(
+
         padding: const EdgeInsets.all(30),
         decoration: const BoxDecoration(
           gradient: LinearGradient(

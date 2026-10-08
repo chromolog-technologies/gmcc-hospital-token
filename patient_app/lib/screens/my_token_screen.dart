@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class MyTokenScreen extends StatefulWidget {
   final UserModel user;
@@ -84,7 +86,9 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     }
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FC),
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: const Text('My Token'),
         centerTitle: true,
         backgroundColor: _primary,

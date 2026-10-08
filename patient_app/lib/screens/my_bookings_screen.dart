@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class MyBookingsScreen extends StatefulWidget {
   final UserModel user;
@@ -93,7 +95,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: const Text('My Tokens'),
         backgroundColor: const Color(0xFFFF0088),
         foregroundColor: Colors.white,

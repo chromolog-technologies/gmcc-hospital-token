@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
-import 'booking_screen.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'department_doctors_screen.dart';
 import 'login_screen.dart';
 import 'my_token_screen.dart';
@@ -165,25 +165,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: _currentIndex == 0 ? _buildHomeBody() : _buildMyTokenBody(),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: _onItemTapped,
-          selectedItemColor: const Color(0xFFFF0088),
-          unselectedItemColor: Colors.grey,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.confirmation_number_outlined),
-              label: 'My Token',
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Anchored Adaptive Google AdMob Banner Ad
+            const BannerAdWidget(),
+            BottomNavigationBar(
+              currentIndex: _currentIndex,
+              onTap: _onItemTapped,
+              selectedItemColor: const Color(0xFFFF0088),
+              unselectedItemColor: Colors.grey,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.confirmation_number_outlined),
+                  label: 'My Token',
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+
 
   // --- HOME TAB ---
   Widget _buildHomeBody() {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Real AdMob Application ID -->
+    <string name="admob_app_id">ca-app-pub-7197849036557828~4476150171</string>
+
+    <!-- Real Production AdMob Banner Ad Unit ID -->
+    <string name="admob_banner_ad_unit_id">ca-app-pub-7197849036557828/9049496605</string>
+
+    <!-- Google Official Test Banner Ad Unit ID for Android -->
+    <!-- Used automatically during development/debug builds -->
+    <string name="admob_test_banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+</resources>

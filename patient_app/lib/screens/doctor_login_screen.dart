@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'doctor_dashboard_screen.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class DoctorLoginScreen extends StatefulWidget {
   const DoctorLoginScreen({super.key});
@@ -101,7 +103,9 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(

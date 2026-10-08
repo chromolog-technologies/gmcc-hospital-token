@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
 
 class BookingScreen extends StatefulWidget {
   final UserModel user;
@@ -117,8 +118,10 @@ class _BookingScreenState extends State<BookingScreen> {
       body: _bookingResult != null && _bookingResult!['success'] == true
           ? _buildSuccessUI()
           : _buildBookingUI(),
+      bottomNavigationBar: const BannerAdWidget(),
     );
   }
+
 
   Widget _buildBookingUI() {
     return Padding(
@@ -249,21 +252,26 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _buildSuccessUI() {
     final data = _bookingResult!['data'];
-    return Padding(
-      padding: const EdgeInsets.all(30.0),
+    final rawSlotTime = data['slot_time'];
+    final slotTime = (rawSlotTime != null && rawSlotTime.toString().trim().isNotEmpty && rawSlotTime.toString() != 'null')
+        ? rawSlotTime
+        : widget.unit.time;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 100),
-            const SizedBox(height: 20),
+            const Icon(Icons.check_circle, color: Colors.green, size: 80),
+            const SizedBox(height: 12),
             const Text(
               'Booking Successful!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.all(30),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
@@ -282,31 +290,38 @@ class _BookingScreenState extends State<BookingScreen> {
                   Text(
                     '${data['token_number']}',
                     style: const TextStyle(
-                      fontSize: 80,
+                      fontSize: 70,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFFFF0088),
                     ),
                   ),
-                const Divider(height: 40),
-                const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, letterSpacing: 2)),
-                const SizedBox(height: 10),
-                Text(
-                  '${data['slot_time']}',
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                ),
-              ],
+                  const Divider(height: 30),
+                  const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, letterSpacing: 2)),
+                  const SizedBox(height: 8),
+                  Text(
+                    '$slotTime',
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 50),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Back to Home', style: TextStyle(color: Color(0xFFFF0088), fontSize: 18)),
-          )
-        ],
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF0088),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Back to Home', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
-     ),
     );
   }
+
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
