@@ -85,7 +85,15 @@ class ImportPatientsJob implements ShouldQueue
 
         $batch = [];
         $now = now()->toDateTimeString();
-        $existingCrnos = User::pluck('crno')->flip()->all();
+        
+        // Build map of existing CR numbers in both formatted and raw formats
+        $existingCrnos = [];
+        foreach (User::pluck('crno') as $dbCrno) {
+            $trimmed = trim($dbCrno);
+            $existingCrnos[$trimmed] = true;
+            $existingCrnos[User::formatCrno($trimmed)] = true;
+        }
+
         $insertedCount = 0;
         $skippedCount = 0;
         $errorMessage = null;
@@ -107,12 +115,14 @@ class ImportPatientsJob implements ShouldQueue
 
                 $crno = User::formatCrno($rawCrno);
 
-                if (empty($name) || empty($crno) || isset($existingCrnos[$crno])) {
+                // Skip if name is empty, crno is empty, or crno already exists (checking both formatted & raw)
+                if (empty($name) || empty($crno) || isset($existingCrnos[$crno]) || isset($existingCrnos[trim($rawCrno)])) {
                     $skippedCount++;
                     continue;
                 }
 
                 $existingCrnos[$crno] = true;
+                $existingCrnos[trim($rawCrno)] = true;
 
                 $batch[] = [
                     'name'        => $name,
@@ -125,14 +135,14 @@ class ImportPatientsJob implements ShouldQueue
                 ];
 
                 if (count($batch) >= 250) {
-                    DB::table('users')->insert($batch);
+                    DB::table('users')->insertOrIgnore($batch);
                     $insertedCount += count($batch);
                     $batch = [];
                 }
             }
 
             if (!empty($batch)) {
-                DB::table('users')->insert($batch);
+                DB::table('users')->insertOrIgnore($batch);
                 $insertedCount += count($batch);
             }
 

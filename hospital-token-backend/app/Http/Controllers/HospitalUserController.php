@@ -63,8 +63,22 @@ class HospitalUserController extends Controller
     {
         $this->checkAccess($request);
 
-        if ($request->has('crno')) {
-            $request->merge(['crno' => User::formatCrno($request->crno)]);
+        $rawCrno = $request->input('crno');
+        $formattedCrno = User::formatCrno($rawCrno);
+        $request->merge(['crno' => $formattedCrno]);
+
+        // Check if CRNO exists in either formatted or raw form
+        if (!empty($rawCrno)) {
+            $exists = User::where('crno', $formattedCrno)
+                ->orWhere('crno', trim($rawCrno))
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'A user with this CR number already exists.'
+                ], 422);
+            }
         }
 
         $request->validate([
