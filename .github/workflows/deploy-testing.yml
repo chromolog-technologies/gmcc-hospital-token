@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ─────────────────────────────────────────────────────────
-  # JOB 1: Build React frontend and deploy to Hostinger via SSH / Rsync
+  # JOB 1: Build React frontend and deploy to Hostinger via SCP
   # ─────────────────────────────────────────────────────────
   deploy-frontend-testing:
     name: 🌐 Build & Deploy Frontend (Hostinger)
@@ -29,26 +29,19 @@ jobs:
           npm ci
           npm run build
 
-      - name: 🔑 Setup SSH Private Key
-        run: |
-          mkdir -p ~/.ssh
-          cat << 'EOF' > ~/.ssh/id_rsa
-          ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
-          EOF
-          chmod 600 ~/.ssh/id_rsa
-          echo "" >> ~/.ssh/id_rsa
-
-      - name: 🚀 Sync Frontend via Rsync
-        run: |
-          PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
-          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
-          
-          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
+      - name: 🚀 Sync Frontend via SCP to Hostinger
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_SSH_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          port: 65002
+          source: "hospital-token-frontend/dist/*"
+          target: "/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
+          strip_components: 2
 
   # ─────────────────────────────────────────────────────────
-  # JOB 2: Deploy Laravel backend to Hostinger via SSH / Rsync
+  # JOB 2: Deploy Laravel backend to Hostinger via SCP & SSH
   # ─────────────────────────────────────────────────────────
   deploy-backend-testing:
     name: ⚙️ Deploy Backend to Hostinger (Laravel)
@@ -58,42 +51,40 @@ jobs:
       - name: 🚚 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔑 Setup SSH Private Key
-        run: |
-          mkdir -p ~/.ssh
-          cat << 'EOF' > ~/.ssh/id_rsa
-          ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
-          EOF
-          chmod 600 ~/.ssh/id_rsa
-          echo "" >> ~/.ssh/id_rsa
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, ctype, fileinfo, json, openssl, tokenizer, xml
+          coverage: none
 
-      - name: 🚀 Sync Backend via Rsync
+      - name: 📦 Install Composer Dependencies
+        working-directory: ./hospital-token-backend
         run: |
-          PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
-          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
 
-          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-            --exclude='.env' \
-            --exclude='vendor/' \
-            --exclude='storage/logs/*' \
-            --exclude='storage/framework/cache/*' \
-            --exclude='storage/framework/sessions/*' \
-            --exclude='.git/' \
-            hospital-token-backend/ $USER@$HOST:$TARGET
+      - name: 🚀 Sync Backend via SCP to Hostinger
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_SSH_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          port: 65002
+          source: "hospital-token-backend/*"
+          target: "/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
+          strip_components: 1
 
       - name: 🔧 Clear Laravel Cache & Reset OPcache via SSH
-        run: |
-          PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
-          
-          ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_SSH_HOST }}
+          username: ${{ secrets.HOSTINGER_SSH_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          port: 65002
+          script: |
             BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
-            ln -sfn \$BASEDIR/storage/app/public \$BASEDIR/public/storage
-            cd \$BASEDIR
+            ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
+            cd $BASEDIR
             rm -f bootstrap/cache/*.php
             php artisan optimize:clear || true
-            php -r \"if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }\"
-          "
+            php -r "if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }"
