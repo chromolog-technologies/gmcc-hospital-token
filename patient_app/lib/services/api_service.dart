@@ -5,7 +5,10 @@ import '../models/user_model.dart';
 import '../models/unit_model.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';
+  // 🧪 Debug → Hostinger (testing)  |  🚀 Release → cPanel (production)
+  static final String baseUrl = kDebugMode
+      ? 'https://api.gmcchtsrtoken.chromologtechnologies.com/api'   // Hostinger
+      : 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';  // TODO: replace with cPanel API URL after migration
   
   // Store token in memory for session
   static String? _token;
