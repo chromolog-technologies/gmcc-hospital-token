@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Hostinger
+name: 🚀 Deploy to cPanel (BigRock)
 
 on:
   push:
@@ -40,9 +40,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
+          port: 2222
           source: "hospital-token-frontend/dist/assets,hospital-token-frontend/dist/index.html,hospital-token-frontend/dist/favicon.svg,hospital-token-frontend/dist/icons.svg,hospital-token-frontend/dist/images,hospital-token-frontend/dist/sample_patients_import.csv,hospital-token-frontend/dist/robots.txt,hospital-token-frontend/dist/sitemap.xml"
-          target: "/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
+          target: "/home1/gmcchaav/public_html/"
           strip_components: 2   # removes "hospital-token-frontend/dist/" prefix
 
   # ─────────────────────────────────────────────────────────
@@ -61,25 +61,31 @@ jobs:
         with:
           switches: -avzr --delete --exclude='.env' --exclude='vendor/' --exclude='storage/logs/' --exclude='storage/framework/cache/' --exclude='storage/framework/sessions/' --exclude='.git/' --exclude='storage/app/firebase_credentials.json' --exclude='storage/app/public/'
           path: hospital-token-backend/
-          remote_path: /home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/
+          remote_path: /home1/gmcchaav/public_html/gmcc-api/
           remote_host: ${{ secrets.SSH_HOST }}
           remote_user: ${{ secrets.SSH_USERNAME }}
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          remote_port: 65002
+          remote_port: 2222
 
-      - name: Clear Laravel cache & set up storage link via SSH
+      - name: Run migrations & clear Laravel cache via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 65002
+          port: 2222
           script: |
-            BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
-            # Create storage symlink (exec() disabled on Hostinger so can't use artisan storage:link)
+            BASEDIR=/home1/gmcchaav/public_html/gmcc-api
+            # Create storage symlink
             ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
             cd $BASEDIR
+            # Install/update composer dependencies
+            composer install --no-dev --optimize-autoloader --no-interaction
+            # Clear bootstrap cache
             rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
+            # Run fresh migrations (safe with --force on fresh DB)
+            php artisan migrate --force
+            # Cache config and routes for performance
             php artisan config:cache
             php artisan route:cache
             echo "✅ Deploy complete"
