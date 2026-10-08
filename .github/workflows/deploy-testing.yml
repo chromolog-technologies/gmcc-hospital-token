@@ -29,19 +29,20 @@ jobs:
           npm ci
           npm run build
 
-      - name: 🔑 Setup SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+      - name: 🔑 Setup SSH Private Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: 🚀 Sync Frontend via Rsync
         run: |
           PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
           TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
           
-          rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
 
   # ─────────────────────────────────────────────────────────
   # JOB 2: Deploy Laravel backend to Hostinger via SSH / Rsync
@@ -54,19 +55,20 @@ jobs:
       - name: 🚚 Checkout code
         uses: actions/checkout@v4
 
-      - name: 🔑 Setup SSH key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+      - name: 🔑 Setup SSH Private Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: 🚀 Sync Backend via Rsync
         run: |
           PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
           TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
 
-          rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no" \
+          rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
             --exclude='.env' \
             --exclude='vendor/' \
             --exclude='storage/logs/*' \
@@ -78,10 +80,10 @@ jobs:
       - name: 🔧 Clear Laravel Cache & Reset OPcache via SSH
         run: |
           PORT=65002
-          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
-          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          HOST="${{ secrets.HOSTINGER_SSH_HOST || secrets.SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME || secrets.SSH_USERNAME }}"
           
-          ssh -p $PORT -o StrictHostKeyChecking=no $USER@$HOST "
+          ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "
             BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
             ln -sfn \$BASEDIR/storage/app/public \$BASEDIR/public/storage
             cd \$BASEDIR
