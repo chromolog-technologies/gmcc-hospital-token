@@ -80,7 +80,8 @@ jobs:
             # Create storage symlink (exec() disabled on Hostinger so can't use artisan storage:link)
             ln -sfn $BASEDIR/storage/app/public $BASEDIR/public/storage
             cd $BASEDIR
-            rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
-            php artisan config:cache
-            php artisan route:cache
+            rm -f bootstrap/cache/*.php
+            php artisan optimize:clear
+            php -r "if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }"
             echo "✅ Hostinger testing deploy complete"
+
