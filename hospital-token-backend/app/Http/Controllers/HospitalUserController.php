@@ -154,10 +154,17 @@ class HospitalUserController extends Controller
      */
     public function bulkStore(Request $request)
     {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+        @ini_set('memory_limit', '512M');
+        if (function_exists('ignore_user_abort')) {
+            @ignore_user_abort(true);
+        }
+
         $this->checkAccess($request);
 
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:5120',
+            'file' => 'required|file|mimes:csv,txt|max:10240',
         ]);
 
         $file = $request->file('file');
@@ -201,8 +208,16 @@ class HospitalUserController extends Controller
         $job = new \App\Jobs\ImportPatientsJob($absolutePath);
         $result = $job->process();
 
-        $imported = $result['imported'];
-        $skipped  = $result['skipped'];
+        $imported = $result['imported'] ?? 0;
+        $skipped  = $result['skipped'] ?? 0;
+        $error    = $result['error'] ?? null;
+
+        if ($error) {
+            return response()->json([
+                'success' => false,
+                'message' => "Bulk import failed: " . $error
+            ], 500);
+        }
 
         $msg = "Bulk import completed. {$imported} patient" . ($imported === 1 ? '' : 's') . " imported successfully.";
         if ($skipped > 0) {

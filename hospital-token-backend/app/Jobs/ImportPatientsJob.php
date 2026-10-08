@@ -34,21 +34,28 @@ class ImportPatientsJob implements ShouldQueue
      */
     public function process(): array
     {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+        @ini_set('memory_limit', '512M');
+        if (function_exists('ignore_user_abort')) {
+            @ignore_user_abort(true);
+        }
+
         if (!file_exists($this->filePath)) {
             Log::error("Import file not found: {$this->filePath}");
-            return ['imported' => 0, 'skipped' => 0];
+            return ['imported' => 0, 'skipped' => 0, 'error' => 'Import file not found'];
         }
 
         $handle = fopen($this->filePath, 'r');
         if ($handle === false) {
             Log::error("Failed to open import file: {$this->filePath}");
-            return ['imported' => 0, 'skipped' => 0];
+            return ['imported' => 0, 'skipped' => 0, 'error' => 'Failed to open import file'];
         }
 
         $header = fgetcsv($handle);
         if (!$header) {
             fclose($handle);
-            return ['imported' => 0, 'skipped' => 0];
+            return ['imported' => 0, 'skipped' => 0, 'error' => 'CSV file header is empty'];
         }
 
         // Strip UTF-8 BOM if present
@@ -73,7 +80,7 @@ class ImportPatientsJob implements ShouldQueue
         if (!isset($headerMap['crno']) || !isset($headerMap['name'])) {
             fclose($handle);
             Log::error("CSV import missing required crno or name column.");
-            return ['imported' => 0, 'skipped' => 0];
+            return ['imported' => 0, 'skipped' => 0, 'error' => 'CSV import missing required crno or name column'];
         }
 
         $batch = [];
@@ -81,6 +88,10 @@ class ImportPatientsJob implements ShouldQueue
         $existingCrnos = User::pluck('crno')->flip()->all();
         $insertedCount = 0;
         $skippedCount = 0;
+        $errorMessage = null;
+
+        // Pre-hash default password once outside the loop to avoid expensive bcrypt per row
+        $defaultPasswordHash = Hash::make('12345678');
 
         DB::beginTransaction();
         try {
@@ -108,12 +119,12 @@ class ImportPatientsJob implements ShouldQueue
                     'crno'        => $crno,
                     'user_age'    => $age,
                     'user_gender' => $gender,
-                    'password'    => Hash::make($crno),
+                    'password'    => $defaultPasswordHash,
                     'created_at'  => $now,
                     'updated_at'  => $now,
                 ];
 
-                if (count($batch) >= 50) {
+                if (count($batch) >= 250) {
                     DB::table('users')->insert($batch);
                     $insertedCount += count($batch);
                     $batch = [];
@@ -129,7 +140,8 @@ class ImportPatientsJob implements ShouldQueue
             Log::info("Bulk import completed successfully: {$insertedCount} imported, {$skippedCount} skipped from {$this->filePath}");
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Bulk import failed for file {$this->filePath}: " . $e->getMessage());
+            $errorMessage = $e->getMessage();
+            Log::error("Bulk import failed for file {$this->filePath}: " . $errorMessage);
         } finally {
             fclose($handle);
             if (file_exists($this->filePath)) {
@@ -137,6 +149,6 @@ class ImportPatientsJob implements ShouldQueue
             }
         }
 
-        return ['imported' => $insertedCount, 'skipped' => $skippedCount];
+        return ['imported' => $insertedCount, 'skipped' => $skippedCount, 'error' => $errorMessage];
     }
 }
