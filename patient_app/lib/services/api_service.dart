@@ -5,10 +5,11 @@ import '../models/user_model.dart';
 import '../models/unit_model.dart';
 
 class ApiService {
-  // 🧪 Debug → Hostinger (testing)  |  🚀 Release → cPanel (production)
-  static final String baseUrl = kDebugMode
-      ? 'https://api.gmcchtsrtoken.chromologtechnologies.com/api'   // Hostinger
-      : 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';  // TODO: replace with cPanel API URL after migration
+  // Hostinger API Base URL (Primary Hostinger production & testing connectivity)
+  // Disabled cPanel connectivity:
+  // static const String _cpanelBaseUrl = 'https://cpanel-domain.com/api';
+  static const String baseUrl = 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';
+
   
   // Store token in memory for session
   static String? _token;

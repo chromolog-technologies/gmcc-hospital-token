@@ -1,33 +1,34 @@
-name: Deploy to cPanel Live Server
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  web-deploy:
-    name: 🎉 Deploying project
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v4
-
-      - name: ⚙️ Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: 🔨 Build React Frontend
-        run: |
-          cd hospital-token-frontend
-          npm install
-          npm run build
-
-      - name: 📂 Sync Files to cPanel via SFTP/FTP
-        uses: SamKirsch/ftp-deploy-action@4.3.5
-        with:
-          server: ${{ secrets.CPANEL_SERVER }}       # e.g., sh002.bigrock.com
-          username: ${{ secrets.CPANEL_USERNAME }}   # gmcchaav
-          password: ${{ secrets.CPANEL_PASSWORD }}   # cPanel Password
-          server-dir: /public_html/
+# cPanel deployment disabled - using Hostinger connectivity exclusively
+# name: Deploy to cPanel Live Server
+# 
+# on:
+#   push:
+#     branches:
+#       - main
+# 
+# jobs:
+#   web-deploy:
+#     name: 🎉 Deploying project
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: 🚚 Get latest code
+#         uses: actions/checkout@v4
+# 
+#       - name: ⚙️ Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 20
+# 
+#       - name: 🔨 Build React Frontend
+#         run: |
+#           cd hospital-token-frontend
+#           npm install
+#           npm run build
+# 
+#       - name: 📂 Sync Files to cPanel via SFTP/FTP
+#         uses: SamKirsch/ftp-deploy-action@4.3.5
+#         with:
+#           server: ${{ secrets.CPANEL_SERVER }}       # e.g., sh002.bigrock.com
+#           username: ${{ secrets.CPANEL_USERNAME }}   # gmcchaav
+#           password: ${{ secrets.CPANEL_PASSWORD }}   # cPanel Password
+#           server-dir: /public_html/

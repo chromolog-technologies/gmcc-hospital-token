@@ -32,8 +32,11 @@ jobs:
       - name: 🔑 Setup SSH Private Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          cat << 'EOF' > ~/.ssh/id_rsa
+          ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_rsa
+          echo "" >> ~/.ssh/id_rsa
 
       - name: 🚀 Sync Frontend via Rsync
         run: |
@@ -58,8 +61,11 @@ jobs:
       - name: 🔑 Setup SSH Private Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          cat << 'EOF' > ~/.ssh/id_rsa
+          ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY || secrets.SSH_PRIVATE_KEY }}
+          EOF
           chmod 600 ~/.ssh/id_rsa
+          echo "" >> ~/.ssh/id_rsa
 
       - name: 🚀 Sync Backend via Rsync
         run: |
