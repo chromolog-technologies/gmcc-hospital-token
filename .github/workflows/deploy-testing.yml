@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ─────────────────────────────────────────────────────────
-  # JOB 1: Build React frontend and deploy to Hostinger via FTP
+  # JOB 1: Build React frontend and deploy to Hostinger via SSH / Rsync
   # ─────────────────────────────────────────────────────────
   deploy-frontend-testing:
     name: 🌐 Build & Deploy Frontend (Hostinger)
@@ -29,18 +29,22 @@ jobs:
           npm ci
           npm run build
 
-      - name: 🚀 Deploy Frontend via FTP to Hostinger
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: 🔑 Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./hospital-token-frontend/dist/
-          server-dir: /
-          dangerous-clean-slate: false
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+
+      - name: 🚀 Sync Frontend via Rsync
+        run: |
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
+          
+          rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
 
   # ─────────────────────────────────────────────────────────
-  # JOB 2: Deploy Laravel backend to Hostinger gmcc-api/
+  # JOB 2: Deploy Laravel backend to Hostinger via SSH / Rsync
   # ─────────────────────────────────────────────────────────
   deploy-backend-testing:
     name: ⚙️ Deploy Backend to Hostinger (Laravel)
@@ -50,33 +54,38 @@ jobs:
       - name: 🚚 Checkout code
         uses: actions/checkout@v4
 
-      - name: ⚙️ Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: 🔑 Setup SSH key
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          php-version: '8.3'
-          extensions: mbstring, pdo, pdo_mysql, ctype, fileinfo, json, openssl, tokenizer, xml
-          coverage: none
+          ssh-private-key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
 
-      - name: 📦 Install Composer Dependencies
-        working-directory: ./hospital-token-backend
+      - name: 🚀 Sync Backend via Rsync
         run: |
-          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
 
-      - name: 📄 Upload bootstrapper scripts
-        run: |
-          curl -v --ftp-create-dirs -T hospital-token-backend/public/unzip.php -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/gmcc-api/public/unzip.php"
-          curl -v --ftp-create-dirs -T hospital-token-backend/public/clear_cache.php -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/gmcc-api/public/clear_cache.php"
+          rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no" \
+            --exclude='.env' \
+            --exclude='vendor/' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='.git/' \
+            hospital-token-backend/ $USER@$HOST:$TARGET
 
-      - name: 📦 Package Backend into ZIP
+      - name: 🔧 Clear Laravel Cache & Reset OPcache via SSH
         run: |
-          cd hospital-token-backend
-          zip -r ../backend.zip . -x "node_modules/*" "tests/*" ".git/*" ".github/*" "storage/logs/*" "storage/framework/sessions/*"
-
-      - name: 🚀 Upload Backend ZIP via FTP
-        run: |
-          curl -v -T backend.zip -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" "ftp://${{ secrets.FTP_SERVER }}/gmcc-api/backend.zip"
-
-      - name: 🔓 Trigger Remote Unzip & Cache Clear
-        run: |
-          curl -fs "https://api.gmcchtsrtoken.chromologtechnologies.com/unzip.php?token=Gmcchaav123"
-          curl -fs "https://api.gmcchtsrtoken.chromologtechnologies.com/clear_cache.php?token=Gmcchaav123"
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          
+          ssh -p $PORT -o StrictHostKeyChecking=no $USER@$HOST "
+            BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api
+            ln -sfn \$BASEDIR/storage/app/public \$BASEDIR/public/storage
+            cd \$BASEDIR
+            rm -f bootstrap/cache/*.php
+            php artisan optimize:clear || true
+            php -r \"if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }\"
+          "
