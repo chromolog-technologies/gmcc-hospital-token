@@ -40,19 +40,8 @@ jobs:
           PASS="${{ secrets.HOSTINGER_SSH_PASSWORD }}"
           TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
           
-          if [ -n "$PASS" ]; then
-            echo "Authenticating via SSH Password..."
-            sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
-          else
-            echo "Authenticating via SSH Private Key..."
-            mkdir -p ~/.ssh
-            cat << 'EOF' > ~/.ssh/id_rsa
-${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
-EOF
-            chmod 600 ~/.ssh/id_rsa
-            echo "" >> ~/.ssh/id_rsa
-            rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
-          fi
+          echo "Syncing frontend via SSH Password..."
+          sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
 
   # ─────────────────────────────────────────────────────────
   # JOB 2: Deploy Laravel backend to Hostinger via Rsync
@@ -76,33 +65,15 @@ EOF
           PASS="${{ secrets.HOSTINGER_SSH_PASSWORD }}"
           TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
 
-          if [ -n "$PASS" ]; then
-            echo "Authenticating via SSH Password..."
-            sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              --exclude='.env' \
-              --exclude='vendor/' \
-              --exclude='storage/logs/*' \
-              --exclude='storage/framework/cache/*' \
-              --exclude='storage/framework/sessions/*' \
-              --exclude='.git/' \
-              hospital-token-backend/ $USER@$HOST:$TARGET
-          else
-            echo "Authenticating via SSH Private Key..."
-            mkdir -p ~/.ssh
-            cat << 'EOF' > ~/.ssh/id_rsa
-${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
-EOF
-            chmod 600 ~/.ssh/id_rsa
-            echo "" >> ~/.ssh/id_rsa
-            rsync -avz -e "ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
-              --exclude='.env' \
-              --exclude='vendor/' \
-              --exclude='storage/logs/*' \
-              --exclude='storage/framework/cache/*' \
-              --exclude='storage/framework/sessions/*' \
-              --exclude='.git/' \
-              hospital-token-backend/ $USER@$HOST:$TARGET
-          fi
+          echo "Syncing backend via SSH Password..."
+          sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            --exclude='.env' \
+            --exclude='vendor/' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='.git/' \
+            hospital-token-backend/ $USER@$HOST:$TARGET
 
       - name: 🔧 Clear Laravel Cache & Reset OPcache via SSH
         run: |
@@ -113,8 +84,4 @@ EOF
           
           CMD="BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api; ln -sfn \$BASEDIR/storage/app/public \$BASEDIR/public/storage; cd \$BASEDIR; rm -f bootstrap/cache/*.php; php artisan optimize:clear || true; php -r \"if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }\""
 
-          if [ -n "$PASS" ]; then
-            sshpass -p "$PASS" ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "$CMD"
-          else
-            ssh -i ~/.ssh/id_rsa -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "$CMD"
-          fi
+          sshpass -p "$PASS" ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "$CMD"
