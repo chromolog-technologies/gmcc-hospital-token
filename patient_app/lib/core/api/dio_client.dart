@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 final dioProvider = Provider((ref) {
   final dio = Dio(
     BaseOptions(
-      baseUrl: 'https://api.gmcchtsrtoken.chromologtechnologies.com/api',
+      baseUrl: 'https://api.gmcchtsrtoken.com/api',
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
       headers: {'Accept': 'application/json'},

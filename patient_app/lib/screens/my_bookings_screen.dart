@@ -126,14 +126,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  booking['unit']['name'].toString().toUpperCase(),
+                  (booking['unit']?['name'] ?? 'UNIT').toString().toUpperCase(),
                   style: TextStyle(fontWeight: FontWeight.bold, color: statusColor, letterSpacing: 1),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(50)),
                   child: Text(
-                    booking['status'].toString().toUpperCase(),
+                    (booking['status'] ?? 'UNKNOWN').toString().toUpperCase(),
                     style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ),

@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'doctor_dashboard_screen.dart';
 import '../services/api_service.dart';
 import '../widgets/banner_ad_widget.dart';
+import '../widgets/app_version_widget.dart';
 
 
 class DoctorLoginScreen extends StatefulWidget {
@@ -114,114 +115,125 @@ class _DoctorLoginScreenState extends State<DoctorLoginScreen> {
         ),
       ),
       extendBodyBehindAppBar: true,
-      body: Container(
-        padding: const EdgeInsets.all(30),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF007AFF), Color(0xFF00C6FF)],
-          ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.medical_services, size: 80, color: Colors.white),
-                const SizedBox(height: 20),
-                const Text(
-                  'GMCCH DOCTOR',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 50),
-
-                // ── Registration Number field ──────────────────────────────
-                TextField(
-                  controller: _regnoController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Enter Registration Number',
-                    prefixIcon: const Icon(Icons.badge, color: Color(0xFF007AFF)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // ── Password field ─────────────────────────────────────────
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Enter Password',
-                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF007AFF)),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                        color: Colors.grey,
-                      ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // ── Remember Me checkbox ───────────────────────────────────
-                Row(
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            padding: const EdgeInsets.all(30),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF007AFF), Color(0xFF00C6FF)],
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Checkbox(
-                      value: _rememberMe,
-                      onChanged: (val) => setState(() => _rememberMe = val ?? false),
-                      activeColor: Colors.white,
-                      checkColor: const Color(0xFF007AFF),
-                      side: const BorderSide(color: Colors.white, width: 2),
-                    ),
+                    const Icon(Icons.medical_services, size: 80, color: Colors.white),
+                    const SizedBox(height: 20),
                     const Text(
-                      'Remember Me',
-                      style: TextStyle(color: Colors.white, fontSize: 15),
+                      'GMCCH DOCTOR',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+
+                    // ── Registration Number field ──────────────────────────────
+                    TextField(
+                      controller: _regnoController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Enter Registration Number',
+                        prefixIcon: const Icon(Icons.badge, color: Color(0xFF007AFF)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
+                    // ── Password field ─────────────────────────────────────────
+                    TextField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Enter Password',
+                        prefixIcon: const Icon(Icons.lock, color: Color(0xFF007AFF)),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // ── Remember Me checkbox ───────────────────────────────────
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: (val) => setState(() => _rememberMe = val ?? false),
+                          activeColor: Colors.white,
+                          checkColor: const Color(0xFF007AFF),
+                          side: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                        const Text(
+                          'Remember Me',
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 15),
+
+                    // ── Login button ───────────────────────────────────────────
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF007AFF),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 15),
-
-                // ── Login button ───────────────────────────────────────────
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xFF007AFF),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          const Positioned(
+            right: 16,
+            bottom: 16,
+            child: AppVersionWidget(),
+          ),
+        ],
       ),
     );
   }

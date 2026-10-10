@@ -1,0 +1,82 @@
+name: 🚀 Deploy to cPanel (Release)
+
+on:
+  push:
+    branches:
+      - release          # Triggers automatically when code is pushed to "release" branch
+  workflow_dispatch:     # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  # ─────────────────────────────────────────────────────────
+  # JOB 1: Build React frontend and deploy to cPanel
+  # ─────────────────────────────────────────────────────────
+  deploy-frontend-release:
+    name: 🌐 Build & Deploy Frontend to cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies & Build
+        working-directory: ./hospital-token-frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: 🚀 Deploy Frontend via FTP to cPanel public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          local-dir: ./hospital-token-frontend/dist/
+          server-dir: /public_html/
+          dangerous-clean-slate: false
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 2: Deploy Laravel backend to cPanel Subdomain
+  # ─────────────────────────────────────────────────────────
+  deploy-backend-release:
+    name: ⚙️ Deploy Backend to cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, pdo, pdo_mysql, ctype, fileinfo, json, openssl, tokenizer, xml
+          coverage: none
+
+      - name: 📦 Install Composer Dependencies
+        working-directory: ./hospital-token-backend
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --ignore-platform-reqs
+
+      - name: 🚀 Deploy Backend via FTP to cPanel Subdomain
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          local-dir: ./hospital-token-backend/
+          server-dir: /api.gmcchtsrtoken.com/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.env*
+            **/storage/logs/**
+            **/storage/framework/cache/**
+            **/storage/framework/sessions/**
+            **/node_modules/**
+            **/tests/**
+          dangerous-clean-slate: false

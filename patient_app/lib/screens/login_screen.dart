@@ -4,6 +4,7 @@ import 'home_screen.dart';
 import '../services/api_service.dart';
 import '../models/user_model.dart';
 import '../widgets/banner_ad_widget.dart';
+import '../widgets/app_version_widget.dart';
 import 'doctor_login_screen.dart';
 
 
@@ -69,83 +70,95 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const BannerAdWidget(),
-      body: Container(
-
-        padding: const EdgeInsets.all(30),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFF0088), Color(0xFFFF80D0)],
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/icon.webp', width: 90, height: 90),
-              const SizedBox(height: 20),
-              const Text(
-                'GMCCH PATIENT',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
-                ),
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            padding: const EdgeInsets.all(30),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFF0088), Color(0xFFFF80D0)],
               ),
-              const SizedBox(height: 50),
-              TextField(
-                controller: _crnoController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: 'Enter CR Number',
-                  prefixIcon: const Icon(Icons.person, color: Color(0xFFFF0088)),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFFFF0088),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/icon.webp', width: 90, height: 90),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'GMCCH PATIENT',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
                     ),
-                  ),
-                  child: _isLoading 
-                    ? const CircularProgressIndicator()
-                    : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 50),
+                    TextField(
+                      controller: _crnoController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Enter CR Number',
+                        prefixIcon: const Icon(Icons.person, color: Color(0xFFFF0088)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 55,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _handleLogin,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFFFF0088),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        child: _isLoading 
+                          ? const CircularProgressIndicator()
+                          : const Text('LOGIN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const DoctorLoginScreen()),
+                        );
+                      },
+                      child: const Text(
+                        'I am a Doctor',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 15),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const DoctorLoginScreen()),
-                  );
-                },
-                child: const Text(
-                  'I am a Doctor',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          const Positioned(
+            right: 16,
+            bottom: 16,
+            child: AppVersionWidget(),
+          ),
+        ],
       ),
     );
   }

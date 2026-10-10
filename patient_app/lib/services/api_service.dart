@@ -8,7 +8,7 @@ class ApiService {
   // Hostinger API Base URL (Primary Hostinger production & testing connectivity)
   // Disabled cPanel connectivity:
   // static const String _cpanelBaseUrl = 'https://cpanel-domain.com/api';
-  static const String baseUrl = 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';
+  static const String baseUrl = 'https://api.gmcchtsrtoken.com/api';
 
   
   // Store token in memory for session

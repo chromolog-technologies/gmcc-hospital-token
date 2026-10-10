@@ -60,7 +60,11 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     final bookings = await ApiService.getUserBookings(widget.user.id);
     
     // Sort by newest booking first (ID descending)
-    bookings.sort((a, b) => (b['id'] as int).compareTo(a['id'] as int));
+    bookings.sort((a, b) {
+      final idA = a['id'] is int ? a['id'] as int : int.tryParse(a['id']?.toString() ?? '0') ?? 0;
+      final idB = b['id'] is int ? b['id'] as int : int.tryParse(b['id']?.toString() ?? '0') ?? 0;
+      return idB.compareTo(idA);
+    });
     
     return bookings;
   }
