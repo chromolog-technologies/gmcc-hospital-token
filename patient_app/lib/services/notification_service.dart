@@ -15,35 +15,50 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
-    // 1. Initialize Firebase
-    await Firebase.initializeApp();
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    try {
+      // 1. Initialize Firebase
+      await Firebase.initializeApp();
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    } catch (e) {
+      debugPrint('Firebase.initializeApp error: $e');
+    }
 
-    // 2. Initialize Timezones
-    tz.initializeTimeZones();
+    try {
+      // 2. Initialize Timezones
+      tz.initializeTimeZones();
+    } catch (e) {
+      debugPrint('tz.initializeTimeZones error: $e');
+    }
 
-    // 3. Android Settings
-    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    
-    // 4. Darwin (iOS/macOS) Settings
-    const DarwinInitializationSettings darwinSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
-    
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: darwinSettings,
-      macOS: darwinSettings,
-    );
+    try {
+      // 3. Android & Darwin Settings
+      const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+      
+      const DarwinInitializationSettings darwinSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+      
+      const InitializationSettings initializationSettings = InitializationSettings(
+        android: androidSettings,
+        iOS: darwinSettings,
+        macOS: darwinSettings,
+      );
 
-    await _notificationsPlugin.initialize(
-      settings: initializationSettings,
-    );
+      await _notificationsPlugin.initialize(
+        settings: initializationSettings,
+      );
+    } catch (e) {
+      debugPrint('Local notifications plugin init error: $e');
+    }
 
-    // 5. Setup Firebase Messaging
-    await _setupFirebaseMessaging();
+    try {
+      // 4. Setup Firebase Messaging
+      await _setupFirebaseMessaging();
+    } catch (e) {
+      debugPrint('Firebase messaging setup error: $e');
+    }
   }
 
   static Future<void> _setupFirebaseMessaging() async {
