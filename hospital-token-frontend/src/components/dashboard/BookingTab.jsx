@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../../lib/axios';
-import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw, Download } from 'lucide-react';
 import Spinner, { LoadingButton } from '../Spinner';
 import SearchableSelect from '../SearchableSelect';
+import * as XLSX from 'xlsx';
 
 const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [bookings, setBookings] = useState([]);
@@ -172,6 +173,34 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         }
     };
 
+    // ── Export bookings to Excel ───────────────────────────────────────────
+    const exportToExcel = () => {
+        const rows = bookings.map(b => ({
+            'CR No':          b.user?.crno || '',
+            'Patient Name':   b.user?.name || '',
+            'Token Number':   b.token_number ?? '',
+            'Booked Date':    formatDate(b.booking_date),
+            'Status':         b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
+        }));
+
+        const worksheet  = XLSX.utils.json_to_sheet(rows);
+        const workbook   = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
+
+        // Auto-fit column widths
+        const colWidths = [
+            { wch: 14 }, // CR No
+            { wch: 28 }, // Patient Name
+            { wch: 14 }, // Token Number
+            { wch: 16 }, // Booked Date
+            { wch: 12 }, // Status
+        ];
+        worksheet['!cols'] = colWidths;
+
+        const today = formatDate(new Date().toISOString());
+        XLSX.writeFile(workbook, `GMCC_Bookings_${today}.xlsx`);
+    };
+
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}><Spinner /></div>;
 
     return (
@@ -289,13 +318,37 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
             {/* Bookings List */}
             <div className="glass-panel" style={{ background: 'white', overflow: 'hidden' }}>
+                {/* Export toolbar */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0.75rem 1rem', borderBottom: '1px solid #f1f5f9' }}>
+                    <button
+                        onClick={exportToExcel}
+                        disabled={bookings.length === 0}
+                        style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.4rem',
+                            padding: '0.45rem 1rem',
+                            background: bookings.length === 0 ? '#e2e8f0' : '#16a34a',
+                            color: bookings.length === 0 ? '#94a3b8' : '#ffffff',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '0.82rem',
+                            fontWeight: 700,
+                            cursor: bookings.length === 0 ? 'not-allowed' : 'pointer',
+                            transition: 'background 0.2s',
+                        }}
+                    >
+                        <Download size={15} />
+                        Export to Excel
+                    </button>
+                </div>
                 <div className="table-responsive">
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Date & Token</th>
+                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Booked Date & Token</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
                                 <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
                             </tr>
