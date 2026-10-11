@@ -33,7 +33,8 @@ class HospitalUserController extends Controller
 
         if ($search) {
             $formattedCrno = User::formatCrno($search);
-            $users = User::where('crno', 'like', "%{$search}%")
+            $users = User::select(['id', 'name', 'crno', 'user_age', 'user_gender', 'created_at'])
+                ->where('crno', 'like', "%{$search}%")
                 ->orWhere('crno', 'like', "%{$formattedCrno}%")
                 ->orWhere('name', 'like', "%{$search}%")
                 ->orderBy('id', 'desc')
@@ -43,8 +44,11 @@ class HospitalUserController extends Controller
             return response()->json(['success' => true, 'data' => $users]);
         }
 
-        $limit = (int) $request->query('limit', 100);
-        $users = User::orderBy('id', 'desc')->limit($limit)->get();
+        $limit = (int) $request->query('limit', 50);
+        $users = User::select(['id', 'name', 'crno', 'user_age', 'user_gender', 'created_at'])
+            ->orderBy('id', 'desc')
+            ->limit($limit)
+            ->get();
         return response()->json(['success' => true, 'data' => $users]);
     }
 
