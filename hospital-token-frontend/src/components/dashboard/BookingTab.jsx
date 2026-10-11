@@ -13,13 +13,12 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
 
-    // Format date as dd-MM-yyyy
+    // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        const d = new Date(dateString);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
+        // Strip time portion if present (e.g. "2026-10-12T00:00:00.000Z" → "2026-10-12")
+        const datePart = dateString.split('T')[0];
+        const [year, month, day] = datePart.split('-');
         return `${day}-${month}-${year}`;
     };
     const [error, setError] = useState('');
