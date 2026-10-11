@@ -5,10 +5,7 @@ import '../models/user_model.dart';
 import '../models/unit_model.dart';
 
 class ApiService {
-  // Disabled Hostinger & Hostinger DB connectivity (u818464796_gmcchaav_db / hstgr.io):
-  // static const String _hostingerBaseUrl = 'https://api.gmcchtsrtoken.chromologtechnologies.com/api';
-  
-  // Active cPanel Production API Base URL (Database: gmcchaav_token_live):
+  // cPanel API Base URL (Used exclusively for both Debug and Release builds):
   static const String baseUrl = 'https://api.gmcchtsrtoken.com/api';
 
   

@@ -22,13 +22,41 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         return `${day}-${month}-${year}`;
     };
     const [error, setError] = useState('');
-    const [users, setUsers] = useState([]);
     const [units, setUnits] = useState([]);
     
-    // Offline Booking State
+    // Offline Booking State & On-Demand Patient Search
     const [offlineForm, setOfflineForm] = useState({ user_id: '', unit_id: '', type: 'chemo', source: 'offline-walkin' });
+    const [patientOptions, setPatientOptions] = useState([]);
+    const [patientSearching, setPatientSearching] = useState(false);
+    const searchTimeoutRef = useRef(null);
     const [bookingLoading, setBookingLoading] = useState(false);
     const [availability, setAvailability] = useState(null);
+
+    // On-demand debounced patient search (scales to 50k+ users without slowing down page load)
+    const handlePatientSearch = useCallback((query) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+        if (!query || query.trim().length === 0) {
+            return;
+        }
+        searchTimeoutRef.current = setTimeout(async () => {
+            setPatientSearching(true);
+            try {
+                const res = await api.get('/hospital/users', { params: { search: query } });
+                if (res.data.success) {
+                    setPatientOptions((res.data.data || []).map(u => ({
+                        value: u.id,
+                        label: `${u.name} (CR: ${u.crno})`
+                    })));
+                }
+            } catch (err) {
+                console.error('Patient search error', err);
+            } finally {
+                setPatientSearching(false);
+            }
+        }, 300);
+    }, []);
 
     // Auto-refresh state
     const AUTO_REFRESH_SECONDS = 5 * 60; // 5 minutes
@@ -81,10 +109,9 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [bRes, sRes, usersRes, unitsRes] = await Promise.all([
+            const [bRes, sRes, unitsRes] = await Promise.all([
                 api.get('/hospital/bookings'),
                 api.get('/hospital/bookings/settings'),
-                api.get('/hospital/users'),
                 api.get('/units')
             ]);
             
@@ -94,12 +121,19 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             if (sRes.data.success) {
                 setCurrentAutoApprove(sRes.data.data.auto_approve_bookings_until);
             }
-            if (usersRes.data.success) {
-                setUsers(usersRes.data.data || []);
-            }
             if (unitsRes.data.success) {
                 setUnits(unitsRes.data.data || []);
             }
+
+            // Prime the offline patient dropdown with recent 20 patients without blocking
+            api.get('/hospital/users', { params: { limit: 20 } }).then(res => {
+                if (res.data.success) {
+                    setPatientOptions((res.data.data || []).map(u => ({
+                        value: u.id,
+                        label: `${u.name} (CR: ${u.crno})`
+                    })));
+                }
+            }).catch(() => {});
         } catch (err) {
             setError('Failed to load data.');
         } finally {
@@ -268,10 +302,12 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     <div style={{ flex: 1, minWidth: '200px' }}>
                         <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Select Patient</label>
                         <SearchableSelect
-                            options={users.map(u => ({ value: u.id, label: `${u.name} (CR: ${u.crno})` }))}
+                            options={patientOptions}
                             value={offlineForm.user_id}
                             onChange={(val) => setOfflineForm({ ...offlineForm, user_id: val })}
-                            placeholder="Search patient by name or CR..."
+                            onSearch={handlePatientSearch}
+                            loading={patientSearching}
+                            placeholder="Type patient name or CR number..."
                             required
                         />
                     </div>

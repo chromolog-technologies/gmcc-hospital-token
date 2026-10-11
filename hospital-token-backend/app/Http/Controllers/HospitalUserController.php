@@ -23,25 +23,28 @@ class HospitalUserController extends Controller
     }
 
     /**
-     * List all users or search by CR Number.
+     * List users (with search and performance limits).
      */
     public function index(Request $request)
     {
         $this->checkAccess($request);
 
-        $crno = $request->query('crno');
+        $search = $request->query('search') ?? $request->query('q') ?? $request->query('crno');
 
-        if ($crno) {
-            $formattedCrno = User::formatCrno($crno);
-            $user = User::where('crno', $formattedCrno)->first();
+        if ($search) {
+            $formattedCrno = User::formatCrno($search);
+            $users = User::where('crno', 'like', "%{$search}%")
+                ->orWhere('crno', 'like', "%{$formattedCrno}%")
+                ->orWhere('name', 'like', "%{$search}%")
+                ->orderBy('id', 'desc')
+                ->limit(50)
+                ->get();
 
-            if (!$user) {
-                return response()->json(['success' => false, 'message' => 'User not found', 'data' => []], 404);
-            }
-            return response()->json(['success' => true, 'data' => [$user]]);
+            return response()->json(['success' => true, 'data' => $users]);
         }
 
-        $users = User::orderBy('id', 'desc')->get();
+        $limit = (int) $request->query('limit', 100);
+        $users = User::orderBy('id', 'desc')->limit($limit)->get();
         return response()->json(['success' => true, 'data' => $users]);
     }
 

@@ -159,10 +159,11 @@ const UserTab = () => {
 
     const setLoad = (key, val) => setLoading(prev => ({ ...prev, [key]: val }));
 
-    const fetchUsers = useCallback(async () => {
+    const fetchUsers = useCallback(async (query = '') => {
         setLoad('fetch', true);
         try {
-            const res = await api.get('/hospital/users');
+            const params = query.trim() ? { search: query.trim() } : { limit: 100 };
+            const res = await api.get('/hospital/users', { params });
             setUsers(res.data.data || []);
         } catch {
             toast.error('Failed to load users.');
@@ -171,12 +172,14 @@ const UserTab = () => {
         }
     }, []);
 
-    useEffect(() => { fetchUsers(); }, [fetchUsers]);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchUsers(searchQuery);
+        }, searchQuery ? 300 : 0);
+        return () => clearTimeout(timer);
+    }, [searchQuery, fetchUsers]);
 
-    const filteredUsers = users.filter(u =>
-        u.crno.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredUsers = users;
 
     // ── Add individual user ────────────────────────────────────────────────
     const handleAdd = async (e) => {
