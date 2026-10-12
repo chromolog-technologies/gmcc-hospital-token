@@ -21,7 +21,7 @@ class Booking extends Model
     protected function casts(): array
     {
         return [
-            'booking_date' => 'date',
+            'booking_date' => 'date:Y-m-d',
         ];
     }
 
