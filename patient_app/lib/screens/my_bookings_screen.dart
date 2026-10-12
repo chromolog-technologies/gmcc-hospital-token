@@ -155,16 +155,27 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   ],
                 ),
                 const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 5),
-                    Text(
-                      '${booking['slot_time']}',
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Builder(
+                  builder: (context) {
+                    final rawSlotTime = booking['slot_time'];
+                    final slotTime = (rawSlotTime != null &&
+                            rawSlotTime.toString().trim().isNotEmpty &&
+                            rawSlotTime.toString().toLowerCase() != 'null' &&
+                            rawSlotTime.toString().toUpperCase() != 'N/A')
+                        ? rawSlotTime.toString()
+                        : 'Report before 12pm';
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const SizedBox(height: 5),
+                        Text(
+                          slotTime,
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

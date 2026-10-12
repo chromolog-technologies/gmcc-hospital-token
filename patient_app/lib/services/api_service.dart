@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
@@ -8,9 +9,28 @@ class ApiService {
   // cPanel API Base URL (Used exclusively for both Debug and Release builds):
   static const String baseUrl = 'https://api.gmcchtsrtoken.com/api';
 
-  
+  static const _storage = FlutterSecureStorage();
+  static const String _keyToken = 'auth_token';
+  static const String _keyUser = 'saved_user';
+
   // Store token in memory for session
   static String? _token;
+
+  /// Retrieves the saved patient session if available.
+  static Future<UserModel?> getSavedUser() async {
+    try {
+      final token = await _storage.read(key: _keyToken);
+      final userJson = await _storage.read(key: _keyUser);
+      if (token != null && token.isNotEmpty && userJson != null && userJson.isNotEmpty) {
+        _token = token;
+        final userMap = json.decode(userJson);
+        return UserModel.fromJson(userMap);
+      }
+    } catch (e) {
+      debugPrint('Error restoring saved user session: $e');
+    }
+    return null;
+  }
 
   static Future<void> logout() async {
     try {
@@ -22,6 +42,13 @@ class ApiService {
       debugPrint('Error logging out from server: $e');
     } finally {
       _token = null;
+      try {
+        await _storage.delete(key: _keyToken);
+        await _storage.delete(key: _keyUser);
+        await _storage.delete(key: 'token');
+      } catch (e) {
+        debugPrint('Error clearing secure storage: $e');
+      }
     }
   }
 
@@ -68,9 +95,19 @@ class ApiService {
 
       if (data['success'] == true) {
         _token = data['data']['token'];
+        final user = UserModel.fromJson(data['data']['user']);
+
+        try {
+          await _storage.write(key: _keyToken, value: _token);
+          await _storage.write(key: 'token', value: _token);
+          await _storage.write(key: _keyUser, value: json.encode(user.toJson()));
+        } catch (e) {
+          debugPrint('Error saving patient session: $e');
+        }
+
         return {
           'status': true,
-          'user': UserModel.fromJson(data['data']['user']),
+          'user': user,
         };
       } else {
         return {

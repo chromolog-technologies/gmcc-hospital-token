@@ -385,6 +385,15 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       _ticketField('TYPE', type.isNotEmpty ? type : 'GENERAL'),
+                      _ticketField(
+                        'REPORTING',
+                        (booking['slot_time'] != null &&
+                                booking['slot_time'].toString().trim().isNotEmpty &&
+                                booking['slot_time'].toString().toLowerCase() != 'null' &&
+                                booking['slot_time'].toString().toUpperCase() != 'N/A')
+                            ? booking['slot_time'].toString()
+                            : 'Before 12pm',
+                      ),
                       _ticketField('DATE', bookingDate, alignRight: true),
                     ],
                   ),

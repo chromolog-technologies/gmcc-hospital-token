@@ -56,6 +56,13 @@ class UnitModel {
   }
 
   // Compatibility getters for single doctor fields
+  String get displayTime {
+    if (time.isEmpty || time.toLowerCase() == 'null' || time.toUpperCase() == 'N/A') {
+      return 'Report before 12pm';
+    }
+    return time;
+  }
+
   String get doctorName {
     if (doctors.isEmpty) return 'On Duty';
     return doctors.map((d) => d.name).join(', ');

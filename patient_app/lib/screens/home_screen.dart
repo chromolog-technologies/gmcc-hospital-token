@@ -131,15 +131,16 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             PopupMenuButton<String>(
-              onSelected: (value) {
+              onSelected: (value) async {
                 if (value == 'about') {
                   _showAboutDialog();
                 } else if (value == 'terms') {
                   _showPrivacyDialog();
                 } else if (value == 'logout') {
-                  ApiService.logout();
-                  Navigator.pushAndRemoveUntil(
-                    context,
+                  final navigator = Navigator.of(context);
+                  await ApiService.logout();
+                  if (!mounted) return;
+                  navigator.pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const LoginScreen()),
                     (route) => false,
                   );

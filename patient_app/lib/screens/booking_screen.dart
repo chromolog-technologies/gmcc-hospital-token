@@ -145,7 +145,7 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 _buildInfoRow(Icons.medical_services, 'Department', widget.unit.name),
                 const Divider(height: 30),
-                _buildInfoRow(Icons.access_time, 'Timings', widget.unit.time),
+                _buildInfoRow(Icons.access_time, 'Timings', widget.unit.displayTime),
               ],
             ),
           ),
@@ -253,9 +253,12 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _buildSuccessUI() {
     final data = _bookingResult!['data'];
     final rawSlotTime = data['slot_time'];
-    final slotTime = (rawSlotTime != null && rawSlotTime.toString().trim().isNotEmpty && rawSlotTime.toString() != 'null')
-        ? rawSlotTime
-        : widget.unit.time;
+    final slotTime = (rawSlotTime != null &&
+            rawSlotTime.toString().trim().isNotEmpty &&
+            rawSlotTime.toString().toLowerCase() != 'null' &&
+            rawSlotTime.toString().toUpperCase() != 'N/A')
+        ? rawSlotTime.toString()
+        : widget.unit.displayTime;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -299,8 +302,9 @@ class _BookingScreenState extends State<BookingScreen> {
                   const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, letterSpacing: 2)),
                   const SizedBox(height: 8),
                   Text(
-                    '$slotTime',
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    slotTime,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

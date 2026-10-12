@@ -24,10 +24,10 @@ class DoctorDashboardScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {
-              ApiService.logout();
-              Navigator.pushAndRemoveUntil(
-                context,
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              await ApiService.logout();
+              navigator.pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
                 (route) => false,
               );

@@ -59,7 +59,7 @@ class _AppVersionWidgetState extends State<AppVersionWidget> {
         Text(
           versionDisplay,
           style: TextStyle(
-            color: widget.textColor.withOpacity(0.85),
+            color: widget.textColor.withValues(alpha: 0.85),
             fontSize: 11,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
