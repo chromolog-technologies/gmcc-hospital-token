@@ -43,8 +43,20 @@ class HospitalBookingController extends Controller
         if ($request->filled('date')) {
             $query->where('booking_date', $request->date);
         }
+        if ($request->filled('crno')) {
+            $crno = trim($request->crno);
+            $query->whereHas('user', function ($q) use ($crno) {
+                $q->where('crno', 'like', "%{$crno}%")
+                  ->orWhere('name', 'like', "%{$crno}%");
+            });
+        }
 
-        $bookings = $query->paginate(50);
+        $perPage = (int) $request->input('per_page', 100);
+        if ($perPage < 1 || $perPage > 500) {
+            $perPage = 100;
+        }
+
+        $bookings = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,

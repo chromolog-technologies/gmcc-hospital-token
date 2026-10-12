@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../../lib/axios';
-import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw, Download } from 'lucide-react';
+import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw, Download, Search, Calendar, X } from 'lucide-react';
 import Spinner, { LoadingButton } from '../Spinner';
 import SearchableSelect from '../SearchableSelect';
 import * as XLSX from 'xlsx';
@@ -12,6 +12,16 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [autoApproveHours, setAutoApproveHours] = useState(0);
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
+
+    // Filter State (Patient CR No / Name and Booking Date)
+    const [filterCrno, setFilterCrno] = useState('');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterLoading, setFilterLoading] = useState(false);
+    const crnoDebounceRef = useRef(null);
+    const filterCrnoRef = useRef('');
+    const filterDateRef = useRef('');
+    filterCrnoRef.current = filterCrno;
+    filterDateRef.current = filterDate;
 
     // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
@@ -101,11 +111,65 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         }, AUTO_REFRESH_SECONDS * 1000);
     }, []);
 
-    // Light refresh: only re-fetches the bookings list (no full page reload)
+    // Fetch filtered bookings list
+    const fetchBookingsList = useCallback(async (crnoVal, dateVal) => {
+        const c = crnoVal !== undefined ? crnoVal : filterCrnoRef.current;
+        const d = dateVal !== undefined ? dateVal : filterDateRef.current;
+        setFilterLoading(true);
+        try {
+            const params = { per_page: 150 };
+            if (c && c.trim()) params.crno = c.trim();
+            if (d && d.trim()) params.date = d.trim();
+            const res = await api.get('/hospital/bookings', { params });
+            if (res.data.success) {
+                setBookings(res.data.data.data || res.data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch filtered bookings', err);
+        } finally {
+            setFilterLoading(false);
+        }
+    }, []);
+
+    // Filter event handlers
+    const handleCrnoChange = (e) => {
+        const val = e.target.value;
+        setFilterCrno(val);
+        if (crnoDebounceRef.current) {
+            clearTimeout(crnoDebounceRef.current);
+        }
+        crnoDebounceRef.current = setTimeout(() => {
+            fetchBookingsList(val, filterDateRef.current);
+        }, 350);
+    };
+
+    const handleDateChange = (e) => {
+        const val = e.target.value;
+        setFilterDate(val);
+        fetchBookingsList(filterCrnoRef.current, val);
+    };
+
+    const handleSetToday = () => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        setFilterDate(todayStr);
+        fetchBookingsList(filterCrnoRef.current, todayStr);
+    };
+
+    const handleClearFilters = () => {
+        setFilterCrno('');
+        setFilterDate('');
+        if (crnoDebounceRef.current) clearTimeout(crnoDebounceRef.current);
+        fetchBookingsList('', '');
+    };
+
+    // Light refresh: only re-fetches the bookings list (preserves active filters)
     const refreshBookingsOnly = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            const bRes = await api.get('/hospital/bookings');
+            const params = { per_page: 150 };
+            if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
+            if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
+            const bRes = await api.get('/hospital/bookings', { params });
             if (bRes.data.success) {
                 setBookings(bRes.data.data.data || bRes.data.data);
             }
@@ -122,12 +186,14 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         startAutoRefresh();
     }, [refreshBookingsOnly, startAutoRefresh]);
 
-
     const fetchData = async () => {
         setLoading(true);
         try {
+            const params = { per_page: 150 };
+            if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
+            if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
             const [bRes, sRes, unitsRes] = await Promise.all([
-                api.get('/hospital/bookings'),
+                api.get('/hospital/bookings', { params }),
                 api.get('/hospital/bookings/settings'),
                 api.get('/units')
             ]);
@@ -265,8 +331,8 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         ];
         worksheet['!cols'] = colWidths;
 
-        const today = formatDate(new Date().toISOString());
-        XLSX.writeFile(workbook, `GMCC_Bookings_${today}.xlsx`);
+        const fileSuffix = filterDate ? formatDate(filterDate) : formatDate(new Date().toISOString());
+        XLSX.writeFile(workbook, `GMCC_Bookings_${fileSuffix}.xlsx`);
     };
 
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}><Spinner /></div>;
@@ -388,29 +454,161 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
             {/* Bookings List */}
             <div className="glass-panel" style={{ background: 'white', overflow: 'hidden' }}>
-                {/* Export toolbar */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0.75rem 1rem', borderBottom: '1px solid #f1f5f9' }}>
-                    <button
-                        onClick={exportToExcel}
-                        disabled={bookings.length === 0}
-                        style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '0.4rem',
-                            padding: '0.45rem 1rem',
-                            background: bookings.length === 0 ? '#e2e8f0' : '#16a34a',
-                            color: bookings.length === 0 ? '#94a3b8' : '#ffffff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '0.82rem',
-                            fontWeight: 700,
-                            cursor: bookings.length === 0 ? 'not-allowed' : 'pointer',
-                            transition: 'background 0.2s',
-                        }}
-                    >
-                        <Download size={15} />
-                        Export to Excel
-                    </button>
+                {/* Filters & Export Toolbar */}
+                <div style={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    gap: '0.75rem', 
+                    padding: '0.85rem 1.25rem', 
+                    borderBottom: '1px solid #f1f5f9',
+                    background: '#ffffff'
+                }}>
+                    {/* Left: Filter Controls */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem', flex: 1 }}>
+                        {/* Search Patient by CR No or Name */}
+                        <div style={{ position: 'relative', minWidth: '220px', flex: '1 1 240px', maxWidth: '340px' }}>
+                            <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                            <input
+                                type="text"
+                                placeholder="Search Patient by CR No or Name..."
+                                value={filterCrno}
+                                onChange={handleCrnoChange}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.45rem 2rem 0.45rem 2rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    fontSize: '0.85rem',
+                                    outline: 'none',
+                                    boxSizing: 'border-box',
+                                    background: '#f8fafc',
+                                    color: '#0f172a'
+                                }}
+                            />
+                            {filterCrno && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setFilterCrno('');
+                                        fetchBookingsList('', filterDateRef.current);
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '8px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#94a3b8',
+                                        padding: 0
+                                    }}
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Date Filter */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <div style={{ position: 'relative' }}>
+                                <Calendar size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                                <input
+                                    type="date"
+                                    value={filterDate}
+                                    onChange={handleDateChange}
+                                    style={{
+                                        padding: '0.45rem 0.6rem 0.45rem 2rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid #e2e8f0',
+                                        fontSize: '0.85rem',
+                                        outline: 'none',
+                                        background: '#f8fafc',
+                                        color: '#0f172a',
+                                        cursor: 'pointer'
+                                    }}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleSetToday}
+                                style={{
+                                    padding: '0.45rem 0.75rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    background: '#f8fafc',
+                                    color: '#475569',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                Today
+                            </button>
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        {(filterCrno || filterDate) && (
+                            <button
+                                type="button"
+                                onClick={handleClearFilters}
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem',
+                                    padding: '0.45rem 0.75rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #fee2e2',
+                                    background: '#fef2f2',
+                                    color: '#ef4444',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                <X size={13} /> Clear Filters
+                            </button>
+                        )}
+
+                        {filterLoading && (
+                            <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <RefreshCw size={12} className="spin-fast" /> Filtering...
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Right: Record count & Export to Excel */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+                            {bookings.length} {bookings.length === 1 ? 'booking' : 'bookings'}
+                        </span>
+                        <button
+                            onClick={exportToExcel}
+                            disabled={bookings.length === 0}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                padding: '0.45rem 1rem',
+                                background: bookings.length === 0 ? '#e2e8f0' : '#16a34a',
+                                color: bookings.length === 0 ? '#94a3b8' : '#ffffff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '0.82rem',
+                                fontWeight: 700,
+                                cursor: bookings.length === 0 ? 'not-allowed' : 'pointer',
+                                transition: 'background 0.2s',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            <Download size={15} />
+                            Export to Excel
+                        </button>
+                    </div>
                 </div>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
