@@ -16,10 +16,27 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        // Strip time portion if present (e.g. "2026-10-12T00:00:00.000Z" → "2026-10-12")
         const datePart = dateString.split('T')[0];
         const [year, month, day] = datePart.split('-');
         return `${day}-${month}-${year}`;
+    };
+
+    // Format full timestamp as dd-MM-yyyy HH:mm:ss
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '—';
+        try {
+            const d = new Date(dateString);
+            if (isNaN(d.getTime())) return dateString;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+        } catch {
+            return dateString;
+        }
     };
     const [error, setError] = useState('');
     const [units, setUnits] = useState([]);
@@ -209,11 +226,20 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     // ── Export bookings to Excel ───────────────────────────────────────────
     const exportToExcel = () => {
         const rows = bookings.map(b => ({
-            'CR No':          b.user?.crno || '',
+            'ID':             b.id,
+            'User ID':        b.user_id,
             'Patient Name':   b.user?.name || '',
+            'CR No':          b.user?.crno || '',
+            'Unit ID':        b.unit_id,
+            'Unit Name':      b.unit?.name || '',
+            'Type':           b.type || '',
             'Token Number':   b.token_number ?? '',
-            'Booked Date':    formatDate(b.booking_date),
+            'Booking Date':   b.booking_date ? formatDate(b.booking_date) : '',
+            'Slot Time':      b.slot_time ?? '',
             'Status':         b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
+            'Source':         b.source || '',
+            'Created At':     formatDateTime(b.created_at),
+            'Updated At':     formatDateTime(b.updated_at),
         }));
 
         const worksheet  = XLSX.utils.json_to_sheet(rows);
@@ -222,11 +248,20 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
         // Auto-fit column widths
         const colWidths = [
+            { wch: 8 },  // ID
+            { wch: 10 }, // User ID
+            { wch: 25 }, // Patient Name
             { wch: 14 }, // CR No
-            { wch: 28 }, // Patient Name
+            { wch: 10 }, // Unit ID
+            { wch: 22 }, // Unit Name
+            { wch: 12 }, // Type
             { wch: 14 }, // Token Number
-            { wch: 16 }, // Booked Date
+            { wch: 14 }, // Booking Date
+            { wch: 12 }, // Slot Time
             { wch: 12 }, // Status
+            { wch: 14 }, // Source
+            { wch: 22 }, // Created At
+            { wch: 22 }, // Updated At
         ];
         worksheet['!cols'] = colWidths;
 
@@ -237,7 +272,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}><Spinner /></div>;
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ width: '100%', margin: '0 auto' }}>
             <div style={{ marginBottom: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Booking Management</h2>
             </div>
@@ -377,49 +412,106 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                         Export to Excel
                     </button>
                 </div>
-                <div className="table-responsive">
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Booked Date & Token</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>ID</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>User ID / Patient</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Unit ID</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Type</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center' }}>Token #</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Booking Date</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Slot Time</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Status</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Source</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Created At</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Updated At</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
                     <tbody>
                         {bookings.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                <td colSpan="12" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                                     No bookings found.
                                 </td>
                             </tr>
                         ) : (
                             bookings.map(b => (
                                 <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{b.user?.name || 'Unknown'}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{b.user?.crno}</div>
+                                    {/* 1. id */}
+                                    <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#334155' }}>
+                                        #{b.id}
                                     </td>
-                                    <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '-'}</div>
-                                    </td>
-                                    <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{formatDate(b.booking_date)}</div>
-                                        <div style={{ fontSize: '0.85rem', color: '#ff0088', fontWeight: 800 }}>Token: {b.token_number}</div>
-                                        <div style={{ fontSize: '0.75rem', marginTop: '0.2rem' }}>
-                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe', color: b.source?.includes('offline') ? '#c2410c' : '#0369a1', fontWeight: 700 }}>
-                                                {b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'STAFF' : 'WALK-IN') : 'ONLINE'}
+
+                                    {/* 2. user_id & Patient */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <span style={{ fontSize: '0.72rem', background: '#f1f5f9', color: '#475569', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
+                                                #{b.user_id}
                                             </span>
-                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: '#f1f5f9', color: '#475569', fontWeight: 700, marginLeft: '0.3rem' }}>
-                                                {b.type?.toUpperCase()}
-                                            </span>
+                                            <span style={{ fontWeight: 700, color: '#0f172a' }}>{b.user?.name || 'Unknown'}</span>
+                                        </div>
+                                        <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>
+                                            CR: {b.user?.crno || '—'}
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1rem' }}>
+
+                                    {/* 3. unit_id & Unit */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <span style={{ fontSize: '0.72rem', background: '#f1f5f9', color: '#475569', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
+                                                #{b.unit_id}
+                                            </span>
+                                            <span style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '—'}</span>
+                                        </div>
+                                    </td>
+
+                                    {/* 4. type */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
                                         <span style={{
-                                            padding: '0.35rem 0.75rem',
+                                            padding: '0.2rem 0.5rem',
+                                            borderRadius: '4px',
+                                            background: b.type === 'chemo' ? '#fdf2f8' : '#f0fdf4',
+                                            color: b.type === 'chemo' ? '#be185d' : '#15803d',
+                                            fontWeight: 700,
+                                            fontSize: '0.75rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {b.type || '—'}
+                                        </span>
+                                    </td>
+
+                                    {/* 5. token_number */}
+                                    <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                                        <span style={{
+                                            display: 'inline-block',
+                                            padding: '0.25rem 0.6rem',
+                                            borderRadius: '6px',
+                                            background: '#fff1f2',
+                                            color: '#e11d48',
+                                            fontWeight: 800,
+                                            fontSize: '0.95rem'
+                                        }}>
+                                            {b.token_number ?? '—'}
+                                        </span>
+                                    </td>
+
+                                    {/* 6. booking_date */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#0f172a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                        {formatDate(b.booking_date)}
+                                    </td>
+
+                                    {/* 7. slot_time */}
+                                    <td style={{ padding: '0.85rem 1rem', color: b.slot_time ? '#0f172a' : '#94a3b8', fontSize: '0.82rem' }}>
+                                        {b.slot_time || 'NULL'}
+                                    </td>
+
+                                    {/* 8. status */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <span style={{
+                                            padding: '0.3rem 0.65rem',
                                             borderRadius: '20px',
                                             fontSize: '0.75rem',
                                             fontWeight: 800,
@@ -430,29 +522,56 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                             {b.status === 'active' ? 'Approved' : b.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+
+                                    {/* 9. source */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <span style={{
+                                            padding: '0.2rem 0.5rem',
+                                            borderRadius: '4px',
+                                            background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe',
+                                            color: b.source?.includes('offline') ? '#c2410c' : '#0369a1',
+                                            fontWeight: 700,
+                                            fontSize: '0.75rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'STAFF' : 'WALK-IN') : (b.source || 'ONLINE')}
+                                        </span>
+                                    </td>
+
+                                    {/* 10. created_at */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                                        {formatDateTime(b.created_at)}
+                                    </td>
+
+                                    {/* 11. updated_at */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                                        {formatDateTime(b.updated_at)}
+                                    </td>
+
+                                    {/* 12. Actions */}
+                                    <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                                         {b.status === 'pending' && (
-                                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                                                 <button 
                                                     onClick={() => handleUpdateStatus(b.id, 'active')}
-                                                    style={{ background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                    style={{ background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                                 >
-                                                    <CheckCircle size={14} /> Approve
+                                                    <CheckCircle size={13} /> Approve
                                                 </button>
                                                 <button 
                                                     onClick={() => handleUpdateStatus(b.id, 'cancelled')}
-                                                    style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                    style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                                 >
-                                                    <XCircle size={14} /> Cancel
+                                                    <XCircle size={13} /> Cancel
                                                 </button>
                                             </div>
                                         )}
                                         {b.status === 'active' && (
                                             <button 
                                                 onClick={() => handleUpdateStatus(b.id, 'cancelled')}
-                                                style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                             >
-                                                <XCircle size={14} /> Cancel
+                                                <XCircle size={13} /> Cancel
                                             </button>
                                         )}
                                     </td>
