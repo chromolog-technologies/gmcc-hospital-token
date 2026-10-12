@@ -13,15 +13,18 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
 
-    // Filter State (Patient CR No / Name and Booking Date)
+    // Filter State (Patient CR No / Name, Booking Date, and Source)
     const [filterCrno, setFilterCrno] = useState('');
     const [filterDate, setFilterDate] = useState('');
+    const [filterSource, setFilterSource] = useState('');
     const [filterLoading, setFilterLoading] = useState(false);
     const crnoDebounceRef = useRef(null);
     const filterCrnoRef = useRef('');
     const filterDateRef = useRef('');
+    const filterSourceRef = useRef('');
     filterCrnoRef.current = filterCrno;
     filterDateRef.current = filterDate;
+    filterSourceRef.current = filterSource;
 
     // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
@@ -112,14 +115,16 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     }, []);
 
     // Fetch filtered bookings list
-    const fetchBookingsList = useCallback(async (crnoVal, dateVal) => {
+    const fetchBookingsList = useCallback(async (crnoVal, dateVal, sourceVal) => {
         const c = crnoVal !== undefined ? crnoVal : filterCrnoRef.current;
         const d = dateVal !== undefined ? dateVal : filterDateRef.current;
+        const s = sourceVal !== undefined ? sourceVal : filterSourceRef.current;
         setFilterLoading(true);
         try {
             const params = { per_page: 150 };
             if (c && c.trim()) params.crno = c.trim();
             if (d && d.trim()) params.date = d.trim();
+            if (s && s.trim()) params.source = s.trim();
             const res = await api.get('/hospital/bookings', { params });
             if (res.data.success) {
                 setBookings(res.data.data.data || res.data.data);
@@ -139,28 +144,49 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             clearTimeout(crnoDebounceRef.current);
         }
         crnoDebounceRef.current = setTimeout(() => {
-            fetchBookingsList(val, filterDateRef.current);
+            fetchBookingsList(val, filterDateRef.current, filterSourceRef.current);
         }, 350);
     };
 
     const handleDateChange = (e) => {
         const val = e.target.value;
         setFilterDate(val);
-        fetchBookingsList(filterCrnoRef.current, val);
+        fetchBookingsList(filterCrnoRef.current, val, filterSourceRef.current);
+    };
+
+    const handleSourceChange = (e) => {
+        const val = e.target.value;
+        setFilterSource(val);
+        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, val);
     };
 
     const handleSetToday = () => {
         const todayStr = new Date().toISOString().split('T')[0];
         setFilterDate(todayStr);
-        fetchBookingsList(filterCrnoRef.current, todayStr);
+        fetchBookingsList(filterCrnoRef.current, todayStr, filterSourceRef.current);
     };
 
     const handleClearFilters = () => {
         setFilterCrno('');
         setFilterDate('');
+        setFilterSource('');
         if (crnoDebounceRef.current) clearTimeout(crnoDebounceRef.current);
-        fetchBookingsList('', '');
+        fetchBookingsList('', '', '');
     };
+
+    // Filtered bookings based on active filters
+    const filteredBookings = bookings.filter(b => {
+        if (filterSource === 'online' && b.source !== 'online') return false;
+        if (filterSource === 'offline' && !b.source?.includes('offline')) return false;
+        if (filterDate && b.booking_date !== filterDate && !b.booking_date?.startsWith(filterDate)) return false;
+        if (filterCrno && filterCrno.trim()) {
+            const q = filterCrno.trim().toLowerCase();
+            const matchCr = b.user?.crno?.toString().toLowerCase().includes(q);
+            const matchName = b.user?.name?.toLowerCase().includes(q);
+            if (!matchCr && !matchName) return false;
+        }
+        return true;
+    });
 
     // Light refresh: only re-fetches the bookings list (preserves active filters)
     const refreshBookingsOnly = useCallback(async () => {
@@ -169,6 +195,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             const params = { per_page: 150 };
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
+            if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
             const bRes = await api.get('/hospital/bookings', { params });
             if (bRes.data.success) {
                 setBookings(bRes.data.data.data || bRes.data.data);
@@ -192,6 +219,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             const params = { per_page: 150 };
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
+            if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
             const [bRes, sRes, unitsRes] = await Promise.all([
                 api.get('/hospital/bookings', { params }),
                 api.get('/hospital/bookings/settings'),
@@ -291,21 +319,14 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
     // ── Export bookings to Excel ───────────────────────────────────────────
     const exportToExcel = () => {
-        const rows = bookings.map(b => ({
-            'ID':             b.id,
-            'User ID':        b.user_id,
-            'Patient Name':   b.user?.name || '',
-            'CR No':          b.user?.crno || '',
-            'Unit ID':        b.unit_id,
-            'Unit Name':      b.unit?.name || '',
-            'Type':           b.type || '',
-            'Token Number':   b.token_number ?? '',
-            'Booking Date':   b.booking_date ? formatDate(b.booking_date) : '',
-            'Slot Time':      b.slot_time ?? '',
-            'Status':         b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
-            'Source':         b.source || '',
-            'Created At':     formatDateTime(b.created_at),
-            'Updated At':     formatDateTime(b.updated_at),
+        const rows = filteredBookings.map(b => ({
+            'Token No': b.token_number ?? '',
+            'Cr No':    b.user?.crno || '',
+            'Name':     b.user?.name || '',
+            'Unit':     b.unit?.name || '',
+            'Date':     b.booking_date ? formatDate(b.booking_date) : '',
+            'Status':   b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
+            'Source':   b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'Staff' : 'Walk-in') : 'Online',
         }));
 
         const worksheet  = XLSX.utils.json_to_sheet(rows);
@@ -314,20 +335,13 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
         // Auto-fit column widths
         const colWidths = [
-            { wch: 8 },  // ID
-            { wch: 10 }, // User ID
-            { wch: 25 }, // Patient Name
-            { wch: 14 }, // CR No
-            { wch: 10 }, // Unit ID
-            { wch: 22 }, // Unit Name
-            { wch: 12 }, // Type
-            { wch: 14 }, // Token Number
-            { wch: 14 }, // Booking Date
-            { wch: 12 }, // Slot Time
-            { wch: 12 }, // Status
+            { wch: 12 }, // Token No
+            { wch: 16 }, // Cr No
+            { wch: 26 }, // Name
+            { wch: 24 }, // Unit
+            { wch: 16 }, // Date
+            { wch: 14 }, // Status
             { wch: 14 }, // Source
-            { wch: 22 }, // Created At
-            { wch: 22 }, // Updated At
         ];
         worksheet['!cols'] = colWidths;
 
@@ -550,8 +564,29 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                             </button>
                         </div>
 
+                        {/* Source Filter (All / Online / Offline) */}
+                        <select
+                            value={filterSource}
+                            onChange={handleSourceChange}
+                            style={{
+                                padding: '0.45rem 0.75rem',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '0.85rem',
+                                outline: 'none',
+                                background: '#f8fafc',
+                                color: '#0f172a',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <option value="">All Sources</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                        </select>
+
                         {/* Clear Filters Button */}
-                        {(filterCrno || filterDate) && (
+                        {(filterCrno || filterDate || filterSource) && (
                             <button
                                 type="button"
                                 onClick={handleClearFilters}
@@ -584,23 +619,23 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     {/* Right: Record count & Export to Excel */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                         <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
-                            {bookings.length} {bookings.length === 1 ? 'booking' : 'bookings'}
+                            {filteredBookings.length} {filteredBookings.length === 1 ? 'booking' : 'bookings'}
                         </span>
                         <button
                             onClick={exportToExcel}
-                            disabled={bookings.length === 0}
+                            disabled={filteredBookings.length === 0}
                             style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.4rem',
                                 padding: '0.45rem 1rem',
-                                background: bookings.length === 0 ? '#e2e8f0' : '#16a34a',
-                                color: bookings.length === 0 ? '#94a3b8' : '#ffffff',
+                                background: filteredBookings.length === 0 ? '#e2e8f0' : '#16a34a',
+                                color: filteredBookings.length === 0 ? '#94a3b8' : '#ffffff',
                                 border: 'none',
                                 borderRadius: '8px',
                                 fontSize: '0.82rem',
                                 fontWeight: 700,
-                                cursor: bookings.length === 0 ? 'not-allowed' : 'pointer',
+                                cursor: filteredBookings.length === 0 ? 'not-allowed' : 'pointer',
                                 transition: 'background 0.2s',
                                 whiteSpace: 'nowrap'
                             }}
@@ -611,16 +646,15 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     </div>
                 </div>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                    <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>ID</th>
-                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>User ID / Patient</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Patient / CR No</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Unit ID</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Type</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center' }}>Token #</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Booking Date</th>
-                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Slot Time</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Status</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Source</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Created At</th>
@@ -629,29 +663,24 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                             </tr>
                         </thead>
                     <tbody>
-                        {bookings.length === 0 ? (
+                        {filteredBookings.length === 0 ? (
                             <tr>
-                                <td colSpan="12" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                <td colSpan="11" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                                     No bookings found.
                                 </td>
                             </tr>
                         ) : (
-                            bookings.map(b => (
+                            filteredBookings.map(b => (
                                 <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                                     {/* 1. id */}
                                     <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#334155' }}>
                                         #{b.id}
                                     </td>
 
-                                    {/* 2. user_id & Patient */}
+                                    {/* 2. Patient & CR No (User ID removed) */}
                                     <td style={{ padding: '0.85rem 1rem' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                                            <span style={{ fontSize: '0.72rem', background: '#f1f5f9', color: '#475569', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
-                                                #{b.user_id}
-                                            </span>
-                                            <span style={{ fontWeight: 700, color: '#0f172a' }}>{b.user?.name || 'Unknown'}</span>
-                                        </div>
-                                        <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>
+                                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{b.user?.name || 'Unknown'}</div>
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.15rem', fontWeight: 600 }}>
                                             CR: {b.user?.crno || '—'}
                                         </div>
                                     </td>
@@ -701,12 +730,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                         {formatDate(b.booking_date)}
                                     </td>
 
-                                    {/* 7. slot_time */}
-                                    <td style={{ padding: '0.85rem 1rem', color: b.slot_time ? '#0f172a' : '#94a3b8', fontSize: '0.82rem' }}>
-                                        {b.slot_time || 'NULL'}
-                                    </td>
-
-                                    {/* 8. status */}
+                                    {/* 7. status */}
                                     <td style={{ padding: '0.85rem 1rem' }}>
                                         <span style={{
                                             padding: '0.3rem 0.65rem',
@@ -721,7 +745,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                         </span>
                                     </td>
 
-                                    {/* 9. source */}
+                                    {/* 8. source */}
                                     <td style={{ padding: '0.85rem 1rem' }}>
                                         <span style={{
                                             padding: '0.2rem 0.5rem',
@@ -736,17 +760,17 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                         </span>
                                     </td>
 
-                                    {/* 10. created_at */}
+                                    {/* 9. created_at */}
                                     <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                                         {formatDateTime(b.created_at)}
                                     </td>
 
-                                    {/* 11. updated_at */}
+                                    {/* 10. updated_at */}
                                     <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                                         {formatDateTime(b.updated_at)}
                                     </td>
 
-                                    {/* 12. Actions */}
+                                    {/* 11. Actions */}
                                     <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                                         {b.status === 'pending' && (
                                             <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>

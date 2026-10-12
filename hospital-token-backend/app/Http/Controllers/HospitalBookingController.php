@@ -35,7 +35,11 @@ class HospitalBookingController extends Controller
 
         // Optional filters
         if ($request->filled('source')) {
-            $query->where('source', $request->source);
+            if ($request->source === 'offline') {
+                $query->where('source', 'like', 'offline%');
+            } else {
+                $query->where('source', $request->source);
+            }
         }
         if ($request->filled('type')) {
             $query->where('type', $request->type);
