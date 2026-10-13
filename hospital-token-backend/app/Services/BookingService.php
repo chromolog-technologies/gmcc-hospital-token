@@ -55,9 +55,10 @@ class BookingService
         }
 
         // ── Date rule ────────────────────────────────────────────────────────
-        // Online  (app)   → books for NEXT booking day (tomorrow's slot)
-        // Offline (admin) → books for CURRENT booking day (today's slot)
-        $bookingDate = $source === 'offline'
+        // Online  (app)         → books for NEXT booking day (tomorrow's slot)
+        // Offline (walk-in/staff) → books for CURRENT booking day (today's slot)
+        $isOffline = str_starts_with($source, 'offline');
+        $bookingDate = $isOffline
             ? $bookingDay->toDateString()
             : $bookingDay->copy()->addDay()->toDateString();
 
@@ -71,7 +72,7 @@ class BookingService
         $unitDays = $unit->day ? array_map('trim', explode(',', $unit->day)) : [];
         if (!empty($unitDays) && !in_array($targetDayName, $unitDays)) {
             $operatingDaysStr = implode(', ', array_map('ucfirst', $unitDays));
-            if ($source === 'online') {
+            if (!$isOffline) {
                 $windowStart = $bookingDay->format('l') . ' 6:00 AM';
                 $windowEnd = $targetDayName . ' 6:00 AM';
                 throw new Exception("This unit operates on {$operatingDaysStr}.\n\nYou are trying to book for {$targetDayName}.\nBooking cannot be done for this day.\n\nNote: Bookings for {$targetDayName} must be made between {$windowStart} and {$windowEnd}.");
@@ -108,14 +109,14 @@ class BookingService
             $nextToken = $this->findNextToken($type, $source, $bookedTokens);
 
             if ($nextToken === null) {
-                $label = $source === 'offline' ? 'Offline (walk-in)' : 'Online';
+                $label = $isOffline ? 'Offline (walk-in)' : 'Online';
                 throw new Exception("{$label} tokens are fully booked for {$type} today. No more slots available.");
             }
 
             // ── 4. Determine status ───────────────────────────────────────
             // Offline bookings are always immediately active (admin confirmed).
             // Online bookings start as 'pending' (1-hour cancellation grace period before auto-approval).
-            if ($source === 'offline') {
+            if ($isOffline) {
                 $status = 'active';
             } else {
                 $status = 'pending';
