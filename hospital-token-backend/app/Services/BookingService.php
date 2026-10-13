@@ -193,7 +193,7 @@ class BookingService
             } else {
                 $totalBooked = count($tokens);
                 $onlineBooked = $booked->where('type', 'followup')->where('source', 'online')->count();
-                $offlineBooked = $booked->where('type', 'followup')->where('source', 'offline')->count();
+                $offlineBooked = $booked->where('type', 'followup')->where('source', '!=', 'online')->count();
                 $result['followup'] = [
                     'online_booked'    => $onlineBooked,
                     'online_remaining' => max(0, 150 - $totalBooked),

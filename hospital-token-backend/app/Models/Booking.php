@@ -16,6 +16,7 @@ class Booking extends Model
         'token_number',
         'booking_date',
         'status',
+        'source',
     ];
 
     protected function casts(): array
