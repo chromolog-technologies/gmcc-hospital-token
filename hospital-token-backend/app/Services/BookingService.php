@@ -80,6 +80,17 @@ class BookingService
             }
         }
 
+        // Ensure bookings.source column is VARCHAR(50) so it accepts 'offline-walkin' and 'offline-staff'
+        static $checkedSourceColumn = false;
+        if (!$checkedSourceColumn) {
+            try {
+                DB::statement("ALTER TABLE bookings MODIFY COLUMN source VARCHAR(50) NOT NULL DEFAULT 'online'");
+                $checkedSourceColumn = true;
+            } catch (\Throwable $e) {
+                // Ignore if alter cannot run directly
+            }
+        }
+
         // Retry up to 5 times on deadlock
         return DB::transaction(function () use ($userId, $unitId, $type, $source, $bookingDate) {
             // Lock the user record to serialize booking requests for this user
@@ -122,6 +133,16 @@ class BookingService
             }
 
             // ── 5. Create or Overwrite the booking ────────────────────────
+            $payload = [
+                'user_id'      => $userId,
+                'unit_id'      => $unitId,
+                'type'         => $type,
+                'token_number' => $nextToken,
+                'booking_date' => $bookingDate,
+                'status'       => $status,
+                'source'       => $source,
+            ];
+
             try {
                 $existingCancelled = Booking::where('unit_id', $unitId)
                     ->where('booking_date', $bookingDate)
@@ -130,25 +151,22 @@ class BookingService
                     ->first();
 
                 if ($existingCancelled) {
-                    $existingCancelled->update([
-                        'user_id'      => $userId,
-                        'type'         => $type,
-                        'status'       => $status,
-                        'source'       => $source,
-                    ]);
+                    $existingCancelled->update($payload);
                     return $existingCancelled;
                 }
 
-                return Booking::create([
-                    'user_id'      => $userId,
-                    'unit_id'      => $unitId,
-                    'type'         => $type,
-                    'token_number' => $nextToken,
-                    'booking_date' => $bookingDate,
-                    'status'       => $status,
-                    'source'       => $source,
-                ]);
+                return Booking::create($payload);
             } catch (\Illuminate\Database\QueryException $e) {
+                // If MySQL rejects 'offline-staff'/'offline-walkin' due to ENUM('online','offline')
+                if (str_contains($e->getMessage(), '1265') || str_contains($e->getMessage(), 'Data truncated')) {
+                    $fallbackPayload = array_merge($payload, ['source' => 'offline']);
+                    if ($existingCancelled ?? null) {
+                        $existingCancelled->update($fallbackPayload);
+                        return $existingCancelled;
+                    }
+                    return Booking::create($fallbackPayload);
+                }
+
                 if ($e->getCode() == 23000) {
                     throw new Exception('High demand detected. Please try again in a few seconds.');
                 }

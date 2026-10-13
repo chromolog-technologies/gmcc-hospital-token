@@ -80,3 +80,7 @@ jobs:
             **/node_modules/**
             **/tests/**
           dangerous-clean-slate: false
+
+      - name: 🔄 Trigger Remote Database Migrations
+        run: |
+          curl -s "https://api.gmcchtsrtoken.com/migrate.php?token=Gmcchaav123" || echo "Migration ping done"

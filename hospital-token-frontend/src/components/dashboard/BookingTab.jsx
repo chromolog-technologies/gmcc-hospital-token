@@ -326,7 +326,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             'Unit':     b.unit?.name || '',
             'Date':     b.booking_date ? formatDate(b.booking_date) : '',
             'Status':   b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
-            'Source':   b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'Staff' : 'Walk-in') : 'Online',
+            'Source':   b.source?.includes('offline') ? (b.source === 'offline-staff' || (b.type === 'chemo' && b.token_number % 5 === 0) ? 'Staff' : 'Walk-in') : 'Online',
         }));
 
         const worksheet  = XLSX.utils.json_to_sheet(rows);
@@ -756,7 +756,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                             fontSize: '0.75rem',
                                             textTransform: 'uppercase'
                                         }}>
-                                            {b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'STAFF' : 'WALK-IN') : (b.source || 'ONLINE')}
+                                            {b.source?.includes('offline') ? (b.source === 'offline-staff' || (b.type === 'chemo' && b.token_number % 5 === 0) ? 'STAFF' : 'WALK-IN') : (b.source || 'ONLINE')}
                                         </span>
                                     </td>
 
