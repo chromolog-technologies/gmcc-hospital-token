@@ -109,7 +109,11 @@ class ApiService {
   }
 
   static Map<String, String> _getHeaders() {
-    final headers = {'Content-Type': 'application/json', ..._clientHeaders};
+    final headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      ..._clientHeaders,
+    };
     if (_token != null) {
       headers['Authorization'] = 'Bearer $_token';
     }
