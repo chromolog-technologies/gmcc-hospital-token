@@ -17,6 +17,22 @@ class CheckRole
     {
         $user = $request->user();
 
+        // Fallback for patient role: allow patient identification by X-User-Id, user_id, or CRNO
+        if (!$user && $role === 'patient') {
+            $userId = $request->header('X-User-Id') ?? $request->input('user_id') ?? $request->query('user_id');
+            $userCrno = $request->header('X-User-Crno') ?? $request->input('crno') ?? $request->query('crno');
+
+            if ($userId) {
+                $user = \App\Models\User::find($userId);
+            } elseif ($userCrno) {
+                $user = \App\Models\User::where('crno', \App\Models\User::formatCrno($userCrno))->first();
+            }
+
+            if ($user) {
+                $request->setUserResolver(fn () => $user);
+            }
+        }
+
         if (!$user) {
             abort(401, 'Unauthenticated.');
         }

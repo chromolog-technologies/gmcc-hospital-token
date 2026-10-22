@@ -17,6 +17,10 @@ class ApiService {
 
   // Store token in memory for session
   static String? _token;
+  static UserModel? _currentUser;
+
+  /// Current logged-in patient user
+  static UserModel? get currentUser => _currentUser;
 
   // Device / system info sent with every request so the backend can record
   // login and activity logs (platform, device model, OS version, app version).
@@ -72,20 +76,60 @@ class ApiService {
   }
 
   /// Retrieves the saved patient session if available.
+  /// Preserves login permanently on the device until explicit user logout.
   static Future<UserModel?> getSavedUser() async {
     try {
-      final token = await _storage.read(key: _keyToken);
       final userJson = await _storage.read(key: _keyUser);
-      if (token != null && token.isNotEmpty && userJson != null && userJson.isNotEmpty) {
+      final token = await _storage.read(key: _keyToken) ?? await _storage.read(key: 'token');
+      if (token != null && token.isNotEmpty) {
         _token = token;
+      }
+
+      if (userJson != null && userJson.isNotEmpty) {
         await _ensureClientInfo();
         final userMap = json.decode(userJson);
-        return UserModel.fromJson(userMap);
+        final user = UserModel.fromJson(userMap);
+        _currentUser = user;
+
+        // If bearer token is missing or empty, perform silent background refresh
+        if ((_token == null || _token!.isEmpty) && user.crno != null && user.crno!.isNotEmpty) {
+          _silentRefreshToken(user.crno!);
+        }
+        return user;
       }
     } catch (e) {
       debugPrint('Error restoring saved user session: $e');
     }
     return null;
+  }
+
+  /// Silently refresh the auth token in background without disrupting the user
+  static Future<bool> _silentRefreshToken(String crno) async {
+    try {
+      debugPrint('Silently refreshing token for CRNO: $crno');
+      final response = await http.post(
+        Uri.parse('$baseUrl/user/login'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ..._clientHeaders,
+        },
+        body: json.encode({'crno': crno}),
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true && data['data'] != null && data['data']['token'] != null) {
+          _token = data['data']['token'];
+          await _storage.write(key: _keyToken, value: _token);
+          await _storage.write(key: 'token', value: _token);
+          debugPrint('Silent token refresh successful');
+          return true;
+        }
+      }
+    } catch (e) {
+      debugPrint('Silent token refresh failed: $e');
+    }
+    return false;
   }
 
   static Future<void> logout() async {
@@ -98,6 +142,7 @@ class ApiService {
       debugPrint('Error logging out from server: $e');
     } finally {
       _token = null;
+      _currentUser = null;
       try {
         await _storage.delete(key: _keyToken);
         await _storage.delete(key: _keyUser);
@@ -114,8 +159,14 @@ class ApiService {
       'Accept': 'application/json',
       ..._clientHeaders,
     };
-    if (_token != null) {
+    if (_token != null && _token!.isNotEmpty) {
       headers['Authorization'] = 'Bearer $_token';
+    }
+    if (_currentUser != null) {
+      headers['X-User-Id'] = _currentUser!.id.toString();
+      if (_currentUser!.crno != null && _currentUser!.crno!.isNotEmpty) {
+        headers['X-User-Crno'] = _currentUser!.crno!;
+      }
     }
     return headers;
   }
@@ -157,6 +208,7 @@ class ApiService {
       if (data['success'] == true) {
         _token = data['data']['token'];
         final user = UserModel.fromJson(data['data']['user']);
+        _currentUser = user;
 
         try {
           await _storage.write(key: _keyToken, value: _token);
@@ -242,15 +294,30 @@ class ApiService {
 
   static Future<Map<String, dynamic>> createBooking(int userId, int unitId, String type) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/booking/create'),
+      final uri = Uri.parse('$baseUrl/booking/create');
+      final payload = {
+        'user_id': userId,
+        'unit_id': unitId,
+        'type': type,
+      };
+      var response = await http.post(
+        uri,
         headers: _getHeaders(),
-        body: json.encode({
-          'user_id': userId,
-          'unit_id': unitId,
-          'type': type,
-        }),
+        body: json.encode(payload),
       );
+
+      // Auto-retry once on 401 Unauthorized with silent background login
+      final crno = _currentUser?.crno;
+      if (response.statusCode == 401 && crno != null && crno.isNotEmpty) {
+        final ok = await _silentRefreshToken(crno);
+        if (ok) {
+          response = await http.post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode(payload),
+          );
+        }
+      }
 
       return json.decode(response.body);
     } catch (e) {
@@ -263,10 +330,24 @@ class ApiService {
 
   static Future<List<dynamic>> getUserBookings(int userId) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/booking/my-bookings'),
+      final uri = Uri.parse('$baseUrl/booking/my-bookings?user_id=$userId');
+      var response = await http.get(
+        uri,
         headers: _getHeaders(),
       );
+
+      // Auto-retry once on 401 Unauthorized with silent background login
+      final crno = _currentUser?.crno;
+      if (response.statusCode == 401 && crno != null && crno.isNotEmpty) {
+        final ok = await _silentRefreshToken(crno);
+        if (ok) {
+          response = await http.get(
+            uri,
+            headers: _getHeaders(),
+          );
+        }
+      }
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success'] == true) return data['data'];
@@ -279,13 +360,29 @@ class ApiService {
 
   static Future<Map<String, dynamic>> cancelBooking(int bookingId) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/booking/cancel'),
+      final uri = Uri.parse('$baseUrl/booking/cancel');
+      final payload = {
+        'booking_id': bookingId,
+        if (_currentUser != null) 'user_id': _currentUser!.id,
+      };
+      var response = await http.post(
+        uri,
         headers: _getHeaders(),
-        body: json.encode({
-          'booking_id': bookingId,
-        }),
+        body: json.encode(payload),
       );
+
+      // Auto-retry once on 401 Unauthorized with silent background login
+      final crno = _currentUser?.crno;
+      if (response.statusCode == 401 && crno != null && crno.isNotEmpty) {
+        final ok = await _silentRefreshToken(crno);
+        if (ok) {
+          response = await http.post(
+            uri,
+            headers: _getHeaders(),
+            body: json.encode(payload),
+          );
+        }
+      }
 
       return json.decode(response.body);
     } catch (e) {

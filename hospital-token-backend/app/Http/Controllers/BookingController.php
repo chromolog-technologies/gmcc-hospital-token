@@ -51,17 +51,18 @@ class BookingController extends Controller
 
     public function create(CreateBookingRequest $request)
     {
-        $userId = $request->user()->id;
+        $user = $request->user();
+        $userId = $user ? $user->id : ($request->input('user_id') ?? $request->header('X-User-Id'));
 
         try {
             $booking = $this->bookingService->createToken(
-                $userId,
+                (int)$userId,
                 $request->unit_id,
                 $request->type,
                 'online'  // App users always book online
             );
 
-            ActivityLogger::log($request->user(), 'booking_created', "Booked online token #{$booking->token_number} for {$booking->booking_date->toDateString()}", $booking, [
+            ActivityLogger::log($user, 'booking_created', "Booked online token #{$booking->token_number} for {$booking->booking_date->toDateString()}", $booking, [
                 'unit_id' => $booking->unit_id,
                 'type'    => $booking->type,
             ]);
@@ -92,10 +93,16 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Doctors cannot fetch patient bookings here.'], 403);
         }
 
+        $userId = $user ? $user->id : ($request->query('user_id') ?? $request->header('X-User-Id'));
+
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 400);
+        }
+
         BookingService::processAutoApprovals();
 
         $bookings = Booking::with(['unit.doctors'])
-            ->where('user_id', $user->id)
+            ->where('user_id', (int)$userId)
             ->orderBy('booking_date', 'desc')
             ->get();
 
@@ -110,7 +117,10 @@ class BookingController extends Controller
     {
         $booking = Booking::find($request->booking_id);
 
-        if ($booking->user_id !== $request->user()->id) {
+        $user = $request->user();
+        $userId = $user ? $user->id : ($request->input('user_id') ?? $request->header('X-User-Id'));
+
+        if ($booking->user_id !== (int)$userId) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
