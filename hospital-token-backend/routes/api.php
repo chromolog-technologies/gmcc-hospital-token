@@ -94,6 +94,9 @@ Route::middleware('throttle:60,1')->group(function () {
                 Route::put('/auto-approve', [\App\Http\Controllers\HospitalBookingController::class, 'updateAutoApprove']);
             });
 
+            // Login / Activity Logs (kept for 30 days)
+            Route::get('/hospital/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index']);
+
             // Hospital Notifications Endpoints
             Route::prefix('hospital/notifications')->group(function () {
                 Route::get('/', [\App\Http\Controllers\NotificationController::class, 'index']);

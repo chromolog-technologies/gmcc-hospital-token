@@ -5,6 +5,20 @@ import Spinner, { LoadingButton } from '../Spinner';
 import SearchableSelect from '../SearchableSelect';
 import * as XLSX from 'xlsx';
 
+// Who/what last changed the booking status (bookings.status_action)
+const STATUS_ACTION_LABELS = {
+    online_booked:        'Booked Online',
+    admin_booked_offline: 'Admin Booked (Offline)',
+    admin_approved:       'Admin Approved',
+    admin_cancelled:      'Admin Cancelled',
+    admin_completed:      'Admin Completed',
+    admin_set_pending:    'Admin Set Pending',
+    user_cancelled:       'User Cancelled',
+    auto_approved:        'Auto Approved',
+    doctor_completed:     'Doctor Completed',
+};
+const statusActionLabel = (action) => action ? (STATUS_ACTION_LABELS[action] || action) : '—';
+
 const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -255,9 +269,10 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
     const handleUpdateStatus = async (id, status) => {
         try {
-            await api.put(`/hospital/bookings/${id}/status`, { status });
+            const res = await api.put(`/hospital/bookings/${id}/status`, { status });
+            const updated = res.data?.data || {};
             // Update local state
-            setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+            setBookings(prev => prev.map(b => b.id === id ? { ...b, status, status_action: updated.status_action, status_action_at: updated.status_action_at } : b));
             if (onBookingChanged) onBookingChanged();
         } catch (err) {
             alert('Failed to update status.');
@@ -326,6 +341,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             'Unit':     b.unit?.name || '',
             'Date':     b.booking_date ? formatDate(b.booking_date) : '',
             'Status':   b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
+            'Action By': statusActionLabel(b.status_action),
             'Source':   b.source?.includes('offline') ? (b.source === 'offline-staff' || (b.type === 'chemo' && b.token_number % 5 === 0) ? 'Staff' : 'Walk-in') : 'Online',
         }));
 
@@ -341,6 +357,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             { wch: 24 }, // Unit
             { wch: 16 }, // Date
             { wch: 14 }, // Status
+            { wch: 22 }, // Action By
             { wch: 14 }, // Source
         ];
         worksheet['!cols'] = colWidths;
@@ -646,7 +663,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     </div>
                 </div>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
+                    <table style={{ width: '100%', minWidth: '1250px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>ID</th>
@@ -656,6 +673,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center' }}>Token #</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Booking Date</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Status</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Action By</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Source</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Created At</th>
                                 <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Updated At</th>
@@ -665,7 +683,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     <tbody>
                         {filteredBookings.length === 0 ? (
                             <tr>
-                                <td colSpan="11" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                <td colSpan="12" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                                     No bookings found.
                                 </td>
                             </tr>
@@ -743,6 +761,14 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                         }}>
                                             {b.status === 'active' ? 'Approved' : b.status}
                                         </span>
+                                    </td>
+
+                                    {/* 7b. status_action (who approved / cancelled) */}
+                                    <td style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap' }}>
+                                        <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>{statusActionLabel(b.status_action)}</div>
+                                        {b.status_action_at && (
+                                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>{formatDateTime(b.status_action_at)}</div>
+                                        )}
                                     </td>
 
                                     {/* 8. source */}

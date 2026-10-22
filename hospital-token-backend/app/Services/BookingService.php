@@ -24,10 +24,24 @@ class BookingService
 
         if (Carbon::now()->lt(Carbon::parse($hospital->auto_approve_bookings_until))) {
             $oneHourAgo = Carbon::now()->subHour();
-            Booking::where('status', 'pending')
+            $ids = Booking::where('status', 'pending')
                 ->where('source', 'online')
                 ->where('created_at', '<=', $oneHourAgo)
-                ->update(['status' => 'active']);
+                ->pluck('id')
+                ->all();
+
+            if (empty($ids)) {
+                return;
+            }
+
+            // Re-check status so concurrent callers don't approve/log the same booking twice
+            $approved = Booking::whereIn('id', $ids)
+                ->where('status', 'pending')
+                ->update(array_merge(['status' => 'active'], Booking::statusActionAttributes('auto_approved')));
+
+            if ($approved > 0) {
+                ActivityLogger::logSystemBulk('booking_auto_approved', 'booking', $ids, 'Token auto-approved after 1-hour grace period');
+            }
         }
     }
 
@@ -141,7 +155,7 @@ class BookingService
                 'booking_date' => $bookingDate,
                 'status'       => $status,
                 'source'       => $source,
-            ];
+            ] + Booking::statusActionAttributes($status === 'active' ? 'admin_booked_offline' : 'online_booked');
 
             try {
                 $existingCancelled = Booking::where('unit_id', $unitId)

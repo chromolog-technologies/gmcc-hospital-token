@@ -8,6 +8,26 @@ const api = axios.create({
     }
 });
 
+// ── Client system info ───────────────────────────────────────────────────────
+// Sent with every request so the backend activity log can record which
+// device/system an admin logged in or acted from.
+const buildDeviceInfo = () => {
+    try {
+        return encodeURIComponent(JSON.stringify({
+            platform: navigator.userAgentData?.platform || navigator.platform || '',
+            mobile:   navigator.userAgentData?.mobile ?? /Mobi/i.test(navigator.userAgent),
+            language: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            screen:   `${window.screen.width}x${window.screen.height}`,
+            cpu_cores: navigator.hardwareConcurrency || null,
+            memory_gb: navigator.deviceMemory || null,
+        }));
+    } catch {
+        return '';
+    }
+};
+const deviceInfoHeader = buildDeviceInfo();
+
 // ── Request Interceptor ──────────────────────────────────────────────────────
 // Automatically attaches the auth token to every request from sessionStorage.
 // This ensures protected API calls work correctly even after a page refresh.
@@ -17,6 +37,8 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        config.headers['X-Client-Platform'] = 'web';
+        if (deviceInfoHeader) config.headers['X-Device-Info'] = deviceInfoHeader;
         return config;
     },
     (error) => Promise.reject(error)

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 
@@ -16,6 +18,59 @@ class ApiService {
   // Store token in memory for session
   static String? _token;
 
+  // Device / system info sent with every request so the backend can record
+  // login and activity logs (platform, device model, OS version, app version).
+  static Map<String, String> _clientHeaders = {};
+  static Future<void>? _clientInfoLoader;
+
+  static Future<void> _ensureClientInfo() {
+    return _clientInfoLoader ??= _loadClientInfo();
+  }
+
+  static Future<void> _loadClientInfo() async {
+    final headers = <String, String>{};
+    try {
+      final Map<String, dynamic> info = {};
+      final deviceInfo = DeviceInfoPlugin();
+
+      if (kIsWeb) {
+        headers['X-Client-Platform'] = 'web';
+      } else if (defaultTargetPlatform == TargetPlatform.android) {
+        final android = await deviceInfo.androidInfo;
+        headers['X-Client-Platform'] = 'android';
+        info.addAll({
+          'manufacturer': android.manufacturer,
+          'model': android.model,
+          'os': 'Android',
+          'os_version': android.version.release,
+          'sdk_int': android.version.sdkInt,
+          'physical_device': android.isPhysicalDevice,
+        });
+      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+        final ios = await deviceInfo.iosInfo;
+        headers['X-Client-Platform'] = 'ios';
+        info.addAll({
+          'manufacturer': 'Apple',
+          'model': ios.utsname.machine,
+          'os': ios.systemName,
+          'os_version': ios.systemVersion,
+          'physical_device': ios.isPhysicalDevice,
+        });
+      } else {
+        headers['X-Client-Platform'] = defaultTargetPlatform.name;
+      }
+
+      final package = await PackageInfo.fromPlatform();
+      headers['X-App-Version'] = '${package.version}+${package.buildNumber}';
+      info['timezone'] = DateTime.now().timeZoneName;
+
+      headers['X-Device-Info'] = Uri.encodeComponent(json.encode(info));
+    } catch (e) {
+      debugPrint('Error collecting device info: $e');
+    }
+    _clientHeaders = headers;
+  }
+
   /// Retrieves the saved patient session if available.
   static Future<UserModel?> getSavedUser() async {
     try {
@@ -23,6 +78,7 @@ class ApiService {
       final userJson = await _storage.read(key: _keyUser);
       if (token != null && token.isNotEmpty && userJson != null && userJson.isNotEmpty) {
         _token = token;
+        await _ensureClientInfo();
         final userMap = json.decode(userJson);
         return UserModel.fromJson(userMap);
       }
@@ -53,7 +109,7 @@ class ApiService {
   }
 
   static Map<String, String> _getHeaders() {
-    final headers = {'Content-Type': 'application/json'};
+    final headers = {'Content-Type': 'application/json', ..._clientHeaders};
     if (_token != null) {
       headers['Authorization'] = 'Bearer $_token';
     }
@@ -75,9 +131,10 @@ class ApiService {
         bodyData['password'] = password;
       }
 
+      await _ensureClientInfo();
       final response = await http.post(
         Uri.parse('$baseUrl/user/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _getHeaders(),
         body: json.encode(bodyData),
       );
 
@@ -126,9 +183,10 @@ class ApiService {
 
   static Future<Map<String, dynamic>> doctorLogin(String regno, String password) async {
     try {
+      await _ensureClientInfo();
       final response = await http.post(
         Uri.parse('$baseUrl/doctor/login'),
-        headers: {'Content-Type': 'application/json'},
+        headers: _getHeaders(),
         body: json.encode({'regno': regno, 'password': password}),
       );
 

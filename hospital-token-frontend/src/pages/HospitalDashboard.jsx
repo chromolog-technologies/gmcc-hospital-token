@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
 import { dashboardCache, CACHE_KEYS } from '../lib/dashboardCache';
-import { LayoutDashboard, Users, Stethoscope, Layers, LogOut, RefreshCw, Menu as MenuIcon, X, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, Stethoscope, Layers, LogOut, RefreshCw, Menu as MenuIcon, X, Bell, History } from 'lucide-react';
 
 const OverviewTab     = lazy(() => import('../components/dashboard/OverviewTab'));
 const UserTab         = lazy(() => import('../components/dashboard/UserTab'));
@@ -10,6 +10,7 @@ const DoctorTab       = lazy(() => import('../components/dashboard/DoctorTab'));
 const UnitTab         = lazy(() => import('../components/dashboard/UnitTab'));
 const BookingTab      = lazy(() => import('../components/dashboard/BookingTab'));
 const NotificationsTab = lazy(() => import('../components/dashboard/NotificationsTab'));
+const ActivityLogsTab  = lazy(() => import('../components/dashboard/ActivityLogsTab'));
 
 const NAV = [
     { id: 'overview', label: 'Overview',        icon: LayoutDashboard },
@@ -18,6 +19,7 @@ const NAV = [
     { id: 'units',    label: 'Units',            icon: Layers          },
     { id: 'bookings', label: 'Bookings',         icon: LayoutDashboard },
     { id: 'notifications', label: 'Notifications', icon: Bell          },
+    { id: 'logs',     label: 'Activity Logs',    icon: History         },
 ];
 
 const HospitalDashboard = () => {
@@ -198,6 +200,7 @@ const HospitalDashboard = () => {
                         {activeTab === 'units'    && <UnitTab units={units} onUnitAdded={handleMutation} />}
                         {activeTab === 'bookings' && <BookingTab onBookingChanged={handleMutation} refreshKey={bookingRefreshKey} />}
                         {activeTab === 'notifications' && <NotificationsTab />}
+                        {activeTab === 'logs'     && <ActivityLogsTab />}
                     </Suspense>
                 )}
             </main>
