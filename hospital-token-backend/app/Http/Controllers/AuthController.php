@@ -7,6 +7,7 @@ use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\DoctorLoginRequest;
 use App\Models\User;
 use App\Models\Doctor;
+use App\Services\ActivityLogger;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -20,6 +21,7 @@ class AuthController extends Controller
         $user = User::where('crno', $crno)->first();
 
         if (!$user) {
+            ActivityLogger::log(null, 'login_failed', 'Patient login failed: unknown CRNO', null, ['actor_type' => 'patient', 'actor_name' => $crno]);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid CRNO.'
@@ -28,6 +30,7 @@ class AuthController extends Controller
 
         if ($request->filled('password')) {
             if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                ActivityLogger::log($user, 'login_failed', 'Patient login failed: wrong password');
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid CRNO or password.'
@@ -36,6 +39,7 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('user-token')->plainTextToken;
+        ActivityLogger::log($user, 'login', 'Patient logged in');
 
         return response()->json([
             'success' => true,
@@ -55,6 +59,7 @@ class AuthController extends Controller
         $doctor = Doctor::where('regno', $request->regno)->with('unit')->first();
 
         if (!$doctor || !Hash::check($request->password, $doctor->password)) {
+            ActivityLogger::log($doctor, 'login_failed', 'Doctor login failed', null, $doctor ? [] : ['actor_type' => 'doctor', 'actor_name' => $request->regno]);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid registration number or password.'
@@ -62,6 +67,7 @@ class AuthController extends Controller
         }
 
         $token = $doctor->createToken('doctor-token')->plainTextToken;
+        ActivityLogger::log($doctor, 'login', 'Doctor logged in');
 
         // Build doctor data with units as an array (dashboard expects doctor['units'])
         $doctorData = $doctor->toArray();
@@ -90,6 +96,7 @@ class AuthController extends Controller
         $hospital = \App\Models\Hospital::where('email', $request->email)->first();
 
         if (!$hospital || !\Illuminate\Support\Facades\Hash::check($request->password, $hospital->password)) {
+            ActivityLogger::log($hospital, 'login_failed', 'Admin login failed', null, $hospital ? [] : ['actor_type' => 'admin', 'actor_name' => $request->email]);
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid email or password.'
@@ -97,6 +104,7 @@ class AuthController extends Controller
         }
 
         $token = $hospital->createToken('hospital-token')->plainTextToken;
+        ActivityLogger::log($hospital, 'login', 'Admin logged in');
 
         return response()->json([
             'success' => true,
@@ -114,6 +122,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+        ActivityLogger::log($request->user(), 'logout', 'Logged out');
 
         return response()->json([
             'success' => true,

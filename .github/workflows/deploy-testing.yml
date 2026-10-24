@@ -1,0 +1,87 @@
+name: 🧪 Deploy to Hostinger (Testing)
+
+on:
+  push:
+    branches:
+      - testing          # Triggers on push to "testing" branch
+  workflow_dispatch:     # Allows manual trigger from GitHub Actions UI
+
+jobs:
+  # ─────────────────────────────────────────────────────────
+  # JOB 1: Build React frontend and deploy to Hostinger via Rsync
+  # ─────────────────────────────────────────────────────────
+  deploy-frontend-testing:
+    name: 🌐 Build & Deploy Frontend (Hostinger)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies & Build
+        working-directory: ./hospital-token-frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: ⚙️ Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: 🚀 Sync Frontend via Rsync
+        run: |
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          PASS="${{ secrets.HOSTINGER_SSH_PASSWORD }}"
+          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/"
+          
+          echo "Syncing frontend via SSH Password..."
+          sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" hospital-token-frontend/dist/ $USER@$HOST:$TARGET
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 2: Deploy Laravel backend to Hostinger via Rsync
+  # ─────────────────────────────────────────────────────────
+  deploy-backend-testing:
+    name: ⚙️ Deploy Backend to Hostinger (Laravel)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: 🚀 Sync Backend via Rsync
+        run: |
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          PASS="${{ secrets.HOSTINGER_SSH_PASSWORD }}"
+          TARGET="/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api/"
+
+          echo "Syncing backend via SSH Password..."
+          sshpass -p "$PASS" rsync -avz -e "ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            --exclude='.env' \
+            --exclude='vendor/' \
+            --exclude='storage/logs/*' \
+            --exclude='storage/framework/cache/*' \
+            --exclude='storage/framework/sessions/*' \
+            --exclude='.git/' \
+            hospital-token-backend/ $USER@$HOST:$TARGET
+
+      - name: 🔧 Clear Laravel Cache & Reset OPcache via SSH
+        run: |
+          PORT=65002
+          HOST="${{ secrets.HOSTINGER_SSH_HOST }}"
+          USER="${{ secrets.HOSTINGER_SSH_USERNAME }}"
+          PASS="${{ secrets.HOSTINGER_SSH_PASSWORD }}"
+          
+          CMD="BASEDIR=/home/u818464796/domains/gmcchtsrtoken.chromologtechnologies.com/public_html/gmcc-api; ln -sfn \$BASEDIR/storage/app/public \$BASEDIR/public/storage; cd \$BASEDIR; rm -f bootstrap/cache/*.php; php artisan optimize:clear || true; php -r \"if (function_exists('opcache_reset')) { opcache_reset(); echo 'OPcache reset'; }\""
+
+          sshpass -p "$PASS" ssh -p $PORT -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST "$CMD"

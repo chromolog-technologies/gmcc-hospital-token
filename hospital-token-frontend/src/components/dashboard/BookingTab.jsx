@@ -1,8 +1,23 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../../lib/axios';
-import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, XCircle, Settings, AlertCircle, RefreshCw, Download, Search, Calendar, X } from 'lucide-react';
 import Spinner, { LoadingButton } from '../Spinner';
 import SearchableSelect from '../SearchableSelect';
+import * as XLSX from 'xlsx';
+
+// Who/what last changed the booking status (bookings.status_action)
+const STATUS_ACTION_LABELS = {
+    online_booked:        'Booked Online',
+    admin_booked_offline: 'Admin Booked (Offline)',
+    admin_approved:       'Admin Approved',
+    admin_cancelled:      'Admin Cancelled',
+    admin_completed:      'Admin Completed',
+    admin_set_pending:    'Admin Set Pending',
+    user_cancelled:       'User Cancelled',
+    auto_approved:        'Auto Approved',
+    doctor_completed:     'Doctor Completed',
+};
+const statusActionLabel = (action) => action ? (STATUS_ACTION_LABELS[action] || action) : '—';
 
 const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [bookings, setBookings] = useState([]);
@@ -12,23 +27,83 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
 
-    // Format date as dd-MM-yyyy
+    // Filter State (Patient CR No / Name, Booking Date, Source, and Type)
+    const [filterCrno, setFilterCrno] = useState('');
+    const [filterDate, setFilterDate] = useState('');
+    const [filterSource, setFilterSource] = useState('');
+    const [filterType, setFilterType] = useState('');
+    const [filterLoading, setFilterLoading] = useState(false);
+    const crnoDebounceRef = useRef(null);
+    const filterCrnoRef = useRef('');
+    const filterDateRef = useRef('');
+    const filterSourceRef = useRef('');
+    const filterTypeRef = useRef('');
+    filterCrnoRef.current = filterCrno;
+    filterDateRef.current = filterDate;
+    filterSourceRef.current = filterSource;
+    filterTypeRef.current = filterType;
+
+    // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        const d = new Date(dateString);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
+        const datePart = dateString.split('T')[0];
+        const [year, month, day] = datePart.split('-');
         return `${day}-${month}-${year}`;
     };
+
+    // Format full timestamp as dd-MM-yyyy HH:mm:ss
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '—';
+        try {
+            const d = new Date(dateString);
+            if (isNaN(d.getTime())) return dateString;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+        } catch {
+            return dateString;
+        }
+    };
     const [error, setError] = useState('');
-    const [users, setUsers] = useState([]);
     const [units, setUnits] = useState([]);
     
-    // Offline Booking State
+    // Offline Booking State & On-Demand Patient Search
     const [offlineForm, setOfflineForm] = useState({ user_id: '', unit_id: '', type: 'chemo', source: 'offline-walkin' });
+    const [patientOptions, setPatientOptions] = useState([]);
+    const [patientSearching, setPatientSearching] = useState(false);
+    const searchTimeoutRef = useRef(null);
     const [bookingLoading, setBookingLoading] = useState(false);
     const [availability, setAvailability] = useState(null);
+
+    // On-demand debounced patient search (scales to 50k+ users without slowing down page load)
+    const handlePatientSearch = useCallback((query) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+        if (!query || query.trim().length === 0) {
+            return;
+        }
+        searchTimeoutRef.current = setTimeout(async () => {
+            setPatientSearching(true);
+            try {
+                const res = await api.get('/hospital/users', { params: { search: query } });
+                if (res.data.success) {
+                    setPatientOptions((res.data.data || []).map(u => ({
+                        value: u.id,
+                        label: `${u.name} (CR: ${u.crno})`
+                    })));
+                }
+            } catch (err) {
+                console.error('Patient search error', err);
+            } finally {
+                setPatientSearching(false);
+            }
+        }, 300);
+    }, []);
 
     // Auto-refresh state
     const AUTO_REFRESH_SECONDS = 5 * 60; // 5 minutes
@@ -56,11 +131,100 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         }, AUTO_REFRESH_SECONDS * 1000);
     }, []);
 
-    // Light refresh: only re-fetches the bookings list (no full page reload)
+    // Fetch filtered bookings list
+    const fetchBookingsList = useCallback(async (crnoVal, dateVal, sourceVal, typeVal) => {
+        const c = crnoVal !== undefined ? crnoVal : filterCrnoRef.current;
+        const d = dateVal !== undefined ? dateVal : filterDateRef.current;
+        const s = sourceVal !== undefined ? sourceVal : filterSourceRef.current;
+        const t = typeVal !== undefined ? typeVal : filterTypeRef.current;
+        setFilterLoading(true);
+        try {
+            const params = { per_page: 300 };
+            if (c && c.trim()) params.crno = c.trim();
+            if (d && d.trim()) params.date = d.trim();
+            if (s && s.trim()) params.source = s.trim();
+            if (t && t.trim()) params.type = t.trim();
+            const res = await api.get('/hospital/bookings', { params });
+            if (res.data.success) {
+                setBookings(res.data.data.data || res.data.data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch filtered bookings', err);
+        } finally {
+            setFilterLoading(false);
+        }
+    }, []);
+
+    // Filter event handlers
+    const handleCrnoChange = (e) => {
+        const val = e.target.value;
+        setFilterCrno(val);
+        if (crnoDebounceRef.current) {
+            clearTimeout(crnoDebounceRef.current);
+        }
+        crnoDebounceRef.current = setTimeout(() => {
+            fetchBookingsList(val, filterDateRef.current, filterSourceRef.current, filterTypeRef.current);
+        }, 350);
+    };
+
+    const handleDateChange = (e) => {
+        const val = e.target.value;
+        setFilterDate(val);
+        fetchBookingsList(filterCrnoRef.current, val, filterSourceRef.current, filterTypeRef.current);
+    };
+
+    const handleSourceChange = (e) => {
+        const val = e.target.value;
+        setFilterSource(val);
+        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, val, filterTypeRef.current);
+    };
+
+    const handleTypeChange = (e) => {
+        const val = e.target.value;
+        setFilterType(val);
+        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, filterSourceRef.current, val);
+    };
+
+    const handleSetToday = () => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        setFilterDate(todayStr);
+        fetchBookingsList(filterCrnoRef.current, todayStr, filterSourceRef.current, filterTypeRef.current);
+    };
+
+    const handleClearFilters = () => {
+        setFilterCrno('');
+        setFilterDate('');
+        setFilterSource('');
+        setFilterType('');
+        if (crnoDebounceRef.current) clearTimeout(crnoDebounceRef.current);
+        fetchBookingsList('', '', '', '');
+    };
+
+    // Filtered bookings based on active filters
+    const filteredBookings = bookings.filter(b => {
+        if (filterType && b.type !== filterType) return false;
+        if (filterSource === 'online' && b.source !== 'online') return false;
+        if (filterSource === 'offline' && !b.source?.includes('offline')) return false;
+        if (filterDate && b.booking_date !== filterDate && !b.booking_date?.startsWith(filterDate)) return false;
+        if (filterCrno && filterCrno.trim()) {
+            const q = filterCrno.trim().toLowerCase();
+            const matchCr = b.user?.crno?.toString().toLowerCase().includes(q);
+            const matchName = b.user?.name?.toLowerCase().includes(q);
+            if (!matchCr && !matchName) return false;
+        }
+        return true;
+    });
+
+    // Light refresh: only re-fetches the bookings list (preserves active filters)
     const refreshBookingsOnly = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            const bRes = await api.get('/hospital/bookings');
+            const params = { per_page: 300 };
+            if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
+            if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
+            if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
+            if (filterTypeRef.current && filterTypeRef.current.trim()) params.type = filterTypeRef.current.trim();
+            const bRes = await api.get('/hospital/bookings', { params });
             if (bRes.data.success) {
                 setBookings(bRes.data.data.data || bRes.data.data);
             }
@@ -77,14 +241,17 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         startAutoRefresh();
     }, [refreshBookingsOnly, startAutoRefresh]);
 
-
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [bRes, sRes, usersRes, unitsRes] = await Promise.all([
-                api.get('/hospital/bookings'),
+            const params = { per_page: 300 };
+            if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
+            if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
+            if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
+            if (filterTypeRef.current && filterTypeRef.current.trim()) params.type = filterTypeRef.current.trim();
+            const [bRes, sRes, unitsRes] = await Promise.all([
+                api.get('/hospital/bookings', { params }),
                 api.get('/hospital/bookings/settings'),
-                api.get('/hospital/users'),
                 api.get('/units')
             ]);
             
@@ -94,12 +261,19 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             if (sRes.data.success) {
                 setCurrentAutoApprove(sRes.data.data.auto_approve_bookings_until);
             }
-            if (usersRes.data.success) {
-                setUsers(usersRes.data.data || []);
-            }
             if (unitsRes.data.success) {
                 setUnits(unitsRes.data.data || []);
             }
+
+            // Prime the offline patient dropdown with recent 20 patients without blocking
+            api.get('/hospital/users', { params: { limit: 20 } }).then(res => {
+                if (res.data.success) {
+                    setPatientOptions((res.data.data || []).map(u => ({
+                        value: u.id,
+                        label: `${u.name} (CR: ${u.crno})`
+                    })));
+                }
+            }).catch(() => {});
         } catch (err) {
             setError('Failed to load data.');
         } finally {
@@ -110,9 +284,10 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
     const handleUpdateStatus = async (id, status) => {
         try {
-            await api.put(`/hospital/bookings/${id}/status`, { status });
+            const res = await api.put(`/hospital/bookings/${id}/status`, { status });
+            const updated = res.data?.data || {};
             // Update local state
-            setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+            setBookings(prev => prev.map(b => b.id === id ? { ...b, status, status_action: updated.status_action, status_action_at: updated.status_action_at } : b));
             if (onBookingChanged) onBookingChanged();
         } catch (err) {
             alert('Failed to update status.');
@@ -172,10 +347,44 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         }
     };
 
+    // ── Export bookings to Excel ───────────────────────────────────────────
+    const exportToExcel = () => {
+        const rows = filteredBookings.map(b => ({
+            'Token No': b.token_number ?? '',
+            'Cr No':    b.user?.crno || '',
+            'Name':     b.user?.name || '',
+            'Unit':     b.unit?.name || '',
+            'Date':     b.booking_date ? formatDate(b.booking_date) : '',
+            'Status':   b.status === 'active' ? 'Approved' : (b.status ? b.status.charAt(0).toUpperCase() + b.status.slice(1) : ''),
+            'Action By': statusActionLabel(b.status_action),
+            'Source':   b.source?.includes('offline') ? (b.source === 'offline-staff' || (b.type === 'chemo' && b.token_number % 5 === 0) ? 'Staff' : 'Walk-in') : 'Online',
+        }));
+
+        const worksheet  = XLSX.utils.json_to_sheet(rows);
+        const workbook   = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Bookings');
+
+        // Auto-fit column widths
+        const colWidths = [
+            { wch: 12 }, // Token No
+            { wch: 16 }, // Cr No
+            { wch: 26 }, // Name
+            { wch: 24 }, // Unit
+            { wch: 16 }, // Date
+            { wch: 14 }, // Status
+            { wch: 22 }, // Action By
+            { wch: 14 }, // Source
+        ];
+        worksheet['!cols'] = colWidths;
+
+        const fileSuffix = filterDate ? formatDate(filterDate) : formatDate(new Date().toISOString());
+        XLSX.writeFile(workbook, `GMCC_Bookings_${fileSuffix}.xlsx`);
+    };
+
     if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}><Spinner /></div>;
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ width: '100%', margin: '0 auto' }}>
             <div style={{ marginBottom: '1.5rem' }}>
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Booking Management</h2>
             </div>
@@ -240,10 +449,12 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                     <div style={{ flex: 1, minWidth: '200px' }}>
                         <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 700, color: '#374151', marginBottom: '0.4rem', textTransform: 'uppercase' }}>Select Patient</label>
                         <SearchableSelect
-                            options={users.map(u => ({ value: u.id, label: `${u.name} (CR: ${u.crno})` }))}
+                            options={patientOptions}
                             value={offlineForm.user_id}
                             onChange={(val) => setOfflineForm({ ...offlineForm, user_id: val })}
-                            placeholder="Search patient by name or CR..."
+                            onSearch={handlePatientSearch}
+                            loading={patientSearching}
+                            placeholder="Type patient name or CR number..."
                             required
                         />
                     </div>
@@ -289,49 +500,294 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
 
             {/* Bookings List */}
             <div className="glass-panel" style={{ background: 'white', overflow: 'hidden' }}>
-                <div className="table-responsive">
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+                {/* Filters & Export Toolbar */}
+                <div style={{ 
+                    display: 'flex', 
+                    flexWrap: 'wrap', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between', 
+                    gap: '0.75rem', 
+                    padding: '0.85rem 1.25rem', 
+                    borderBottom: '1px solid #f1f5f9',
+                    background: '#ffffff'
+                }}>
+                    {/* Left: Filter Controls */}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem', flex: 1 }}>
+                        {/* Search Patient by CR No or Name */}
+                        <div style={{ position: 'relative', minWidth: '220px', flex: '1 1 240px', maxWidth: '340px' }}>
+                            <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                            <input
+                                type="text"
+                                placeholder="Search Patient by CR No or Name..."
+                                value={filterCrno}
+                                onChange={handleCrnoChange}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.45rem 2rem 0.45rem 2rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    fontSize: '0.85rem',
+                                    outline: 'none',
+                                    boxSizing: 'border-box',
+                                    background: '#f8fafc',
+                                    color: '#0f172a'
+                                }}
+                            />
+                            {filterCrno && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setFilterCrno('');
+                                        fetchBookingsList('', filterDateRef.current);
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '8px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        color: '#94a3b8',
+                                        padding: 0
+                                    }}
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Date Filter */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <div style={{ position: 'relative' }}>
+                                <Calendar size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                                <input
+                                    type="date"
+                                    value={filterDate}
+                                    onChange={handleDateChange}
+                                    style={{
+                                        padding: '0.45rem 0.6rem 0.45rem 2rem',
+                                        borderRadius: '8px',
+                                        border: '1px solid #e2e8f0',
+                                        fontSize: '0.85rem',
+                                        outline: 'none',
+                                        background: '#f8fafc',
+                                        color: '#0f172a',
+                                        cursor: 'pointer'
+                                    }}
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleSetToday}
+                                style={{
+                                    padding: '0.45rem 0.75rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #e2e8f0',
+                                    background: '#f8fafc',
+                                    color: '#475569',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                Today
+                            </button>
+                        </div>
+
+                        {/* Source Filter (All / Online / Offline) */}
+                        <select
+                            value={filterSource}
+                            onChange={handleSourceChange}
+                            style={{
+                                padding: '0.45rem 0.75rem',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '0.85rem',
+                                outline: 'none',
+                                background: '#f8fafc',
+                                color: '#0f172a',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <option value="">All Sources</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                        </select>
+
+                        {/* Type Filter (All / Chemo / Followup) */}
+                        <select
+                            value={filterType}
+                            onChange={handleTypeChange}
+                            style={{
+                                padding: '0.45rem 0.75rem',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '0.85rem',
+                                outline: 'none',
+                                background: '#f8fafc',
+                                color: '#0f172a',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <option value="">All Types</option>
+                            <option value="chemo">Chemo</option>
+                            <option value="followup">Followup</option>
+                        </select>
+
+                        {/* Clear Filters Button */}
+                        {(filterCrno || filterDate || filterSource || filterType) && (
+                            <button
+                                type="button"
+                                onClick={handleClearFilters}
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem',
+                                    padding: '0.45rem 0.75rem',
+                                    borderRadius: '8px',
+                                    border: '1px solid #fee2e2',
+                                    background: '#fef2f2',
+                                    color: '#ef4444',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                    whiteSpace: 'nowrap'
+                                }}
+                            >
+                                <X size={13} /> Clear Filters
+                            </button>
+                        )}
+
+                        {filterLoading && (
+                            <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                <RefreshCw size={12} className="spin-fast" /> Filtering...
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Right: Record count & Export to Excel */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ fontSize: '0.82rem', color: '#64748b', fontWeight: 600 }}>
+                            {filteredBookings.length} {filteredBookings.length === 1 ? 'booking' : 'bookings'}
+                        </span>
+                        <button
+                            onClick={exportToExcel}
+                            disabled={filteredBookings.length === 0}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                padding: '0.45rem 1rem',
+                                background: filteredBookings.length === 0 ? '#e2e8f0' : '#16a34a',
+                                color: filteredBookings.length === 0 ? '#94a3b8' : '#ffffff',
+                                border: 'none',
+                                borderRadius: '8px',
+                                fontSize: '0.82rem',
+                                fontWeight: 700,
+                                cursor: filteredBookings.length === 0 ? 'not-allowed' : 'pointer',
+                                transition: 'background 0.2s',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            <Download size={15} />
+                            Export to Excel
+                        </button>
+                    </div>
+                </div>
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', minWidth: '1250px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.88rem' }}>
                         <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                             <tr>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Patient / CRNO</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Unit</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Date & Token</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600 }}>Status</th>
-                                <th style={{ padding: '1rem', color: '#64748b', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>ID</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Patient / CR No</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Unit ID</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Type</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'center' }}>Token #</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Booking Date</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Status</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Action By</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Source</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Created At</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase' }}>Updated At</th>
+                                <th style={{ padding: '0.85rem 1rem', color: '#64748b', fontWeight: 700, fontSize: '0.8rem', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
                     <tbody>
-                        {bookings.length === 0 ? (
+                        {filteredBookings.length === 0 ? (
                             <tr>
-                                <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
+                                <td colSpan="12" style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8' }}>
                                     No bookings found.
                                 </td>
                             </tr>
                         ) : (
-                            bookings.map(b => (
+                            filteredBookings.map(b => (
                                 <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '1rem' }}>
+                                    {/* 1. id */}
+                                    <td style={{ padding: '0.85rem 1rem', fontWeight: 700, color: '#334155' }}>
+                                        #{b.id}
+                                    </td>
+
+                                    {/* 2. Patient & CR No (User ID removed) */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
                                         <div style={{ fontWeight: 700, color: '#0f172a' }}>{b.user?.name || 'Unknown'}</div>
-                                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{b.user?.crno}</div>
-                                    </td>
-                                    <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '-'}</div>
-                                    </td>
-                                    <td style={{ padding: '1rem' }}>
-                                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{formatDate(b.booking_date)}</div>
-                                        <div style={{ fontSize: '0.85rem', color: '#ff0088', fontWeight: 800 }}>Token: {b.token_number}</div>
-                                        <div style={{ fontSize: '0.75rem', marginTop: '0.2rem' }}>
-                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe', color: b.source?.includes('offline') ? '#c2410c' : '#0369a1', fontWeight: 700 }}>
-                                                {b.source?.includes('offline') ? (b.source === 'offline-staff' ? 'STAFF' : 'WALK-IN') : 'ONLINE'}
-                                            </span>
-                                            <span style={{ padding: '0.15rem 0.4rem', borderRadius: '4px', background: '#f1f5f9', color: '#475569', fontWeight: 700, marginLeft: '0.3rem' }}>
-                                                {b.type?.toUpperCase()}
-                                            </span>
+                                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.15rem', fontWeight: 600 }}>
+                                            CR: {b.user?.crno || '—'}
                                         </div>
                                     </td>
-                                    <td style={{ padding: '1rem' }}>
+
+                                    {/* 3. unit_id & Unit */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                                            <span style={{ fontSize: '0.72rem', background: '#f1f5f9', color: '#475569', padding: '0.1rem 0.35rem', borderRadius: '4px', fontWeight: 700 }}>
+                                                #{b.unit_id}
+                                            </span>
+                                            <span style={{ fontWeight: 600, color: '#0f172a' }}>{b.unit?.name || '—'}</span>
+                                        </div>
+                                    </td>
+
+                                    {/* 4. type */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
                                         <span style={{
-                                            padding: '0.35rem 0.75rem',
+                                            padding: '0.2rem 0.5rem',
+                                            borderRadius: '4px',
+                                            background: b.type === 'chemo' ? '#fdf2f8' : '#f0fdf4',
+                                            color: b.type === 'chemo' ? '#be185d' : '#15803d',
+                                            fontWeight: 700,
+                                            fontSize: '0.75rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {b.type || '—'}
+                                        </span>
+                                    </td>
+
+                                    {/* 5. token_number */}
+                                    <td style={{ padding: '0.85rem 1rem', textAlign: 'center' }}>
+                                        <span style={{
+                                            display: 'inline-block',
+                                            padding: '0.25rem 0.6rem',
+                                            borderRadius: '6px',
+                                            background: '#fff1f2',
+                                            color: '#e11d48',
+                                            fontWeight: 800,
+                                            fontSize: '0.95rem'
+                                        }}>
+                                            {b.token_number ?? '—'}
+                                        </span>
+                                    </td>
+
+                                    {/* 6. booking_date */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#0f172a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                                        {formatDate(b.booking_date)}
+                                    </td>
+
+                                    {/* 7. status */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <span style={{
+                                            padding: '0.3rem 0.65rem',
                                             borderRadius: '20px',
                                             fontSize: '0.75rem',
                                             fontWeight: 800,
@@ -342,29 +798,64 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                                             {b.status === 'active' ? 'Approved' : b.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+
+                                    {/* 7b. status_action (who approved / cancelled) */}
+                                    <td style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap' }}>
+                                        <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>{statusActionLabel(b.status_action)}</div>
+                                        {b.status_action_at && (
+                                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>{formatDateTime(b.status_action_at)}</div>
+                                        )}
+                                    </td>
+
+                                    {/* 8. source */}
+                                    <td style={{ padding: '0.85rem 1rem' }}>
+                                        <span style={{
+                                            padding: '0.2rem 0.5rem',
+                                            borderRadius: '4px',
+                                            background: b.source?.includes('offline') ? '#ffedd5' : '#e0f2fe',
+                                            color: b.source?.includes('offline') ? '#c2410c' : '#0369a1',
+                                            fontWeight: 700,
+                                            fontSize: '0.75rem',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {b.source?.includes('offline') ? (b.source === 'offline-staff' || (b.type === 'chemo' && b.token_number % 5 === 0) ? 'STAFF' : 'WALK-IN') : (b.source || 'ONLINE')}
+                                        </span>
+                                    </td>
+
+                                    {/* 9. created_at */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                                        {formatDateTime(b.created_at)}
+                                    </td>
+
+                                    {/* 10. updated_at */}
+                                    <td style={{ padding: '0.85rem 1rem', color: '#64748b', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                                        {formatDateTime(b.updated_at)}
+                                    </td>
+
+                                    {/* 11. Actions */}
+                                    <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                                         {b.status === 'pending' && (
-                                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
                                                 <button 
                                                     onClick={() => handleUpdateStatus(b.id, 'active')}
-                                                    style={{ background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                    style={{ background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                                 >
-                                                    <CheckCircle size={14} /> Approve
+                                                    <CheckCircle size={13} /> Approve
                                                 </button>
                                                 <button 
                                                     onClick={() => handleUpdateStatus(b.id, 'cancelled')}
-                                                    style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                    style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                                 >
-                                                    <XCircle size={14} /> Cancel
+                                                    <XCircle size={13} /> Cancel
                                                 </button>
                                             </div>
                                         )}
                                         {b.status === 'active' && (
                                             <button 
                                                 onClick={() => handleUpdateStatus(b.id, 'cancelled')}
-                                                style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.4rem 0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', fontWeight: 600 }}
+                                                style={{ background: 'white', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '6px', padding: '0.35rem 0.65rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.78rem', fontWeight: 600 }}
                                             >
-                                                <XCircle size={14} /> Cancel
+                                                <XCircle size={13} /> Cancel
                                             </button>
                                         )}
                                     </td>

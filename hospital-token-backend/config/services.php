@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Used by ActivityLogger to resolve approximate login location from IP.
+    'ip_geolocation' => [
+        'enabled' => env('IP_GEOLOCATION_ENABLED', true),
+        'url' => env('IP_GEOLOCATION_URL', 'http://ip-api.com/json/{ip}?fields=status,country,regionName,city,lat,lon,isp'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

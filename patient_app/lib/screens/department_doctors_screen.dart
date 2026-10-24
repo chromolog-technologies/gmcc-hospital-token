@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'booking_screen.dart';
 
 class DepartmentDoctorsScreen extends StatelessWidget {
@@ -63,8 +64,10 @@ class DepartmentDoctorsScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const BannerAdWidget(),
     );
   }
+
 
   Widget _buildUnitSection(BuildContext context, UnitModel unit) {
     final String days = unit.day ?? 'Not Scheduled';

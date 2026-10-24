@@ -11,7 +11,7 @@ import { ChevronDown, X } from 'lucide-react';
  *   placeholder  : string
  *   required     : bool
  */
-const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Search…', required = false }) => {
+const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Search…', required = false, onSearch, loading = false }) => {
     const [query,    setQuery]    = useState('');
     const [open,     setOpen]     = useState(false);
     const [focused,  setFocused]  = useState(-1);
@@ -23,9 +23,11 @@ const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Search
     const selectedLabel = options.find(o => String(o.value) === String(value))?.label ?? '';
 
     // Filtered list
-    const filtered = query.trim() === ''
+    const filtered = onSearch
         ? options
-        : options.filter(o => o.label.toLowerCase().includes(query.toLowerCase()));
+        : (query.trim() === ''
+            ? options
+            : options.filter(o => o.label.toLowerCase().includes(query.toLowerCase())));
 
     // Close on outside click
     useEffect(() => {
@@ -49,9 +51,13 @@ const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Search
     }, [focused]);
 
     const handleInputChange = (e) => {
-        setQuery(e.target.value);
+        const val = e.target.value;
+        setQuery(val);
         setOpen(true);
         setFocused(-1);
+        if (onSearch) {
+            onSearch(val);
+        }
     };
 
     const handleSelect = (option) => {
@@ -156,9 +162,13 @@ const SearchableSelect = ({ options = [], value, onChange, placeholder = 'Search
                         zIndex: 999,
                     }}
                 >
-                    {filtered.length === 0 ? (
+                    {loading ? (
+                        <div style={{ padding: '0.75rem 1rem', color: '#ff0088', fontSize: '0.85rem' }}>
+                            Searching…
+                        </div>
+                    ) : filtered.length === 0 ? (
                         <div style={{ padding: '0.75rem 1rem', color: '#94a3b8', fontSize: '0.85rem' }}>
-                            No results found
+                            {onSearch && query.trim() === '' ? 'Type patient name or CR number to search…' : 'No results found'}
                         </div>
                     ) : (
                         filtered.map((option, idx) => (

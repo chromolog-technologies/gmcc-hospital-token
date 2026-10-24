@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class MyTokenScreen extends StatefulWidget {
   final UserModel user;
@@ -58,7 +60,11 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     final bookings = await ApiService.getUserBookings(widget.user.id);
     
     // Sort by newest booking first (ID descending)
-    bookings.sort((a, b) => (b['id'] as int).compareTo(a['id'] as int));
+    bookings.sort((a, b) {
+      final idA = a['id'] is int ? a['id'] as int : int.tryParse(a['id']?.toString() ?? '0') ?? 0;
+      final idB = b['id'] is int ? b['id'] as int : int.tryParse(b['id']?.toString() ?? '0') ?? 0;
+      return idB.compareTo(idA);
+    });
     
     return bookings;
   }
@@ -84,7 +90,9 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     }
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FC),
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: const Text('My Token'),
         centerTitle: true,
         backgroundColor: _primary,
@@ -372,12 +380,34 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                   const SizedBox(height: 18),
                   _dashedDivider(),
                   const SizedBox(height: 16),
-                  // Bottom row: type + date
+                  // Bottom row: type + reporting + date
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _ticketField('TYPE', type.isNotEmpty ? type : 'GENERAL'),
-                      _ticketField('DATE', bookingDate, alignRight: true),
+                      Expanded(
+                        child: _ticketField(
+                          'TYPE',
+                          type.isNotEmpty ? type : 'GENERAL',
+                        ),
+                      ),
+                      Expanded(
+                        child: _ticketField(
+                          'REPORTING',
+                          (booking['slot_time'] != null &&
+                                  booking['slot_time'].toString().trim().isNotEmpty &&
+                                  booking['slot_time'].toString().toLowerCase() != 'null' &&
+                                  booking['slot_time'].toString().toUpperCase() != 'N/A')
+                              ? booking['slot_time'].toString()
+                              : 'Before 12pm',
+                          alignCenter: true,
+                        ),
+                      ),
+                      Expanded(
+                        child: _ticketField(
+                          'DATE',
+                          bookingDate,
+                          alignRight: true,
+                        ),
+                      ),
                     ],
                   ),
                   if (isPending) ...[
@@ -719,20 +749,35 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     );
   }
 
-  Widget _ticketField(String label, String value, {bool alignRight = false}) {
+  Widget _ticketField(String label, String value,
+      {bool alignRight = false, bool alignCenter = false}) {
+    final crossAlign = alignRight
+        ? CrossAxisAlignment.end
+        : alignCenter
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.start;
     return Column(
-      crossAxisAlignment:
-          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: crossAlign,
       children: [
         Text(label,
             style: const TextStyle(
-                color: Colors.white60, fontSize: 10,
-                fontWeight: FontWeight.w600, letterSpacing: 1)),
-        const SizedBox(height: 3),
-        Text(value,
-            style: const TextStyle(
-                color: Colors.white, fontSize: 16,
-                fontWeight: FontWeight.bold)),
+                color: Colors.white60,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1)),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          textAlign: alignRight
+              ? TextAlign.right
+              : alignCenter
+                  ? TextAlign.center
+                  : TextAlign.left,
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }

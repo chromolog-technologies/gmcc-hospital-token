@@ -7,6 +7,7 @@ use App\Http\Requests\CreateBookingRequest;
 use App\Http\Requests\CancelBookingRequest;
 use App\Models\Booking;
 use App\Models\Doctor;
+use App\Services\ActivityLogger;
 use App\Services\BookingService;
 use Carbon\Carbon;
 
@@ -50,15 +51,21 @@ class BookingController extends Controller
 
     public function create(CreateBookingRequest $request)
     {
-        $userId = $request->user()->id;
+        $user = $request->user();
+        $userId = $user ? $user->id : ($request->input('user_id') ?? $request->header('X-User-Id'));
 
         try {
             $booking = $this->bookingService->createToken(
-                $userId,
+                (int)$userId,
                 $request->unit_id,
                 $request->type,
                 'online'  // App users always book online
             );
+
+            ActivityLogger::log($user, 'booking_created', "Booked online token #{$booking->token_number} for {$booking->booking_date->toDateString()}", $booking, [
+                'unit_id' => $booking->unit_id,
+                'type'    => $booking->type,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -86,10 +93,16 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Doctors cannot fetch patient bookings here.'], 403);
         }
 
+        $userId = $user ? $user->id : ($request->query('user_id') ?? $request->header('X-User-Id'));
+
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'User ID is required.'], 400);
+        }
+
         BookingService::processAutoApprovals();
 
         $bookings = Booking::with(['unit.doctors'])
-            ->where('user_id', $user->id)
+            ->where('user_id', (int)$userId)
             ->orderBy('booking_date', 'desc')
             ->get();
 
@@ -104,7 +117,10 @@ class BookingController extends Controller
     {
         $booking = Booking::find($request->booking_id);
 
-        if ($booking->user_id !== $request->user()->id) {
+        $user = $request->user();
+        $userId = $user ? $user->id : ($request->input('user_id') ?? $request->header('X-User-Id'));
+
+        if ($booking->user_id !== (int)$userId) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
@@ -112,7 +128,12 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Only active or pending bookings can be cancelled'], 400);
         }
 
-        $booking->update(['status' => 'cancelled']);
+        $previousStatus = $booking->status;
+        $booking->update(array_merge(['status' => 'cancelled'], Booking::statusActionAttributes('user_cancelled')));
+
+        ActivityLogger::log($request->user(), 'booking_cancelled', "Patient cancelled token #{$booking->token_number}", $booking, [
+            'from_status' => $previousStatus,
+        ]);
 
         return response()->json([
             'success' => true,

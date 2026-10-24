@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/user_model.dart';
+import '../services/api_service.dart';
+import 'home_screen.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,17 +19,24 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _startSplash() async {
-    // Wait for 2 seconds (like SPLASH_TIME_OUT = 2000 in old app)
-    await Future.delayed(const Duration(milliseconds: 2000));
+    // Run 2-second splash timer and saved user check concurrently
+    final delayFuture = Future.delayed(const Duration(milliseconds: 2000));
+    final userFuture = ApiService.getSavedUser();
+
+    final results = await Future.wait([delayFuture, userFuture]);
+    final UserModel? savedUser = results[1] as UserModel?;
 
     if (!mounted) return;
-    _navigateToLogin();
-  }
 
-  void _navigateToLogin() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+    if (savedUser != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => HomeScreen(user: savedUser)),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    }
   }
 
   @override

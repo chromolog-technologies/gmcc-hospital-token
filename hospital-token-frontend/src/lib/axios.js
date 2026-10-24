@@ -1,12 +1,32 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.gmcchtsrtoken.chromologtechnologies.com/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://api.gmcchtsrtoken.com/api',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
 });
+
+// ── Client system info ───────────────────────────────────────────────────────
+// Sent with every request so the backend activity log can record which
+// device/system an admin logged in or acted from.
+const buildDeviceInfo = () => {
+    try {
+        return encodeURIComponent(JSON.stringify({
+            platform: navigator.userAgentData?.platform || navigator.platform || '',
+            mobile:   navigator.userAgentData?.mobile ?? /Mobi/i.test(navigator.userAgent),
+            language: navigator.language,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            screen:   `${window.screen.width}x${window.screen.height}`,
+            cpu_cores: navigator.hardwareConcurrency || null,
+            memory_gb: navigator.deviceMemory || null,
+        }));
+    } catch {
+        return '';
+    }
+};
+const deviceInfoHeader = buildDeviceInfo();
 
 // ── Request Interceptor ──────────────────────────────────────────────────────
 // Automatically attaches the auth token to every request from sessionStorage.
@@ -17,6 +37,8 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        config.headers['X-Client-Platform'] = 'web';
+        if (deviceInfoHeader) config.headers['X-Device-Info'] = deviceInfoHeader;
         return config;
     },
     (error) => Promise.reject(error)

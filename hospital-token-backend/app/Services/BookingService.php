@@ -24,10 +24,24 @@ class BookingService
 
         if (Carbon::now()->lt(Carbon::parse($hospital->auto_approve_bookings_until))) {
             $oneHourAgo = Carbon::now()->subHour();
-            Booking::where('status', 'pending')
+            $ids = Booking::where('status', 'pending')
                 ->where('source', 'online')
                 ->where('created_at', '<=', $oneHourAgo)
-                ->update(['status' => 'active']);
+                ->pluck('id')
+                ->all();
+
+            if (empty($ids)) {
+                return;
+            }
+
+            // Re-check status so concurrent callers don't approve/log the same booking twice
+            $approved = Booking::whereIn('id', $ids)
+                ->where('status', 'pending')
+                ->update(array_merge(['status' => 'active'], Booking::statusActionAttributes('auto_approved')));
+
+            if ($approved > 0) {
+                ActivityLogger::logSystemBulk('booking_auto_approved', 'booking', $ids, 'Token auto-approved after 1-hour grace period');
+            }
         }
     }
 
@@ -55,9 +69,9 @@ class BookingService
         }
 
         // ── Date rule ────────────────────────────────────────────────────────
-        // Online  (app)   → books for NEXT booking day (tomorrow's slot)
-        // Offline (admin) → books for CURRENT booking day (today's slot)
-        $bookingDate = $source === 'offline'
+        // Online  (app)           → books for NEXT booking day (tomorrow's slot)
+        // Offline (walk-in/staff) → books for CURRENT booking day (today's slot)
+        $bookingDate = ($source === 'offline-walkin' || $source === 'offline-staff')
             ? $bookingDay->toDateString()
             : $bookingDay->copy()->addDay()->toDateString();
 
@@ -77,6 +91,17 @@ class BookingService
                 throw new Exception("This unit operates on {$operatingDaysStr}.\n\nYou are trying to book for {$targetDayName}.\nBooking cannot be done for this day.\n\nNote: Bookings for {$targetDayName} must be made between {$windowStart} and {$windowEnd}.");
             } else {
                 throw new Exception("This unit operates on {$operatingDaysStr}. Cannot generate offline token for {$targetDayName}.");
+            }
+        }
+
+        // Ensure bookings.source column is VARCHAR(50) so it accepts 'offline-walkin' and 'offline-staff'
+        static $checkedSourceColumn = false;
+        if (!$checkedSourceColumn) {
+            try {
+                DB::statement("ALTER TABLE bookings MODIFY COLUMN source VARCHAR(50) NOT NULL DEFAULT 'online'");
+                $checkedSourceColumn = true;
+            } catch (\Throwable $e) {
+                // Ignore if alter cannot run directly
             }
         }
 
@@ -108,20 +133,30 @@ class BookingService
             $nextToken = $this->findNextToken($type, $source, $bookedTokens);
 
             if ($nextToken === null) {
-                $label = $source === 'offline' ? 'Offline (walk-in)' : 'Online';
+                $label = ($source === 'offline-walkin' || $source === 'offline-staff') ? 'Offline (walk-in)' : 'Online';
                 throw new Exception("{$label} tokens are fully booked for {$type} today. No more slots available.");
             }
 
             // ── 4. Determine status ───────────────────────────────────────
             // Offline bookings are always immediately active (admin confirmed).
             // Online bookings start as 'pending' (1-hour cancellation grace period before auto-approval).
-            if ($source === 'offline') {
+            if ($source === 'offline-walkin' || $source === 'offline-staff') {
                 $status = 'active';
             } else {
                 $status = 'pending';
             }
 
             // ── 5. Create or Overwrite the booking ────────────────────────
+            $payload = [
+                'user_id'      => $userId,
+                'unit_id'      => $unitId,
+                'type'         => $type,
+                'token_number' => $nextToken,
+                'booking_date' => $bookingDate,
+                'status'       => $status,
+                'source'       => $source,
+            ] + Booking::statusActionAttributes($status === 'active' ? 'admin_booked_offline' : 'online_booked');
+
             try {
                 $existingCancelled = Booking::where('unit_id', $unitId)
                     ->where('booking_date', $bookingDate)
@@ -130,25 +165,22 @@ class BookingService
                     ->first();
 
                 if ($existingCancelled) {
-                    $existingCancelled->update([
-                        'user_id'      => $userId,
-                        'type'         => $type,
-                        'status'       => $status,
-                        'source'       => $source,
-                    ]);
+                    $existingCancelled->update($payload);
                     return $existingCancelled;
                 }
 
-                return Booking::create([
-                    'user_id'      => $userId,
-                    'unit_id'      => $unitId,
-                    'type'         => $type,
-                    'token_number' => $nextToken,
-                    'booking_date' => $bookingDate,
-                    'status'       => $status,
-                    'source'       => $source,
-                ]);
+                return Booking::create($payload);
             } catch (\Illuminate\Database\QueryException $e) {
+                // If MySQL rejects 'offline-staff'/'offline-walkin' due to ENUM('online','offline')
+                if (str_contains($e->getMessage(), '1265') || str_contains($e->getMessage(), 'Data truncated')) {
+                    $fallbackPayload = array_merge($payload, ['source' => 'offline']);
+                    if ($existingCancelled ?? null) {
+                        $existingCancelled->update($fallbackPayload);
+                        return $existingCancelled;
+                    }
+                    return Booking::create($fallbackPayload);
+                }
+
                 if ($e->getCode() == 23000) {
                     throw new Exception('High demand detected. Please try again in a few seconds.');
                 }
@@ -193,7 +225,7 @@ class BookingService
             } else {
                 $totalBooked = count($tokens);
                 $onlineBooked = $booked->where('type', 'followup')->where('source', 'online')->count();
-                $offlineBooked = $booked->where('type', 'followup')->where('source', 'offline')->count();
+                $offlineBooked = $booked->where('type', 'followup')->where('source', '!=', 'online')->count();
                 $result['followup'] = [
                     'online_booked'    => $onlineBooked,
                     'online_remaining' => max(0, 150 - $totalBooked),

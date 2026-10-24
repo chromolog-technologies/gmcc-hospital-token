@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Hospital;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use App\Services\BookingService;
 use Carbon\Carbon;
 
@@ -35,7 +36,11 @@ class HospitalBookingController extends Controller
 
         // Optional filters
         if ($request->filled('source')) {
-            $query->where('source', $request->source);
+            if ($request->source === 'offline') {
+                $query->where('source', 'like', 'offline%');
+            } else {
+                $query->where('source', $request->source);
+            }
         }
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -43,8 +48,20 @@ class HospitalBookingController extends Controller
         if ($request->filled('date')) {
             $query->where('booking_date', $request->date);
         }
+        if ($request->filled('crno')) {
+            $crno = trim($request->crno);
+            $query->whereHas('user', function ($q) use ($crno) {
+                $q->where('crno', 'like', "%{$crno}%")
+                  ->orWhere('name', 'like', "%{$crno}%");
+            });
+        }
 
-        $bookings = $query->paginate(50);
+        $perPage = (int) $request->input('per_page', 300);
+        if ($perPage < 1 || $perPage > 1000) {
+            $perPage = 300;
+        }
+
+        $bookings = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -76,6 +93,12 @@ class HospitalBookingController extends Controller
             );
 
             $booking->load(['user', 'unit.doctors']);
+
+            ActivityLogger::log($request->user(), 'booking_created', "Admin booked {$request->source} token #{$booking->token_number} for {$booking->user->name}", $booking, [
+                'unit_id' => $booking->unit_id,
+                'type'    => $booking->type,
+                'source'  => $booking->source,
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -130,8 +153,23 @@ class HospitalBookingController extends Controller
         ]);
 
         $booking = Booking::findOrFail($id);
+        $previousStatus = $booking->status;
+
+        $action = match ($request->status) {
+            'active'    => 'admin_approved',
+            'cancelled' => 'admin_cancelled',
+            'completed' => 'admin_completed',
+            'pending'   => 'admin_set_pending',
+        };
+
+        $booking->fill(Booking::statusActionAttributes($action));
         $booking->status = $request->status;
         $booking->save();
+
+        ActivityLogger::log($request->user(), 'booking_' . str_replace('admin_', '', $action), "Admin changed token #{$booking->token_number} from {$previousStatus} to {$request->status}", $booking, [
+            'from_status' => $previousStatus,
+            'to_status'   => $request->status,
+        ]);
 
         return response()->json([
             'success' => true,
@@ -177,6 +215,8 @@ class HospitalBookingController extends Controller
         }
 
         $hospital->save();
+
+        ActivityLogger::log($hospital, 'auto_approve_' . ($request->hours > 0 ? 'enabled' : 'disabled'), 'Admin turned auto-approve ' . ($request->hours > 0 ? 'ON' : 'OFF'));
 
         return response()->json([
             'success' => true,

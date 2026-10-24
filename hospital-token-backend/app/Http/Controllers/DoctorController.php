@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Doctor;
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -121,7 +122,9 @@ class DoctorController extends Controller
             $this->checkAccess($request->user(), $unit_id);
             $today = Carbon::today()->toDateString();
 
-            return DB::transaction(function () use ($unit_id, $today) {
+            $doctor = $request->user();
+
+            return DB::transaction(function () use ($unit_id, $today, $doctor) {
                 // Find the current active token and lock it
                 $currentToken = Booking::where('unit_id', $unit_id)
                     ->where('booking_date', $today)
@@ -131,7 +134,8 @@ class DoctorController extends Controller
                     ->first();
 
                 if ($currentToken) {
-                    $currentToken->update(['status' => 'completed']);
+                    $currentToken->update(array_merge(['status' => 'completed'], Booking::statusActionAttributes('doctor_completed')));
+                    ActivityLogger::log($doctor, 'booking_completed', "Doctor completed token #{$currentToken->token_number} (call next)", $currentToken);
                 }
 
                 // Get the very next token
@@ -180,7 +184,8 @@ class DoctorController extends Controller
                 return response()->json(['success' => false, 'message' => 'Only active bookings can be marked completed'], 400);
             }
 
-            $booking->update(['status' => 'completed']);
+            $booking->update(array_merge(['status' => 'completed'], Booking::statusActionAttributes('doctor_completed')));
+            ActivityLogger::log($request->user(), 'booking_completed', "Doctor marked token #{$booking->token_number} as completed", $booking);
 
             return response()->json([
                 'success' => true,

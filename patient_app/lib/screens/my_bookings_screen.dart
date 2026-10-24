@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
+
 
 class MyBookingsScreen extends StatefulWidget {
   final UserModel user;
@@ -93,7 +95,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: const Text('My Tokens'),
         backgroundColor: const Color(0xFFFF0088),
         foregroundColor: Colors.white,
@@ -122,14 +126,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  booking['unit']['name'].toString().toUpperCase(),
+                  (booking['unit']?['name'] ?? 'UNIT').toString().toUpperCase(),
                   style: TextStyle(fontWeight: FontWeight.bold, color: statusColor, letterSpacing: 1),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(color: statusColor, borderRadius: BorderRadius.circular(50)),
                   child: Text(
-                    booking['status'].toString().toUpperCase(),
+                    (booking['status'] ?? 'UNKNOWN').toString().toUpperCase(),
                     style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -151,16 +155,27 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   ],
                 ),
                 const Spacer(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, fontSize: 12)),
-                    const SizedBox(height: 5),
-                    Text(
-                      '${booking['slot_time']}',
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Builder(
+                  builder: (context) {
+                    final rawSlotTime = booking['slot_time'];
+                    final slotTime = (rawSlotTime != null &&
+                            rawSlotTime.toString().trim().isNotEmpty &&
+                            rawSlotTime.toString().toLowerCase() != 'null' &&
+                            rawSlotTime.toString().toUpperCase() != 'N/A')
+                        ? rawSlotTime.toString()
+                        : 'Report before 12pm';
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text('REPORTING TIME', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                        const SizedBox(height: 5),
+                        Text(
+                          slotTime,
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'dart:async';
+
 
 class DoctorQueueScreen extends StatefulWidget {
   final Map<String, dynamic> unit;
@@ -98,7 +100,9 @@ class _DoctorQueueScreenState extends State<DoctorQueueScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
+
         title: Text(widget.unit['name'] ?? 'Queue Management'),
         backgroundColor: const Color(0xFF007AFF),
         foregroundColor: Colors.white,

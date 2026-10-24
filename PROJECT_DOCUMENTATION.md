@@ -67,7 +67,7 @@ The **GMCC Hospital Patient Portal** is a multi-platform token management system
 │              │                               │             │
 │    ┌─────────▼──────────┐    ┌───────────────▼──────────┐  │
 │    │  MySQL Database    │    │  Firebase Cloud           │  │
-│    │  (Hostinger VPS)   │    │  Messaging (FCM)          │  │
+│    │(gmcchaav_token_live)│    │  Messaging (FCM)          │  │
 │    └────────────────────┘    └──────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -81,9 +81,9 @@ The **GMCC Hospital Patient Portal** is a multi-platform token management system
 |-----------|-----------|
 | Framework | Laravel 11 (PHP) |
 | Authentication | Laravel Sanctum (token-based) |
-| Database | MySQL |
+| Database | MySQL (`gmcchaav_token_live`) |
 | Push Notifications | Firebase Cloud Messaging (FCM) v1 API |
-| Hosting | Hostinger VPS (Port 65002) |
+| Hosting | cPanel (`api.gmcchtsrtoken.com`) |
 | Rate Limiting | Laravel throttle middleware |
 
 ### Admin Web Frontend

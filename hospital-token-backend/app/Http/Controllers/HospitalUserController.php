@@ -23,25 +23,32 @@ class HospitalUserController extends Controller
     }
 
     /**
-     * List all users or search by CR Number.
+     * List users (with search and performance limits).
      */
     public function index(Request $request)
     {
         $this->checkAccess($request);
 
-        $crno = $request->query('crno');
+        $search = $request->query('search') ?? $request->query('q') ?? $request->query('crno');
 
-        if ($crno) {
-            $formattedCrno = User::formatCrno($crno);
-            $user = User::where('crno', $formattedCrno)->first();
+        if ($search) {
+            $formattedCrno = User::formatCrno($search);
+            $users = User::select(['id', 'name', 'crno', 'user_age', 'user_gender', 'created_at'])
+                ->where('crno', 'like', "%{$search}%")
+                ->orWhere('crno', 'like', "%{$formattedCrno}%")
+                ->orWhere('name', 'like', "%{$search}%")
+                ->orderBy('id', 'desc')
+                ->limit(50)
+                ->get();
 
-            if (!$user) {
-                return response()->json(['success' => false, 'message' => 'User not found', 'data' => []], 404);
-            }
-            return response()->json(['success' => true, 'data' => [$user]]);
+            return response()->json(['success' => true, 'data' => $users]);
         }
 
-        $users = User::orderBy('id', 'desc')->get();
+        $limit = (int) $request->query('limit', 50);
+        $users = User::select(['id', 'name', 'crno', 'user_age', 'user_gender', 'created_at'])
+            ->orderBy('id', 'desc')
+            ->limit($limit)
+            ->get();
         return response()->json(['success' => true, 'data' => $users]);
     }
 
@@ -63,8 +70,22 @@ class HospitalUserController extends Controller
     {
         $this->checkAccess($request);
 
-        if ($request->has('crno')) {
-            $request->merge(['crno' => User::formatCrno($request->crno)]);
+        $rawCrno = $request->input('crno');
+        $formattedCrno = User::formatCrno($rawCrno);
+        $request->merge(['crno' => $formattedCrno]);
+
+        // Check if CRNO exists in either formatted or raw form
+        if (!empty($rawCrno)) {
+            $exists = User::where('crno', $formattedCrno)
+                ->orWhere('crno', trim($rawCrno))
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'A user with this CR number already exists.'
+                ], 422);
+            }
         }
 
         $request->validate([
@@ -154,10 +175,17 @@ class HospitalUserController extends Controller
      */
     public function bulkStore(Request $request)
     {
+        @set_time_limit(300);
+        @ini_set('max_execution_time', '300');
+        @ini_set('memory_limit', '512M');
+        if (function_exists('ignore_user_abort')) {
+            @ignore_user_abort(true);
+        }
+
         $this->checkAccess($request);
 
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt|max:5120',
+            'file' => 'required|file|mimes:csv,txt|max:10240',
         ]);
 
         $file = $request->file('file');
@@ -174,27 +202,55 @@ class HospitalUserController extends Controller
             return response()->json(['success' => false, 'message' => 'The CSV file is empty.'], 422);
         }
 
+        // Strip UTF-8 BOM if present
+        $header[0] = preg_replace('/[\x{FEFF}\x{FFFE}]/u', '', $header[0]);
+        $header[0] = str_replace("\xEF\xBB\xBF", '', $header[0]);
         $header = array_map(fn($col) => strtolower(trim($col)), $header);
 
-        $requiredColumns = ['name', 'crno'];
-        $missingColumns  = array_diff($requiredColumns, $header);
+        // Check required columns allowing variations (crno/cr_number/cr/cr_no, name/patient_name)
+        $hasName = false;
+        $hasCrno = false;
+        foreach ($header as $colName) {
+            if (in_array($colName, ['name', 'patient_name', 'patient name'])) $hasName = true;
+            if (in_array($colName, ['crno', 'cr_number', 'cr number', 'cr_no', 'cr'])) $hasCrno = true;
+        }
 
-        if (!empty($missingColumns)) {
+        if (!$hasName || !$hasCrno) {
             return response()->json([
                 'success' => false,
-                'message' => 'Missing required columns: ' . implode(', ', $missingColumns) . '. The CSV must have "name" and "crno" columns.'
+                'message' => 'Missing required columns. The CSV must contain "name" and "crno" (or "cr_number") columns.'
             ], 422);
         }
 
-        // Store file and dispatch background job
+        // Store file and process import synchronously
         $path = $file->store('imports');
         $absolutePath = \Illuminate\Support\Facades\Storage::path($path);
 
-        \App\Jobs\ImportPatientsJob::dispatch($absolutePath);
+        $job = new \App\Jobs\ImportPatientsJob($absolutePath);
+        $result = $job->process();
+
+        $imported = $result['imported'] ?? 0;
+        $skipped  = $result['skipped'] ?? 0;
+        $error    = $result['error'] ?? null;
+
+        if ($error) {
+            return response()->json([
+                'success' => false,
+                'message' => "Bulk import failed: " . $error
+            ], 500);
+        }
+
+        $msg = "Bulk import completed. {$imported} patient" . ($imported === 1 ? '' : 's') . " imported successfully.";
+        if ($skipped > 0) {
+            $msg .= " ({$skipped} duplicates or invalid rows skipped).";
+        }
 
         return response()->json([
             'success'  => true,
-            'message'  => "CSV file uploaded successfully. Bulk patient import is now processing in the background."
+            'imported' => $imported,
+            'skipped'  => $skipped,
+            'message'  => $msg
         ], 200);
     }
+
 }

@@ -19,26 +19,23 @@ Route::middleware('throttle:60,1')->group(function () {
     });
 
     Route::get('/units', [UnitController::class, 'index']);
+    Route::get('/booking/availability', [BookingController::class, 'getAvailability']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
 
-    // Protected Routes
+    // Patient / User Booking Routes (Authenticates via Sanctum token OR patient credentials)
+    Route::middleware('role:patient')->group(function () {
+        Route::post('/booking/create', [BookingController::class, 'create']);
+        Route::get('/booking/my-bookings', [BookingController::class, 'getByUser']);
+        Route::post('/booking/cancel', [BookingController::class, 'cancel']);
+    });
+
+    // Protected Routes (Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
 
         Route::post('/logout', [AuthController::class, 'logout']);
-
-        // Patient / User Only Routes
-        Route::middleware('role:patient')->group(function () {
-            // Booking Endpoints (Users)
-            Route::get('/booking/availability', [BookingController::class, 'getAvailability']);
-            Route::post('/booking/create', [BookingController::class, 'create']);
-            Route::get('/booking/my-bookings', [BookingController::class, 'getByUser']);
-            Route::post('/booking/cancel', [BookingController::class, 'cancel']);
-            
-            // Notifications (Users can read)
-            Route::get('/notifications', [NotificationController::class, 'index']);
-        });
         
         // Doctor Only Routes
         Route::middleware('role:doctor')->group(function () {
@@ -93,6 +90,9 @@ Route::middleware('throttle:60,1')->group(function () {
                 Route::get('/settings', [\App\Http\Controllers\HospitalBookingController::class, 'getSettings']);
                 Route::put('/auto-approve', [\App\Http\Controllers\HospitalBookingController::class, 'updateAutoApprove']);
             });
+
+            // Login / Activity Logs (kept for 30 days)
+            Route::get('/hospital/activity-logs', [\App\Http\Controllers\ActivityLogController::class, 'index']);
 
             // Hospital Notifications Endpoints
             Route::prefix('hospital/notifications')->group(function () {

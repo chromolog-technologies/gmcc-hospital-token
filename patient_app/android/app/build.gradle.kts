@@ -39,8 +39,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "2.1"
+        versionCode = 23
+        versionName = "2.5"
         multiDexEnabled = true
     }
 
@@ -67,4 +67,7 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+    implementation("androidx.core:core-ktx:1.13.1")
 }
+
