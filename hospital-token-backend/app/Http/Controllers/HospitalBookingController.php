@@ -56,9 +56,9 @@ class HospitalBookingController extends Controller
             });
         }
 
-        $perPage = (int) $request->input('per_page', 100);
-        if ($perPage < 1 || $perPage > 500) {
-            $perPage = 100;
+        $perPage = (int) $request->input('per_page', 300);
+        if ($perPage < 1 || $perPage > 1000) {
+            $perPage = 300;
         }
 
         $bookings = $query->paginate($perPage);

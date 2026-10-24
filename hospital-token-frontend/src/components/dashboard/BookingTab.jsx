@@ -135,7 +135,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
         const s = sourceVal !== undefined ? sourceVal : filterSourceRef.current;
         setFilterLoading(true);
         try {
-            const params = { per_page: 150 };
+            const params = { per_page: 300 };
             if (c && c.trim()) params.crno = c.trim();
             if (d && d.trim()) params.date = d.trim();
             if (s && s.trim()) params.source = s.trim();
@@ -206,7 +206,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const refreshBookingsOnly = useCallback(async () => {
         setIsRefreshing(true);
         try {
-            const params = { per_page: 150 };
+            const params = { per_page: 300 };
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
             if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
@@ -230,7 +230,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const params = { per_page: 150 };
+            const params = { per_page: 300 };
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
             if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
