@@ -27,18 +27,21 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     const [currentAutoApprove, setCurrentAutoApprove] = useState(null);
     const [savingSettings, setSavingSettings] = useState(false);
 
-    // Filter State (Patient CR No / Name, Booking Date, and Source)
+    // Filter State (Patient CR No / Name, Booking Date, Source, and Type)
     const [filterCrno, setFilterCrno] = useState('');
     const [filterDate, setFilterDate] = useState('');
     const [filterSource, setFilterSource] = useState('');
+    const [filterType, setFilterType] = useState('');
     const [filterLoading, setFilterLoading] = useState(false);
     const crnoDebounceRef = useRef(null);
     const filterCrnoRef = useRef('');
     const filterDateRef = useRef('');
     const filterSourceRef = useRef('');
+    const filterTypeRef = useRef('');
     filterCrnoRef.current = filterCrno;
     filterDateRef.current = filterDate;
     filterSourceRef.current = filterSource;
+    filterTypeRef.current = filterType;
 
     // Format date as dd-MM-yyyy — parse directly to avoid UTC→local timezone shift
     const formatDate = (dateString) => {
@@ -129,16 +132,18 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
     }, []);
 
     // Fetch filtered bookings list
-    const fetchBookingsList = useCallback(async (crnoVal, dateVal, sourceVal) => {
+    const fetchBookingsList = useCallback(async (crnoVal, dateVal, sourceVal, typeVal) => {
         const c = crnoVal !== undefined ? crnoVal : filterCrnoRef.current;
         const d = dateVal !== undefined ? dateVal : filterDateRef.current;
         const s = sourceVal !== undefined ? sourceVal : filterSourceRef.current;
+        const t = typeVal !== undefined ? typeVal : filterTypeRef.current;
         setFilterLoading(true);
         try {
             const params = { per_page: 300 };
             if (c && c.trim()) params.crno = c.trim();
             if (d && d.trim()) params.date = d.trim();
             if (s && s.trim()) params.source = s.trim();
+            if (t && t.trim()) params.type = t.trim();
             const res = await api.get('/hospital/bookings', { params });
             if (res.data.success) {
                 setBookings(res.data.data.data || res.data.data);
@@ -158,38 +163,46 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             clearTimeout(crnoDebounceRef.current);
         }
         crnoDebounceRef.current = setTimeout(() => {
-            fetchBookingsList(val, filterDateRef.current, filterSourceRef.current);
+            fetchBookingsList(val, filterDateRef.current, filterSourceRef.current, filterTypeRef.current);
         }, 350);
     };
 
     const handleDateChange = (e) => {
         const val = e.target.value;
         setFilterDate(val);
-        fetchBookingsList(filterCrnoRef.current, val, filterSourceRef.current);
+        fetchBookingsList(filterCrnoRef.current, val, filterSourceRef.current, filterTypeRef.current);
     };
 
     const handleSourceChange = (e) => {
         const val = e.target.value;
         setFilterSource(val);
-        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, val);
+        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, val, filterTypeRef.current);
+    };
+
+    const handleTypeChange = (e) => {
+        const val = e.target.value;
+        setFilterType(val);
+        fetchBookingsList(filterCrnoRef.current, filterDateRef.current, filterSourceRef.current, val);
     };
 
     const handleSetToday = () => {
         const todayStr = new Date().toISOString().split('T')[0];
         setFilterDate(todayStr);
-        fetchBookingsList(filterCrnoRef.current, todayStr, filterSourceRef.current);
+        fetchBookingsList(filterCrnoRef.current, todayStr, filterSourceRef.current, filterTypeRef.current);
     };
 
     const handleClearFilters = () => {
         setFilterCrno('');
         setFilterDate('');
         setFilterSource('');
+        setFilterType('');
         if (crnoDebounceRef.current) clearTimeout(crnoDebounceRef.current);
-        fetchBookingsList('', '', '');
+        fetchBookingsList('', '', '', '');
     };
 
     // Filtered bookings based on active filters
     const filteredBookings = bookings.filter(b => {
+        if (filterType && b.type !== filterType) return false;
         if (filterSource === 'online' && b.source !== 'online') return false;
         if (filterSource === 'offline' && !b.source?.includes('offline')) return false;
         if (filterDate && b.booking_date !== filterDate && !b.booking_date?.startsWith(filterDate)) return false;
@@ -210,6 +223,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
             if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
+            if (filterTypeRef.current && filterTypeRef.current.trim()) params.type = filterTypeRef.current.trim();
             const bRes = await api.get('/hospital/bookings', { params });
             if (bRes.data.success) {
                 setBookings(bRes.data.data.data || bRes.data.data);
@@ -234,6 +248,7 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
             if (filterCrnoRef.current && filterCrnoRef.current.trim()) params.crno = filterCrnoRef.current.trim();
             if (filterDateRef.current && filterDateRef.current.trim()) params.date = filterDateRef.current.trim();
             if (filterSourceRef.current && filterSourceRef.current.trim()) params.source = filterSourceRef.current.trim();
+            if (filterTypeRef.current && filterTypeRef.current.trim()) params.type = filterTypeRef.current.trim();
             const [bRes, sRes, unitsRes] = await Promise.all([
                 api.get('/hospital/bookings', { params }),
                 api.get('/hospital/bookings/settings'),
@@ -602,8 +617,29 @@ const BookingTab = ({ onBookingChanged, refreshKey = 0 }) => {
                             <option value="offline">Offline</option>
                         </select>
 
+                        {/* Type Filter (All / Chemo / Followup) */}
+                        <select
+                            value={filterType}
+                            onChange={handleTypeChange}
+                            style={{
+                                padding: '0.45rem 0.75rem',
+                                borderRadius: '8px',
+                                border: '1px solid #e2e8f0',
+                                fontSize: '0.85rem',
+                                outline: 'none',
+                                background: '#f8fafc',
+                                color: '#0f172a',
+                                cursor: 'pointer',
+                                fontWeight: 600
+                            }}
+                        >
+                            <option value="">All Types</option>
+                            <option value="chemo">Chemo</option>
+                            <option value="followup">Followup</option>
+                        </select>
+
                         {/* Clear Filters Button */}
-                        {(filterCrno || filterDate || filterSource) && (
+                        {(filterCrno || filterDate || filterSource || filterType) && (
                             <button
                                 type="button"
                                 onClick={handleClearFilters}
