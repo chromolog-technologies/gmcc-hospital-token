@@ -83,11 +83,26 @@ const Footer = () => {
 
         <div style={{ textAlign: 'center', color: '#64748b', fontSize: '0.875rem' }}>
           <p style={{ marginBottom: '0.5rem', fontWeight: 500 }}>
-            Copyright © 2021, Government Medical College Chest and Cancer Hospital, Thrissur.
+            Copyright © {new Date().getFullYear()}, Government Medical College Chest and Cancer Hospital, Thrissur.
           </p>
           <div style={{ marginTop: '0.75rem', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '1.25rem', fontSize: '0.75rem', color: '#94a3b8' }}>
+            <Link to="/about" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              About
+            </Link>
+            <Link to="/how-to-book" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              How to Book
+            </Link>
+            <Link to="/faq" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              FAQ
+            </Link>
+            <Link to="/contact" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              Contact
+            </Link>
             <Link to="/privacy" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
               Privacy Policy
+            </Link>
+            <Link to="/terms" style={{ color: '#94a3b8', textDecoration: 'underline' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+              Terms of Use
             </Link>
             <a
               href="https://chromologtechnologies.com/"

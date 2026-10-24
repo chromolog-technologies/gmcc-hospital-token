@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ShieldCheck, FileText, Cookie, Lock, Mail, ExternalLink, Calendar, CheckCircle } from 'lucide-react';
+import { useAdSense } from '../lib/adsense';
 
 const PrivacyPolicy = () => {
   const [activeTab, setActiveTab] = useState('all');
+  useAdSense();
 
   useEffect(() => {
     document.title = 'Privacy Policy | GMC Chest Hospital Token Management System';
@@ -41,11 +43,11 @@ const PrivacyPolicy = () => {
               <ShieldCheck size={18} /> Official Legal Documentation
             </div>
             <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em', color: '#ffffff' }}>
-              Privacy Policy for gmcchtsrtoken.in
+              Privacy Policy for gmcchtsrtoken.com
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8', fontSize: '0.875rem' }}>
               <Calendar size={15} />
-              <span>Last updated: June 03, 2021</span>
+              <span>Last updated: October 24, 2026</span>
             </div>
           </div>
 
@@ -316,6 +318,29 @@ const PrivacyPolicy = () => {
                   </div>
 
                 </div>
+              </section>
+            )}
+
+            {/* ADVERTISING (GOOGLE ADSENSE) */}
+            {(activeTab === 'all' || activeTab === 'cookies') && (
+              <section style={{ marginBottom: '2.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', marginTop: '1.5rem', marginBottom: '1rem', borderBottom: '2px solid #f1f5f9', paddingBottom: '0.5rem' }}>
+                  Advertising
+                </h2>
+                <p style={{ marginBottom: '1rem' }}>
+                  Public pages of this website show advertisements served by Google AdSense. Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites.
+                </p>
+                <p style={{ marginBottom: '1rem' }}>
+                  Google's use of advertising cookies enables it and its partners to serve ads to You based on Your visit to this site and/or other sites on the Internet. Advertising is not shown in the hospital staff portal, and no patient booking or medical information is shared with advertisers.
+                </p>
+                <p style={{ marginBottom: '1rem' }}>
+                  You may opt out of personalised advertising by visiting{' '}
+                  <a href="https://adssettings.google.com/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>Google Ads Settings</a>
+                  , or opt out of some third-party vendors' use of cookies for personalised advertising at{' '}
+                  <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>www.aboutads.info</a>
+                  . Learn more in{' '}
+                  <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', fontWeight: 600 }}>how Google uses information from sites that use its services</a>.
+                </p>
               </section>
             )}
 
