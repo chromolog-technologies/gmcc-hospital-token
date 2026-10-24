@@ -318,6 +318,14 @@ h2 { font-size: 2.25rem; font-weight: 800; line-height: 1.2; }
 .reviews-rating-count{ font-size: 0.85rem; color: #94a3b8; }
 .reviews-link-btn    { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; font-size: 0.85rem; background: transparent; cursor: pointer; color: #0f172a; text-decoration: none; transition: var(--transition); }
 .reviews-link-btn:hover { background: #f8fafc; }
+.home-steps          { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+.home-step-card      { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 1.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.home-step-num       { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-weight: 900; margin-bottom: 0.75rem; }
+.home-step-title     { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 800; color: #0f172a; }
+.home-step-text      { margin: 0; font-size: 0.9rem; color: #64748b; line-height: 1.7; }
+.home-steps-more     { margin-top: 1.5rem; text-align: center; color: #64748b; font-size: 0.9rem; }
+.home-steps-more a   { color: var(--primary); font-weight: 700; }
+.home-rating-row     { justify-content: center; margin-top: 2.5rem; }
 .reviews-grid        { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
 .review-card         { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 1.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
 .review-card:hover   { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
