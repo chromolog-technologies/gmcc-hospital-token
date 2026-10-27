@@ -31,6 +31,17 @@ class _HomeScreenState extends State<HomeScreen> {
     _unitsFuture = ApiService.getUnits();
   }
 
+  String get _displayCrno {
+    if (widget.user.crno != null && widget.user.crno!.trim().isNotEmpty) {
+      return widget.user.crno!.trim();
+    }
+    final apiUser = ApiService.currentUser;
+    if (apiUser?.crno != null && apiUser!.crno!.trim().isNotEmpty) {
+      return apiUser.crno!.trim();
+    }
+    return '';
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -215,7 +226,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 5),
+              if (_displayCrno.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'CR No: $_displayCrno',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
               const Text(
                 'Choose a department to book your token',
                 style: TextStyle(color: Colors.white70, fontSize: 14),
