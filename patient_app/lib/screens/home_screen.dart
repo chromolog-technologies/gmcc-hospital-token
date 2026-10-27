@@ -166,26 +166,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: _currentIndex == 0 ? _buildHomeBody() : _buildMyTokenBody(),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Anchored Adaptive Google AdMob Banner Ad
-            const BannerAdWidget(),
-            BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: _onItemTapped,
-              selectedItemColor: const Color(0xFFFF0088),
-              unselectedItemColor: Colors.grey,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.confirmation_number_outlined),
-                  label: 'My Token',
-                ),
-              ],
+        // No banner next to the tab bar: ads placed against navigation
+        // controls invite accidental clicks (AdMob placement policy).
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: const Color(0xFFFF0088),
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.confirmation_number_outlined),
+              label: 'My Token',
             ),
           ],
         ),
@@ -229,7 +224,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        const SizedBox(height: 10),
+        // Anchored Adaptive Google AdMob Banner Ad, kept clear of the
+        // department cards and tab bar
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: BannerAdWidget(),
+        ),
 
         // Units List
         Expanded(

@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
-import '../widgets/banner_ad_widget.dart';
 
 class BookingScreen extends StatefulWidget {
   final UserModel user;
@@ -118,7 +117,6 @@ class _BookingScreenState extends State<BookingScreen> {
       body: _bookingResult != null && _bookingResult!['success'] == true
           ? _buildSuccessUI()
           : _buildBookingUI(),
-      bottomNavigationBar: const BannerAdWidget(),
     );
   }
 
