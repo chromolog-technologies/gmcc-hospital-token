@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
@@ -24,11 +25,27 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool _isBackPressed = false;
   late Future<List<UnitModel>> _unitsFuture;
+  String _appVersion = '2.5.2 (25)';
 
   @override
   void initState() {
     super.initState();
     _unitsFuture = ApiService.getUnits();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          final build = info.buildNumber.trim();
+          _appVersion = build.isNotEmpty
+              ? '${info.version} ($build)'
+              : info.version;
+        });
+      }
+    } catch (_) {}
   }
 
   String get _displayCrno {
@@ -75,8 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('About'),
-          content: const Text(
-              "MCCH Token App\nVersion 1.0\nDesigned for smooth hospital token booking."),
+          content: Text(
+              "MCCH Token App\nVersion $_appVersion\nDesigned for smooth hospital token booking."),
           actions: <Widget>[
             TextButton(
               child: const Text('OK', style: TextStyle(color: Color(0xFFFF0088))),
