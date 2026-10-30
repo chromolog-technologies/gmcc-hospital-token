@@ -207,7 +207,12 @@ class ApiService {
 
       if (data['success'] == true) {
         _token = data['data']['token'];
-        final user = UserModel.fromJson(data['data']['user']);
+        final Map<String, dynamic> userMap =
+            Map<String, dynamic>.from(data['data']['user'] as Map);
+        if ((userMap['crno'] == null || userMap['crno'].toString().trim().isEmpty) && crno.isNotEmpty) {
+          userMap['crno'] = crno;
+        }
+        final user = UserModel.fromJson(userMap);
         _currentUser = user;
 
         try {

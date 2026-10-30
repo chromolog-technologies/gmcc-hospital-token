@@ -128,6 +128,24 @@ class BookingController extends Controller
             return response()->json(['success' => false, 'message' => 'Only active or pending bookings can be cancelled'], 400);
         }
 
+        // History check: Booking date is in the past
+        $today = Carbon::today('Asia/Kolkata')->toDateString();
+        $bookingDate = Carbon::parse($booking->booking_date)->toDateString();
+        if ($bookingDate < $today) {
+            return response()->json([
+                'success' => false,
+                'message' => 'History tokens cannot be cancelled.'
+            ], 400);
+        }
+
+        // 1-hour cancellation window check from booking creation time (created_at)
+        if ($booking->created_at && Carbon::parse($booking->created_at)->addHour()->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cancellation window has expired. Tokens can only be cancelled within 1 hour of booking.'
+            ], 400);
+        }
+
         $previousStatus = $booking->status;
         $booking->update(array_merge(['status' => 'cancelled'], Booking::statusActionAttributes('user_cancelled')));
 

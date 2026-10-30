@@ -21,8 +21,8 @@ class AppVersionWidget extends StatefulWidget {
 }
 
 class _AppVersionWidgetState extends State<AppVersionWidget> {
-  String _version = '2.5';
-  String _buildNumber = '23';
+  String _version = '2.5.2';
+  String _buildNumber = '25';
   bool _loaded = false;
 
   @override

@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
-import '../widgets/banner_ad_widget.dart';
 
 
 class MyTokenScreen extends StatefulWidget {
@@ -20,6 +20,7 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   late Future<List<dynamic>> _tokenFuture;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
+  Timer? _countdownTimer;
 
   static const Color _primary = Color(0xFFFF0088);
 
@@ -36,12 +37,75 @@ class _MyTokenScreenState extends State<MyTokenScreen>
       curve: Curves.easeInOut,
     ));
     _load();
+
+    // Ticks every second so the 1-hour cancellation countdown stays live
+    // and automatically updates/disables cancel buttons when the window closes
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  /// Returns true if the token is a history token:
+  /// - Status is completed or cancelled
+  /// - Or booking date is before today (past appointment)
+  bool _isHistoryBooking(dynamic booking) {
+    if (booking is! Map) return true;
+    final status = (booking['status'] as String? ?? '').toLowerCase();
+    if (status == 'completed' || status == 'cancelled') {
+      return true;
+    }
+
+    final rawDate = booking['booking_date'] as String? ?? '';
+    if (rawDate.isNotEmpty) {
+      try {
+        final dateStr = rawDate.length >= 10 ? rawDate.substring(0, 10) : rawDate;
+        final bDate = DateTime.parse(dateStr);
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final bookingDay = DateTime(bDate.year, bDate.month, bDate.day);
+        if (bookingDay.isBefore(today)) {
+          return true; // Past date
+        }
+      } catch (_) {}
+    }
+
+    return false;
+  }
+
+  /// Returns true if within 1 hour of the token's booking creation time (created_at)
+  bool _isWithinOneHour(dynamic booking) {
+    if (booking is! Map) return false;
+    final createdAtStr = booking['created_at'] as String?;
+    if (createdAtStr == null || createdAtStr.isEmpty) return false;
+
+    try {
+      final dt = DateTime.parse(createdAtStr);
+      final createdAt = dt.isUtc ? dt.toLocal() : dt;
+      final expireAt = createdAt.add(const Duration(hours: 1));
+      return DateTime.now().isBefore(expireAt);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Token cancellation is allowed ONLY when:
+  /// 1. Not a history token (date is today/future and status is not completed/cancelled)
+  /// 2. Status is active or pending
+  /// 3. Within 1 hour of booking creation time (created_at)
+  bool _canCancelBooking(dynamic booking) {
+    if (_isHistoryBooking(booking)) return false;
+    final status = (booking is Map ? booking['status'] as String? ?? '' : '').toLowerCase();
+    if (status != 'active' && status != 'pending') return false;
+    return _isWithinOneHour(booking);
   }
 
   void _load() {
@@ -90,7 +154,6 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     }
     return Scaffold(
       backgroundColor: const Color(0xFFF7F8FC),
-      bottomNavigationBar: const BannerAdWidget(),
       appBar: AppBar(
 
         title: const Text('My Token'),
@@ -107,12 +170,12 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   //  FULL LIST VIEW
   // ────────────────────────────────────────────────────────────
   Widget _buildList(List<dynamic> bookings) {
-    // Separate upcoming (active/pending) from history (completed/cancelled)
+    // Separate upcoming (future/today active or pending) from history (past date, completed, or cancelled)
     final upcoming = bookings
-        .where((b) => b['status'] == 'active' || b['status'] == 'pending')
+        .where((b) => !_isHistoryBooking(b))
         .toList();
     final history = bookings
-        .where((b) => b['status'] != 'active' && b['status'] != 'pending')
+        .where((b) => _isHistoryBooking(b))
         .toList();
 
     return RefreshIndicator(
@@ -215,6 +278,8 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   //  HERO TICKET (latest / most important token)
   // ────────────────────────────────────────────────────────────
   Widget _buildHeroTicket(Map<String, dynamic> booking) {
+    final isHistory = _isHistoryBooking(booking);
+    final canCancel = _canCancelBooking(booking);
     final status = (booking['status'] as String? ?? '').toLowerCase();
     final isActive = status == 'active';
     final isPending = status == 'pending';
@@ -410,22 +475,32 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                       ),
                     ],
                   ),
-                  if (isPending) ...[
+                  if (!isHistory && (isActive || isPending)) ...[
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.25),
+                        color: canCancel
+                            ? Colors.white.withValues(alpha: 0.25)
+                            : Colors.black.withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.timer_outlined, color: Colors.white, size: 14),
+                          Icon(
+                            canCancel ? Icons.timer_outlined : Icons.lock_clock_outlined,
+                            color: Colors.white,
+                            size: 14,
+                          ),
                           const SizedBox(width: 6),
                           Text(
                             _calculateRemainingCancelTime(booking['created_at'] as String?),
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: canCancel ? 1.0 : 0.85),
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
@@ -436,9 +511,9 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                   Row(
                     children: [
                       Expanded(child: _copyButton(tokenNo)),
-                      if (isActive || isPending) ...[
+                      if (!isHistory && (isActive || isPending)) ...[
                         const SizedBox(width: 10),
-                        Expanded(child: _cancelButton(booking['id'])),
+                        Expanded(child: _cancelButton(booking)),
                       ],
                     ],
                   ),
@@ -455,6 +530,8 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   //  COMPACT CARD (secondary upcoming + all history)
   // ────────────────────────────────────────────────────────────
   Widget _buildCompactCard(Map<String, dynamic> booking) {
+    final isHistory = _isHistoryBooking(booking);
+    final canCancel = _canCancelBooking(booking);
     final status = (booking['status'] as String? ?? '').toLowerCase();
     final isActive = status == 'active';
     final isPending = status == 'pending';
@@ -552,15 +629,23 @@ class _MyTokenScreenState extends State<MyTokenScreen>
                                     fontWeight: FontWeight.bold)),
                           ),
                         ),
-                      if (isPending) ...[
+                      if (!isHistory && (isActive || isPending)) ...[
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.timer_outlined, size: 12, color: statusColor),
+                            Icon(
+                              canCancel ? Icons.timer_outlined : Icons.lock_clock_outlined,
+                              size: 12,
+                              color: canCancel ? statusColor : Colors.grey,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               _calculateRemainingCancelTime(booking['created_at'] as String?),
-                              style: TextStyle(fontSize: 11, color: statusColor, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: canCancel ? statusColor : Colors.grey.shade600,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),
@@ -613,35 +698,75 @@ class _MyTokenScreenState extends State<MyTokenScreen>
               ],
             ),
           ),
-          // Cancel button — shown for active and pending tokens only
-          if (isActive || isPending) ...[  
+          // Cancel button — only shown for upcoming active/pending tokens (NEVER for history tokens)
+          if (!isHistory && (isActive || isPending)) ...[  
             Divider(height: 1, color: Colors.grey.shade100),
-            InkWell(
-              onTap: () => _handleCancel(booking['id']),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 11),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.cancel_outlined,
-                        size: 15, color: Colors.red.shade400),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Cancel Token',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.red.shade400,
+            if (canCancel)
+              InkWell(
+                onTap: () => _handleCancel(booking),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_outlined,
+                          size: 15, color: Colors.red.shade400),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Cancel Token',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.red.shade400,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              InkWell(
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text(
+                          'Cancellation window expired (allowed within 1 hour of booking).'),
+                      backgroundColor: Colors.grey.shade900,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      duration: const Duration(seconds: 2),
                     ),
-                  ],
+                  );
+                },
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 11),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cancel_outlined,
+                          size: 15, color: Colors.grey.shade400),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Cancel Window Closed',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade400,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ],
       ),
@@ -807,14 +932,49 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     );
   }
 
-  Widget _cancelButton(int bookingId) {
+  Widget _cancelButton(Map<String, dynamic> booking) {
+    final canCancel = _canCancelBooking(booking);
+
+    if (canCancel) {
+      return OutlinedButton.icon(
+        onPressed: () => _handleCancel(booking),
+        icon: const Icon(Icons.cancel_outlined, size: 15, color: Colors.white),
+        label:
+            const Text('Cancel', style: TextStyle(color: Colors.white, fontSize: 12)),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white54),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          padding: const EdgeInsets.symmetric(vertical: 11),
+        ),
+      );
+    }
+
+    // Disabled state after 1 hour has elapsed
     return OutlinedButton.icon(
-      onPressed: () => _handleCancel(bookingId),
-      icon: const Icon(Icons.cancel_outlined, size: 15, color: Colors.white),
-      label:
-          const Text('Cancel', style: TextStyle(color: Colors.white, fontSize: 12)),
+      onPressed: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_isHistoryBooking(booking)
+                ? 'History tokens cannot be cancelled.'
+                : 'Cancellation window expired (allowed within 1 hour of booking).'),
+            backgroundColor: Colors.grey.shade900,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      },
+      icon: Icon(Icons.cancel_outlined,
+          size: 15, color: Colors.white.withValues(alpha: 0.35)),
+      label: Text(
+        'Cancel (Expired)',
+        style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.45), fontSize: 12),
+      ),
       style: OutlinedButton.styleFrom(
-        side: const BorderSide(color: Colors.white54),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.25)),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: const EdgeInsets.symmetric(vertical: 11),
@@ -822,7 +982,31 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     );
   }
 
-  Future<void> _handleCancel(int bookingId) async {
+  Future<void> _handleCancel(Map<String, dynamic> booking) async {
+    final bookingId = booking['id'];
+    if (bookingId == null) return;
+
+    if (_isHistoryBooking(booking)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('History tokens cannot be cancelled.'),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+      return;
+    }
+
+    if (!_canCancelBooking(booking)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text(
+            'Cancellation window has expired. Tokens can only be cancelled within 1 hour of booking.'),
+        backgroundColor: Colors.red.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ));
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -845,7 +1029,7 @@ class _MyTokenScreenState extends State<MyTokenScreen>
     );
 
     if (confirmed == true) {
-      final result = await ApiService.cancelBooking(bookingId);
+      final result = await ApiService.cancelBooking(bookingId as int);
       if (!mounted) return;
       if (result['status'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -871,15 +1055,16 @@ class _MyTokenScreenState extends State<MyTokenScreen>
   String _calculateRemainingCancelTime(String? createdAtStr) {
     if (createdAtStr == null || createdAtStr.isEmpty) return '1 hour cancel window';
     try {
-      final createdAt = DateTime.parse(createdAtStr).toLocal();
+      final dt = DateTime.parse(createdAtStr);
+      final createdAt = dt.isUtc ? dt.toLocal() : dt;
       final expireAt = createdAt.add(const Duration(hours: 1));
       final remaining = expireAt.difference(DateTime.now());
       if (remaining.isNegative) {
-        return 'Cancel window ending soon';
+        return 'Cancel window closed';
       }
       final mins = remaining.inMinutes;
       final secs = remaining.inSeconds % 60;
-      return 'Cancel window ends in: ${mins}m ${secs}s';
+      return 'Cancel window ends in: ${mins}m ${secs.toString().padLeft(2, '0')}s';
     } catch (e) {
       return '1 hour cancel window';
     }

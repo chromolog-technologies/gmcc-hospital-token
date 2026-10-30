@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../models/user_model.dart';
 import '../models/unit_model.dart';
 import '../services/api_service.dart';
@@ -24,11 +25,38 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool _isBackPressed = false;
   late Future<List<UnitModel>> _unitsFuture;
+  String _appVersion = '2.5.2 (25)';
 
   @override
   void initState() {
     super.initState();
     _unitsFuture = ApiService.getUnits();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (mounted) {
+        setState(() {
+          final build = info.buildNumber.trim();
+          _appVersion = build.isNotEmpty
+              ? '${info.version} ($build)'
+              : info.version;
+        });
+      }
+    } catch (_) {}
+  }
+
+  String get _displayCrno {
+    if (widget.user.crno != null && widget.user.crno!.trim().isNotEmpty) {
+      return widget.user.crno!.trim();
+    }
+    final apiUser = ApiService.currentUser;
+    if (apiUser?.crno != null && apiUser!.crno!.trim().isNotEmpty) {
+      return apiUser.crno!.trim();
+    }
+    return '';
   }
 
   void _onItemTapped(int index) {
@@ -64,8 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('About'),
-          content: const Text(
-              "MCCH Token App\nVersion 1.0\nDesigned for smooth hospital token booking."),
+          content: Text(
+              "MCCH Token App\nVersion $_appVersion\nDesigned for smooth hospital token booking."),
           actions: <Widget>[
             TextButton(
               child: const Text('OK', style: TextStyle(color: Color(0xFFFF0088))),
@@ -166,26 +194,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: _currentIndex == 0 ? _buildHomeBody() : _buildMyTokenBody(),
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Anchored Adaptive Google AdMob Banner Ad
-            const BannerAdWidget(),
-            BottomNavigationBar(
-              currentIndex: _currentIndex,
-              onTap: _onItemTapped,
-              selectedItemColor: const Color(0xFFFF0088),
-              unselectedItemColor: Colors.grey,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.confirmation_number_outlined),
-                  label: 'My Token',
-                ),
-              ],
+        // No banner next to the tab bar: ads placed against navigation
+        // controls invite accidental clicks (AdMob placement policy).
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: const Color(0xFFFF0088),
+          unselectedItemColor: Colors.grey,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.confirmation_number_outlined),
+              label: 'My Token',
             ),
           ],
         ),
@@ -220,7 +243,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 5),
+              if (_displayCrno.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    'CR No: $_displayCrno',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
               const Text(
                 'Choose a department to book your token',
                 style: TextStyle(color: Colors.white70, fontSize: 14),
@@ -229,7 +271,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        const SizedBox(height: 10),
+        // Anchored Adaptive Google AdMob Banner Ad, kept clear of the
+        // department cards and tab bar
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: BannerAdWidget(),
+        ),
 
         // Units List
         Expanded(

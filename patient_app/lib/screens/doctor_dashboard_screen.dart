@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'doctor_queue_screen.dart';
 import 'login_screen.dart';
 import '../services/api_service.dart';
-import '../widgets/banner_ad_widget.dart';
 
 class DoctorDashboardScreen extends StatelessWidget {
   final Map<String, dynamic> doctor;
@@ -35,7 +34,6 @@ class DoctorDashboardScreen extends StatelessWidget {
           )
         ],
       ),
-      bottomNavigationBar: const BannerAdWidget(),
 
       body: Column(
         children: [
