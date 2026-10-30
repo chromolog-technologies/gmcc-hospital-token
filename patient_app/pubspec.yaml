@@ -1,6 +1,6 @@
 name: patient_app
 description: "Production Level POS System"
-version: 2.5.1+24
+version: 2.5.2+25
 publish_to: 'none'
 
 environment:

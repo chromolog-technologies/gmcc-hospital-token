@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
@@ -16,11 +17,23 @@ class MyBookingsScreen extends StatefulWidget {
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> {
   late Future<List<dynamic>> _bookingsFuture;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
     super.initState();
     _loadBookings();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
   }
 
   void _loadBookings() {
@@ -29,7 +42,76 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     });
   }
 
-  Future<void> _handleCancel(int bookingId) async {
+  /// Returns true if the token is a history token (past date or completed/cancelled)
+  bool _isHistoryBooking(dynamic booking) {
+    if (booking is! Map) return true;
+    final status = (booking['status'] as String? ?? '').toLowerCase();
+    if (status == 'completed' || status == 'cancelled') {
+      return true;
+    }
+
+    final rawDate = booking['booking_date'] as String? ?? '';
+    if (rawDate.isNotEmpty) {
+      try {
+        final dateStr = rawDate.length >= 10 ? rawDate.substring(0, 10) : rawDate;
+        final bDate = DateTime.parse(dateStr);
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final bookingDay = DateTime(bDate.year, bDate.month, bDate.day);
+        if (bookingDay.isBefore(today)) {
+          return true;
+        }
+      } catch (_) {}
+    }
+
+    return false;
+  }
+
+  /// Returns true if within 1 hour of the token's booking creation time (created_at)
+  bool _isWithinOneHour(dynamic booking) {
+    if (booking is! Map) return false;
+    final createdAtStr = booking['created_at'] as String?;
+    if (createdAtStr == null || createdAtStr.isEmpty) return false;
+
+    try {
+      final dt = DateTime.parse(createdAtStr);
+      final createdAt = dt.isUtc ? dt.toLocal() : dt;
+      final expireAt = createdAt.add(const Duration(hours: 1));
+      return DateTime.now().isBefore(expireAt);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Token cancellation is allowed ONLY when:
+  /// 1. Not a history token
+  /// 2. Status is active or pending
+  /// 3. Within 1 hour of booking creation time (created_at)
+  bool _canCancelBooking(dynamic booking) {
+    if (_isHistoryBooking(booking)) return false;
+    final status = (booking is Map ? booking['status'] as String? ?? '' : '').toLowerCase();
+    if (status != 'active' && status != 'pending') return false;
+    return _isWithinOneHour(booking);
+  }
+
+  Future<void> _handleCancel(dynamic booking) async {
+    final bookingId = booking is Map ? booking['id'] : booking;
+    if (bookingId == null) return;
+
+    if (booking is Map && _isHistoryBooking(booking)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('History tokens cannot be cancelled.'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    if (booking is Map && !_canCancelBooking(booking)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Cancellation window has expired. Tokens can only be cancelled within 1 hour of booking.'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -46,7 +128,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     );
 
     if (confirmed == true) {
-      final result = await ApiService.cancelBooking(bookingId);
+      final result = await ApiService.cancelBooking(bookingId as int);
       if (result['status'] == true) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,8 +189,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   }
 
   Widget _buildBookingCard(dynamic booking) {
-    final bool isActive = booking['status'] == 'active';
-    final Color statusColor = isActive ? Colors.blue : (booking['status'] == 'completed' ? Colors.green : Colors.red);
+    final bool isHistory = _isHistoryBooking(booking);
+    final bool canCancel = _canCancelBooking(booking);
+    final bool isActive = booking['status'] == 'active' && !isHistory;
+    final bool isPending = booking['status'] == 'pending' && !isHistory;
+    final Color statusColor = isActive ? Colors.blue : (isPending ? Colors.orange : (booking['status'] == 'completed' ? Colors.green : Colors.red));
 
     return Card(
       elevation: 3,
@@ -180,22 +265,42 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               ],
             ),
           ),
-          if (isActive)
+          // Cancel button: Only shown if NOT a history token (never for past tokens)
+          if (!isHistory && (isActive || isPending))
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
               child: SizedBox(
                 width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: () => _handleCancel(booking['id']),
-                  icon: const Icon(Icons.cancel_outlined, size: 18),
-                  label: const Text('CANCEL BOOKING'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
+                child: canCancel
+                    ? OutlinedButton.icon(
+                        onPressed: () => _handleCancel(booking),
+                        icon: const Icon(Icons.cancel_outlined, size: 18),
+                        label: const Text('CANCEL BOOKING'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      )
+                    : OutlinedButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cancellation window expired (allowed within 1 hour of booking).'),
+                              backgroundColor: Colors.black87,
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.cancel_outlined, size: 18, color: Colors.grey.shade400),
+                        label: Text('CANCEL WINDOW CLOSED', style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w600)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey.shade500,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
               ),
             ),
         ],
